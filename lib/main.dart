@@ -1,3 +1,21 @@
+// main.dart  --  This file is part of tiny_computer.               
+                                                                        
+// Copyright (C) 2023 Caten Hu                                          
+                                                                        
+// Tiny Computer is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published    
+// by the Free Software Foundation, either version 3 of the License,    
+// or any later version.                               
+                                                                         
+// Tiny Computer is distributed in the hope that it will be useful,          
+// but WITHOUT ANY WARRANTY; without even the implied warranty          
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              
+// See the GNU General Public License for more details.                 
+                                                                     
+// You should have received a copy of the GNU General Public License    
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+
+
 import 'dart:async';
 import 'dart:math';
 
@@ -97,7 +115,7 @@ Loading... Please wait about 5 to 10 minutes for first time
 
 一些注意事项：
 此软件免费开源
-项目地址：
+项目地址: https://github.com/Cateners/tiny_computer
 如果是买的就是被骗了, 请举报!
 ((然后请我喝水!!!!!!)(不是))
 
@@ -157,9 +175,9 @@ debian系统里预装了WPS, VSCode和fcitx输入法
           ),
           ElevatedButton(
             onPressed: () {
-              launchUrl(Uri.parse('https://flutter.dev'));
+              launchUrl(Uri.parse("https://github.com/Cateners/tiny_computer"));
             },
-            child: const Text("项目开源地址"),
+            child: const Text("项目地址"),
           ),
         ]
       )),

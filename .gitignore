@@ -44,4 +44,4 @@ app.*.map.json
 /android/app/release
 
 /backup
-/assets/xa*
+#assets/xa*

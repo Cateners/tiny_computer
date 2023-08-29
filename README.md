@@ -1,4 +1,6 @@
-# tiny_computer
+# 小小电脑
+
+<img decoding="async" src="assets/cover0.png" width="50%">
 
 点开软件就是电脑
 
@@ -40,7 +42,6 @@ assets的文件来源如下:
   - 默认显示太大了，很多窗口点开都超出了屏幕范围，目前我使显示缩小了userScale=1.5倍
 - 改掉了一些容器里的Termux硬链接，有一些.git文件夹里的没改，应该无伤大雅吧=v=
 - 最后采用tar.xz压缩，用split命令分成了xa*等多个文件
-- 这里好像因为github的限制太大的文件暂时上传不了
 
 lib目录：
 
@@ -54,10 +55,10 @@ lib目录：
 
 这是我的第一个flutter软件，感谢这些项目为我指路
 
-- 要一点基础的[《Flutter实战·第二版》](https://book.flutterchina.club)
-- 也许是零基础的Flutter视频课程[freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
+- 要一点基础的 [《Flutter实战·第二版》](https://book.flutterchina.club)
+- 也许是零基础的Flutter视频课程 [freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
 
-- 安卓上的VS Code[Code FA](https://github.com/nightmare-space/vscode_for_android)
+- 安卓上的VS Code [Code FA](https://github.com/nightmare-space/vscode_for_android)
 
 ## Getting Started
 

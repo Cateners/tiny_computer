@@ -1,3 +1,20 @@
+// workflow.dart  --  This file is part of tiny_computer.               
+                                                                        
+// Copyright (C) 2023 Caten Hu                                          
+                                                                        
+// Tiny Computer is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published    
+// by the Free Software Foundation, either version 3 of the License,    
+// or any later version.                               
+                                                                         
+// Tiny Computer is distributed in the hope that it will be useful,          
+// but WITHOUT ANY WARRANTY; without even the implied warranty          
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              
+// See the GNU General Public License for more details.                 
+                                                                     
+// You should have received a copy of the GNU General Public License    
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
@@ -18,7 +35,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class Util {
   static bool isFirstTime() {
-    return (! Directory("${G.dataPath}/bin").existsSync()) || File("${G.dataPath}/xac").existsSync();
+    return (! Directory("${G.dataPath}/bin").existsSync()) || File("${G.dataPath}/xao").existsSync();
   }
 
   static Future<void> copyAsset(String src, String dst) async {
@@ -102,7 +119,7 @@ class Workflow {
     "assets/assets.zip",
     "${G.dataPath}/assets.zip",
     );
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     await Util.copyAsset(
