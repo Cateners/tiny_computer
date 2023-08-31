@@ -18,6 +18,9 @@ Click-to-run debian 12 xfce on android for Chinese users, with fcitx pinyin inpu
 只支持arm64安卓
 
 **目前新安装的软件无法读写文件，但可以访问手机存储，原因未知**
+（我接下来可能会排查一下是proot还是容器的问题
+顺便学习一下容器是怎么做的
+毕竟我的修改可能出了问题）
 
 ## 项目结构
 
@@ -28,7 +31,9 @@ assets的文件来源如下:
 - [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
 - [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)
 
-其中proot和busybox都是直接用了二进制文件。对debian容器进行了如下修改：
+其中proot、busybox和pulseaudio相关文件都是直接用了二进制文件。
+（pulseaudio我真的编译不来，如果你会的话教教我吧）
+对debian容器进行了如下修改：
 - 使用tmoe工具安装了xfce环境和全套VNC；
 - 安装了wps office, 对wps office进行了如下修改：
   - 界面改成了多组件，避免无法打开wps；
