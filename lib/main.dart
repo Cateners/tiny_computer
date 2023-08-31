@@ -130,14 +130,16 @@ Loading... Please wait about 5 to 10 minutes for first time
 这个项目没有使用Termux
 因为我不太喜欢Termux的路径硬编码
 路径硬编码会导致软件在多用户/分身等场景无法使用
-
 当然这样一来就用不了Termux的软件生态了
-比如我不会编译pulseaudio
-现在软件就没有声音
 
 项目采用proot运行tmoe的debian12(xfce)
 debian系统里预装了WPS, VSCode和fcitx输入法
 界面是webview+noVNC
+
+目前不能安装其他软件
+安装的其他软件无法读写容器
+但可以访问手机存储
+我也不太清楚原因
 
 如果你给了存储权限
 那么可以从storage目录访问手机目录

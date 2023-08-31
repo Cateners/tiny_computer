@@ -10,14 +10,14 @@ Click-to-run debian 12 xfce on android for Chinese users, with fcitx pinyin inpu
 
 使用proot运行debian环境
 
-内置noVNC显示图形界面
-
-目前不能播放声音
+内置[noVNC](https://github.com/novnc/noVNC)显示图形界面
 
 初次启动由于解压的缘故要点时间
 以后点开就能用
 
 只支持arm64安卓
+
+**目前新安装的软件无法读写文件，但可以访问手机存储，原因未知**
 
 ## 项目结构
 
@@ -25,6 +25,7 @@ assets的文件来源如下:
 
 - [build-proot-android, proot二进制文件](https://github.com/green-green-avk/build-proot-android)
 - [busybox](https://github.com/meefik/busybox)
+- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
 - [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)
 
 其中proot和busybox都是直接用了二进制文件。对debian容器进行了如下修改：
