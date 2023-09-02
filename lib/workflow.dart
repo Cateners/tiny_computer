@@ -33,8 +33,6 @@ import 'package:flutter_pty/flutter_pty.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:device_info_plus/device_info_plus.dart';
-
 class Util {
   static bool isFirstTime() {
     return (! Directory("${G.dataPath}/bin").existsSync()) || File("${G.dataPath}/xao").existsSync();
@@ -71,7 +69,6 @@ class G {
   static late Pty pty;
   static late WebViewController controller;
   static late BuildContext homePageStateContext;
-  static late AndroidDeviceInfo androidInfo;
 
   static const String vncUrl = "http://localhost:36080/vnc.html?host=localhost&port=36080&autoconnect=true&resize=remote";
 }
@@ -83,6 +80,11 @@ class Workflow {
     Permission.manageExternalStorage.request();
   }
 
+  static Future<void> initData() async {
+
+
+  }
+
   static Future<void> initTerminal() async {
 
     G.dataPath = (await getApplicationSupportDirectory()).path;
@@ -90,8 +92,6 @@ class Workflow {
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
 
     G.terminal = Terminal();
-
-    G.androidInfo = await DeviceInfoPlugin().androidInfo;
 
     G.pty = Pty.start(
       "/system/bin/sh",
@@ -144,6 +144,7 @@ class Workflow {
     "${G.dataPath}/assets.zip",
     );
     for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao"]) {
+    //for (String name in ["xaa"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     await Util.copyAsset(
@@ -174,7 +175,7 @@ export LD_LIBRARY_PATH=\$PWD/bin
 export PROOT_TMP_DIR=\$PWD/tmp
 export PROOT_LOADER=\$PWD/libexec/proot/loader
 export PROOT_LOADER_32=\$PWD/libexec/proot/loader32
-${G.dataPath}/bin/proot --mute-setxid --tcsetsf2tcsetsw --root-id --pwd=/root --rootfs=${G.dataPath}/debian --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --mount=${G.dataPath}/share:/media/share -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=${G.dataPath}/debian/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/storage/self/primary:/media/storage/shared --mount=/storage/self/primary/Pictures:/media/storage/Pictures --mount=/storage/self/primary/Music:/media/storage/Music --mount=/storage/self/primary/Movies:/media/storage/Movies --mount=/storage/self/primary/Download:/media/storage/Download --mount=/storage/self/primary/DCIM:/media/storage/DCIM --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kpageflags:/proc/kpageflags --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=${G.androidInfo.model} HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp DISPLAY=:2 PULSE_SERVER=tcp:127.0.0.1:4713 LANG=zh_CN.UTF-8 SHELL=/bin/zsh PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/zsh -l
+${G.dataPath}/bin/proot --mute-setxid --tcsetsf2tcsetsw --root-id --pwd=/root --rootfs=${G.dataPath}/debian --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --mount=${G.dataPath}/share:/media/share -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=${G.dataPath}/debian/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/storage/self/primary:/media/storage/shared --mount=/storage/self/primary/Pictures:/media/storage/Pictures --mount=/storage/self/primary/Music:/media/storage/Music --mount=/storage/self/primary/Movies:/media/storage/Movies --mount=/storage/self/primary/Download:/media/storage/Download --mount=/storage/self/primary/DCIM:/media/storage/DCIM --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kpageflags:/proc/kpageflags --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=TINY HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp DISPLAY=:2 PULSE_SERVER=tcp:127.0.0.1:4713 LANG=zh_CN.UTF-8 SHELL=/bin/zsh PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/zsh -l
 startnovnc""");
   }
 
@@ -236,6 +237,7 @@ startnovnc""");
 
   static Future<void> workflow() async {
     grantPermissions();
+    await initData();
     await initTerminal();
     if (Util.isFirstTime()) {
       await setupBootstrap();

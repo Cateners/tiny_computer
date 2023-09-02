@@ -34,7 +34,7 @@ assets的文件来源如下:
 
 其中proot、busybox和pulseaudio相关文件都是直接用了二进制文件。
 
-（pulseaudio我真的编译不来，如果你会的话教教我吧）
+（pulseaudio我真的编译不来，如果你会的话请教教我吧）
 
 对debian容器进行了如下修改：
 - 使用tmoe工具安装了xfce环境和全套VNC；

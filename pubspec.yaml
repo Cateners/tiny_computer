@@ -39,6 +39,7 @@ dependencies:
   retry: ^3.1.2
   url_launcher: ^6.1.12
   device_info_plus: ^9.0.3
+  shared_preferences: ^2.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
