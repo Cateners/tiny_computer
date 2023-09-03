@@ -188,34 +188,11 @@ debian系统里预装了WPS, VSCode和fcitx输入法
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({super.key});
   @override
   Widget build(BuildContext context) {
-
-    G.homePageStateContext = context;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: FutureBuilder(
-        future: Workflow.workflow(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return TerminalView(G.terminal);
-          } else {
-            return const Padding(
+    return const Padding(
               padding: EdgeInsets.all(8),
               child: Column(
                 children: [
@@ -246,13 +223,65 @@ class _MyHomePageState extends State<MyHomePage> {
                 ]
               )
             );
-          }
-        }
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  //安装完成了吗？
+  //完成后从加载界面切换到主界面
+  bool isLoadingComplete = false;
+  //主界面索引
+  int pageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+
+  G.homePageStateContext = context;
+
+  if (!isLoadingComplete) {
+    Workflow.workflow().then((value) {
+      setState(() {
+        isLoadingComplete = true;
+      });
+    });
+  }
+
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Workflow.launchBrowser(),
-        tooltip: 'Increment',
-        child: const Icon(Icons.play_arrow),
+      body: isLoadingComplete?TerminalView(G.terminal):const LoadingPage(),
+      bottomNavigationBar: Visibility(visible: isLoadingComplete,
+        child: BottomNavigationBar(currentIndex: pageIndex, 
+          onTap: (index) {
+            setState(() {
+              pageIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
+            BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
+          ],
+        )
+      ),
+      floatingActionButton: Visibility(visible: isLoadingComplete && (pageIndex == 0),
+        child: FloatingActionButton(
+          onPressed: () => Workflow.launchBrowser(),
+          tooltip: "进入图形界面",
+          child: const Icon(Icons.play_arrow),
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

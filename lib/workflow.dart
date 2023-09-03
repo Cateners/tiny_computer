@@ -33,6 +33,8 @@ import 'package:flutter_pty/flutter_pty.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Util {
   static bool isFirstTime() {
     return (! Directory("${G.dataPath}/bin").existsSync()) || File("${G.dataPath}/xao").existsSync();
@@ -70,6 +72,9 @@ class G {
   static late WebViewController controller;
   static late BuildContext homePageStateContext;
 
+  static late SharedPreferences prefs;
+
+
   static const String vncUrl = "http://localhost:36080/vnc.html?host=localhost&port=36080&autoconnect=true&resize=remote";
 }
 
@@ -81,7 +86,8 @@ class Workflow {
   }
 
   static Future<void> initData() async {
-
+    
+    G.prefs = await SharedPreferences.getInstance();
 
   }
 
