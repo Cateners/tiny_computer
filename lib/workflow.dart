@@ -18,6 +18,9 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+
+import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:retry/retry.dart';
@@ -35,10 +38,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
 class Util {
-  static bool isFirstTime() {
-    return (! Directory("${G.dataPath}/bin").existsSync()) || File("${G.dataPath}/xao").existsSync();
-  }
 
   static Future<void> copyAsset(String src, String dst) async {
     await File(dst).writeAsBytes((await rootBundle.load(src)).buffer.asUint8List());
@@ -60,58 +62,81 @@ class Util {
   }
 
   static void termWrite(String str) {
-    G.pty.write(const Utf8Encoder().convert("$str\n"));
+    G.termPtys[G.currentContainer]!.pty.write(const Utf8Encoder().convert("$str\n"));
+  }
+
+  static dynamic getCurrentProp(String key) {
+    return jsonDecode(G.prefs.getStringList("containersInfo")![G.currentContainer])[key];
+  }
+
+  //用来设置name, boot, vnc, vncUrl等
+  static Future<void> setCurrentProp(String key, dynamic value) async {
+    await G.prefs.setStringList("containersInfo",
+      G.prefs.getStringList("containersInfo")!..setAll(G.currentContainer,
+        [jsonEncode((jsonDecode(
+          G.prefs.getStringList("containersInfo")![G.currentContainer]
+        ))..update(key, (v) => value))]
+      )
+    );
+  }
+
+  //返回单个G.bonusTable定义的item
+  static Map<String, dynamic> getRandomBonus() {
+    final random = Random();
+    final totalWeight = G.bonusTable.fold(0.0, (sum, item) => sum + item['weight']);
+    final randomIndex = random.nextDouble() * totalWeight;
+    var cumulativeWeight = 0.0;
+    for (final item in G.bonusTable) {
+      cumulativeWeight += item['weight'];
+      if (randomIndex <= cumulativeWeight) {
+        return item;
+      }
+    }
+    return G.bonusTable[0];
+  }
+
+  //由getRandomBonus返回的数据
+  static Future<void> applyBonus(Map<String, dynamic> bonus) async {
+    bool flag = false;
+    List<String> ret = G.prefs.getStringList("adsBonus")!.map((e) {
+      Map<String, dynamic> item = jsonDecode(e);
+      return (item["name"] == bonus["name"])?
+        jsonEncode(item..update("amount", (v) {
+          flag = true;
+          return v + bonus["amount"];
+        })):e;
+    }).toList();
+    if (!flag) {
+      ret.add("""{"name": "${bonus["name"]}", "amount": ${bonus["amount"]}}""");
+    }
+    await G.prefs.setStringList("adsBonus", ret);
+    print(G.prefs.getStringList("adsBonus")!);
   }
 }
 
-// Global variables
-class G {
-  static late final String dataPath;
-  static late Terminal terminal;
-  static late Pty pty;
-  static late WebViewController controller;
-  static late BuildContext homePageStateContext;
+//一个结合terminal和pty的类
+class TermPty {
+  late final Terminal terminal;
+  late final Pty pty;
 
-  static late SharedPreferences prefs;
-
-
-  static const String vncUrl = "http://localhost:36080/vnc.html?host=localhost&port=36080&autoconnect=true&resize=remote";
-}
-
-class Workflow {
-
-  static Future<void> grantPermissions() async {
-    Permission.storage.request();
-    Permission.manageExternalStorage.request();
-  }
-
-  static Future<void> initData() async {
-    
-    G.prefs = await SharedPreferences.getInstance();
-
-  }
-
-  static Future<void> initTerminal() async {
-
-    G.dataPath = (await getApplicationSupportDirectory()).path;
-
-    G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
-
-    G.terminal = Terminal();
-
-    G.pty = Pty.start(
+  TermPty() {
+    terminal = Terminal();
+    pty = Pty.start(
       "/system/bin/sh",
       workingDirectory: G.dataPath,
-      columns: G.terminal.viewWidth,
-      rows: G.terminal.viewHeight,
+      columns: terminal.viewWidth,
+      rows: terminal.viewHeight,
     );
-    G.pty.output
+    pty.output
         .cast<List<int>>()
         .transform(const Utf8Decoder())
-        .listen(G.terminal.write);
-    G.pty.exitCode.then((code) {
-      G.terminal.write('the process exited with exit code $code');
-      //TO_DO: Singal 9 hint
+        .listen(terminal.write);
+    pty.exitCode.then((code) {
+      terminal.write('the process exited with exit code $code');
+      if (code == 0) {
+        SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+      }
+      //TODO: Singal 9 hint, 改成对话框
       if (code == -9) {
         Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
           const TextStyle ts = TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.normal);
@@ -131,87 +156,337 @@ class Workflow {
         }));
       }
     });
-    G.terminal.onOutput = (data) {
-      G.pty.write(const Utf8Encoder().convert(data));
+    terminal.onOutput = (data) {
+      if (G.prefs.getBool("isTerminalWriteEnabled")!) {
+        pty.write(const Utf8Encoder().convert(data));
+      }
     };
-    G.terminal.onResize = (w, h, pw, ph) {
-      G.pty.resize(h, w);
+    terminal.onResize = (w, h, pw, ph) {
+      pty.resize(h, w);
     };
-
   }
 
+}
+
+// Global variables
+class G {
+  static late final String dataPath;
+  static Pty? audioPty;
+  static late WebViewController controller;
+  static late BuildContext homePageStateContext;
+  static late int currentContainer; //目前运行第几个容器
+  static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
+  static late AdManager ads;//广告实例
+
+
+  //看广告可以获得的奖励。
+  //weight抽奖权重，singleUse使用一次花费的数量，amount抽中可以获得的数量
+  static const List<Map<String, dynamic>> bonusTable = [
+    {"name": "开发者的祝福", "subtitle": "支持开发者的证明", "description": "(*'v'*)\n开发者由衷地感谢你!", "weight": 10000, "amount": 1, "singleUse": 0},
+    {"name": "记忆晶片", "subtitle": "看上去像平行四边形", "description": "组成记忆空间的基本元素。\n是从哪里掉下来的呢?", "weight": 50, "amount": 1, "singleUse": 0},
+    {"name": "Wishes Flower Part", "subtitle": "为1个人献上祝福", "description": "希望之花的花瓣。在想好为谁祝福后, 点击使用", "weight": 500, "amount": 1, "singleUse": 1},
+    {"name": "Wishes Flower Part", "subtitle": "为1个人献上祝福", "description": "希望之花的花瓣。在想好为谁祝福后, 点击使用", "weight": 100, "amount": 3, "singleUse": 1},
+    {"name": "Wishes Flower", "subtitle": "为3个人献上祝福", "description": "希望之花。在想好为谁祝福后, 点击使用", "weight": 50, "amount": 1, "singleUse": 1},
+    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 10, "amount": 0.01, "singleUse": 1},
+    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 1, "amount": 0.1, "singleUse": 1},
+    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 1, "amount": 1, "singleUse": 1},
+  ];
+
+  //所有key
+  //int defaultContainer = 0: 默认启动第0个容器
+  //String defaultAudioPort = 4713: 默认pulseaudio端口(为了避免和其它软件冲突改成4718了) !!!注意!这个值是String类型
+  //bool autoLaunchVnc = true: 是否自动启动VNC并跳转
+  //String lastDate: 上次启动软件的日期，yyyy-MM-dd
+  //int adsWatchedToday: 今日视频广告观看数量
+  //int adsWatchedTotal: 视频广告观看数量
+  //bool isBannerAdsClosed = false
+  //bool bannerAdsCanBeClosed = false 看一次视频广告永久开启，历史遗留
+  //bool isTerminalWriteEnabled = false
+  //bool terminalWriteCanBeEnabled = false 看一次视频广告永久开启，历史遗留
+  //? int bootstrapVersion: 启动包版本
+  //String[] containersInfo: 所有容器信息(json)
+  //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"}, ...]}
+  //String[] adsBonus: 观看广告获取的奖励(json)
+  //{name: "xxx", amount: xxx}
+  static late SharedPreferences prefs;
+
+}
+
+class AdManager {
   
+  static Map<String, bool> placements = {
+    interstitialVideoAdPlacementId: false,
+    rewardedVideoAdPlacementId: false,
+  };
+
+  static void loadAds() {
+    for (var placementId in placements.keys) {
+      loadAd(placementId);
+    }
+  }
+
+  static void loadAd(String placementId) {
+    UnityAds.load(
+      placementId: placementId,
+      onComplete: (placementId) {
+        print('Load Complete $placementId');
+        placements[placementId] = true;
+      },
+      onFailed: (placementId, error, message) => print('Load Failed $placementId: $error $message'),
+    );
+  }
+
+  static void showAd(String placementId, Function completeExtra, Function full) {
+
+    if (G.prefs.getInt("adsWatchedToday")!>=5) {
+      full();
+      return;
+    }
+
+    placements[placementId] = false;
+    UnityAds.showVideoAd(
+      placementId: placementId,
+      onComplete: (placementId) async {
+        print('Video Ad $placementId completed');
+        loadAd(placementId);
+        await G.prefs.setInt("adsWatchedTotal", G.prefs.getInt("adsWatchedTotal")!+1);
+        await G.prefs.setInt("adsWatchedToday", G.prefs.getInt("adsWatchedToday")!+1);
+        completeExtra();
+      },
+      onFailed: (placementId, error, message) {
+        print('Video Ad $placementId failed: $error $message');
+        loadAd(placementId);
+      },
+      onStart: (placementId) => print('Video Ad $placementId started'),
+      onClick: (placementId) => print('Video Ad $placementId click'),
+      onSkipped: (placementId) {
+        print('Video Ad $placementId skipped');
+        loadAd(placementId);
+      },
+    );
+  }
+
+  static String get gameId {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return '5403132';
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return '5403133';
+    }
+    return '';
+  }
+
+  static String bannerAdPlacementId = 'Banner_Android';
+
+  static String interstitialVideoAdPlacementId = 'Interstitial_Android';
+
+  static String rewardedVideoAdPlacementId = 'Rewarded_Android';
+}
+
+class Workflow {
+
+  static Future<void> grantPermissions() async {
+    Permission.storage.request();
+    Permission.manageExternalStorage.request();
+  }
+
   static Future<void> setupBootstrap() async {
+    //用来共享数据文件的文件夹
     Util.createDirFromString("${G.dataPath}/share");
-    Util.createDirFromString("${G.dataPath}/debian");
+    //挂载到/dev/shm的文件夹
     Util.createDirFromString("${G.dataPath}/tmp");
+    //给proot的tmp文件夹，虽然我不知道为什么proot要这个
+    Util.createDirFromString("${G.dataPath}/proot_tmp");
+    //解压后得到bin文件夹和libexec文件夹
+    //bin存放了proot和pulseaudio
+    //libexec存放了proot loader
     await Util.copyAsset(
     "assets/assets.zip",
     "${G.dataPath}/assets.zip",
     );
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao"]) {
-    //for (String name in ["xaa"]) {
-      await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
-    }
+    //dddd
     await Util.copyAsset(
     "assets/busybox",
     "${G.dataPath}/busybox",
     );
     await Util.execute(
 """
-cd ${G.dataPath}
+export DATA_DIR=${G.dataPath}
+cd \$DATA_DIR
 chmod +x busybox
-${G.dataPath}/busybox unzip assets.zip
+\$DATA_DIR/busybox unzip assets.zip
 chmod -R +x bin/*
 chmod -R +x libexec/proot/*
-cat xa* | ${G.dataPath}/busybox tar x -J -v -C debian
-${G.dataPath}/busybox rm -rf assets.zip xa*
+chmod 1777 tmp
+ln -s \$DATA_DIR/busybox \$DATA_DIR/bin/xz
+\$DATA_DIR/busybox rm -rf assets.zip
 """);
   }
 
-  static Future<void> launchDefaultContainer() async {
+  //初次启动要做的事情
+  static Future<void> initForFirstTime() async {
+    //首先设置bootstrap
+    await setupBootstrap();
+    //存放容器的文件夹0和存放硬链接的文件夹.l2s
+    Util.createDirFromString("${G.dataPath}/containers/0/.l2s");
+    //这个是容器rootfs，被split命令分成了xa*
+    //首次启动，就用这个，别让用户另选了
+    //TODO: 这个字符串列表太丑陋了
+    //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam"]) {
+      await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
+    }
+    //-J
+    await Util.execute(
+"""
+export DATA_DIR=${G.dataPath}
+export CONTAINER_DIR=\$DATA_DIR/containers/0
+cd \$DATA_DIR
+export PATH=\$DATA_DIR/bin:\$PATH
+export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
+export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
+export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
+export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
+\$DATA_DIR/bin/proot --link2symlink -H sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
+#Script from proot-distro
+chmod u+rw "\$CONTAINER_DIR/etc/passwd" "\$CONTAINER_DIR/etc/shadow" "\$CONTAINER_DIR/etc/group" "\$CONTAINER_DIR/etc/gshadow"
+echo "aid_\$(id -un):x:\$(id -u):\$(id -g):Termux:/:/sbin/nologin" >> "\$CONTAINER_DIR/etc/passwd"
+echo "aid_\$(id -un):*:18446:0:99999:7:::" >> "\$CONTAINER_DIR/etc/shadow"
+id -Gn | tr ' ' '\\n' > tmp1
+id -G | tr ' ' '\\n' > tmp2
+\$DATA_DIR/busybox paste tmp1 tmp2 > tmp3
+local group_name group_id
+cat tmp3 | while read -r group_name group_id; do
+	echo "aid_\${group_name}:x:\${group_id}:root,aid_\$(id -un)" >> "\$CONTAINER_DIR/etc/group"
+	if [ -f "\$CONTAINER_DIR/etc/gshadow" ]; then
+		echo "aid_\${group_name}:*::root,aid_\$(id -un)" >> "\$CONTAINER_DIR/etc/gshadow"
+	fi
+done
+\$DATA_DIR/busybox rm -rf xa* tmp1 tmp2 tmp3
+""");
+    //一些数据初始化
+    //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
+    //容器根目录会有一个fake-proc文件夹存放一些假的proc文件供挂载
+    //"boot":"\$DATA_DIR/bin/proot --link2symlink -H --kill-on-exit --tcsetsf2tcsetsw --root-id --pwd=/root --rootfs=\$CONTAINER_DIR -L --kernel-release=6.2.1-PRoot-Distro --bind=\$DATA_DIR/tmp:/dev/shm --bind=/sys --bind=/proc/self/fd/2:/dev/stderr --bind=/proc/self/fd/1:/dev/stdout --bind=/proc/self/fd/0:/dev/stdin --bind=/proc/self/fd:/dev/fd --bind=/proc --bind=/dev/urandom:/dev/random --bind=/dev --bind=\$CONTAINER_DIR/fake-proc/.loadavg:/proc/loadavg --bind=\$CONTAINER_DIR/fake-proc/.stat:/proc/stat --bind=\$CONTAINER_DIR/fake-proc/.uptime:/proc/uptime --bind=\$CONTAINER_DIR/fake-proc/.version:/proc/version --bind=\$CONTAINER_DIR/fake-proc/.vmstat:/proc/vmstat --bind=\$CONTAINER_DIR/fake-proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap /usr/bin/env -i HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMPDIR=/tmp DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
+    await G.prefs.setStringList("containersInfo", ["""{
+"name":"Ubuntu Jammy",
+"boot":"\$DATA_DIR/bin/proot --link2symlink --ashmem-memfd --sysvipc -H --kill-on-exit --root-id --pwd=/root --rootfs=\$CONTAINER_DIR -L --kernel-release=6.2.1-PRoot-Distro --mount=\$DATA_DIR/share:/media/share  --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary:/media/storage/shared --mount=/storage/self/primary/Pictures:/media/storage/Pictures --mount=/storage/self/primary/Music:/media/storage/Music --mount=/storage/self/primary/Movies:/media/storage/Movies --mount=/storage/self/primary/Download:/media/storage/Download --mount=/storage/self/primary/DCIM:/media/storage/DCIM --mount=/storage/self/primary/Documents:/media/storage/Documents --bind=\$DATA_DIR/tmp:/dev/shm --bind=/sys --bind=/proc/self/fd/2:/dev/stderr --bind=/proc/self/fd/1:/dev/stdout --bind=/proc/self/fd/0:/dev/stdin --bind=/proc/self/fd:/dev/fd --bind=/proc --bind=/dev/urandom:/dev/random --bind=/dev --bind=\$CONTAINER_DIR/fake-proc/.loadavg:/proc/loadavg --bind=\$CONTAINER_DIR/fake-proc/.stat:/proc/stat --bind=\$CONTAINER_DIR/fake-proc/.uptime:/proc/uptime --bind=\$CONTAINER_DIR/fake-proc/.version:/proc/version --bind=\$CONTAINER_DIR/fake-proc/.vmstat:/proc/vmstat --bind=\$CONTAINER_DIR/fake-proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap /usr/bin/env -i HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMPDIR=/tmp DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
+"vnc":"tigervncserver :4 -SecurityTypes none && .local/share/noVNC/utils/novnc_proxy --vnc localhost:5904 --listen localhost:36082 &",
+"vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote",
+"commands":[{"name":"检查更新并升级", "command":"apt update && apt upgrade -y"},
+{"name":"查看系统信息", "command":"uname -a"},
+{"name":"清屏", "command":"clear"},
+{"name":"安装图形处理软件Krita", "command":"apt update && apt install -y krita krita-l10n"},
+{"name":"卸载图形处理软件Krita", "command":"apt autoremove --purge -y krita krita-l10n"},
+{"name":"安装视频剪辑软件Kdenlive", "command":"apt update && apt install -y kdenlive"},
+{"name":"卸载视频剪辑软件Kdenlive", "command":"apt autoremove --purge -y kdenlive"},
+{"name":"安装科学计算软件Octave", "command":"apt update && apt install -y octave"},
+{"name":"卸载科学计算软件Octave", "command":"apt autoremove --purge -y octave"},
+{"name":"???", "command":"timeout 8 /root/.local/bin/cmatrix"}]
+}"""]);
+    await G.prefs.setStringList("adsBonus", []);
+    await G.prefs.setInt("adsWatchedTotal", 0);
+    //await G.prefs.setBool("terminalWriteCanBeEnabled", false);
+    //G.prefs.setBool("isTerminalWriteEnabled", false);
+    await G.prefs.setBool("isTerminalWriteEnabled", false);
+    //await G.prefs.setBool("bannerAdsCanBeClosed", false);
+    await G.prefs.setBool("isBannerAdsClosed", false);
+    //G.prefs.setBool("autoLaunchVnc", true);
+    await G.prefs.setBool("autoLaunchVnc", true);
+    await G.prefs.setString("defaultAudioPort", "4718");
+    await G.prefs.setInt("defaultContainer", 0);
+  }
+
+  static Future<void> initData() async {
+
+    G.dataPath = (await getApplicationSupportDirectory()).path;
+
+    G.termPtys = {};
+    
+    G.prefs = await SharedPreferences.getInstance();
+
+    //限制一天内观看视频广告不超过5次
+    final String currentDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+    if (currentDate != G.prefs.getString("lastDate")) {
+      await G.prefs.setString("lastDate", currentDate);
+      await G.prefs.setInt("adsWatchedToday", 0);
+    }
+
+    //如果没有这个key，说明是初次启动
+    if (!G.prefs.containsKey("defaultContainer")) {
+      await initForFirstTime();
+    }
+    G.currentContainer = G.prefs.getInt("defaultContainer")!;
+
+    G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
+
+  }
+
+  static Future<void> initTerminalForCurrent() async {
+    if (!G.termPtys.containsKey(G.currentContainer)) {
+      G.termPtys[G.currentContainer] = TermPty();
+    }
+  }
+
+  static Future<void> initAds() async {
+    UnityAds.init(
+      gameId: AdManager.gameId,
+      testMode: true,
+      onComplete: () {
+        print('Initialization Complete');
+        AdManager.loadAds();
+      },
+      onFailed: (error, message) => print('Initialization Failed: $error $message'),
+    );
+  }
+
+  static Future<void> setupAudio() async {
+    G.audioPty?.kill();
+    G.audioPty = Pty.start(
+      "/system/bin/sh"
+    );
+    //pulseaudio也需要一个tmp文件夹，这里选择前面的cache，没有什么特别的原因，不行再换
+    //pulseaudio还需要一个文件夹放配置，这里用share
+    G.audioPty!.write(const Utf8Encoder().convert("""
+export DATA_DIR=${G.dataPath}
+cd \$DATA_DIR/..
+export TMPDIR=\$PWD/cache
+cd \$DATA_DIR
+export HOME=\$DATA_DIR/share
+export LD_LIBRARY_PATH=\$DATA_DIR/bin
+\$DATA_DIR/busybox sed "s/4713/${G.prefs.getString("defaultAudioPort")!}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
+\$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
+exit
+"""));
+  await G.audioPty?.exitCode;
+  }
+
+  static Future<void> launchCurrentContainer() async {
     Util.termWrite(
 """
-cd ${G.dataPath}/..
-export TMPDIR=\$PWD/cache
-cd ${G.dataPath}
-export HOME=\$PWD/share
-export LD_LIBRARY_PATH=\$PWD/bin
-\$PWD/bin/pulseaudio -F \$PWD/bin/pulseaudio.conf >/dev/null 2>&1 & 
-export PROOT_TMP_DIR=\$PWD/tmp
-export PROOT_LOADER=\$PWD/libexec/proot/loader
-export PROOT_LOADER_32=\$PWD/libexec/proot/loader32
-${G.dataPath}/bin/proot --mute-setxid --tcsetsf2tcsetsw --root-id --pwd=/root --rootfs=${G.dataPath}/debian --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --mount=${G.dataPath}/share:/media/share -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=${G.dataPath}/debian/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/storage/self/primary:/media/storage/shared --mount=/storage/self/primary/Pictures:/media/storage/Pictures --mount=/storage/self/primary/Music:/media/storage/Music --mount=/storage/self/primary/Movies:/media/storage/Movies --mount=/storage/self/primary/Download:/media/storage/Download --mount=/storage/self/primary/DCIM:/media/storage/DCIM --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/kpageflags:/proc/kpageflags --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=${G.dataPath}/debian/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=TINY HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp DISPLAY=:2 PULSE_SERVER=tcp:127.0.0.1:4713 LANG=zh_CN.UTF-8 SHELL=/bin/zsh PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/zsh -l
-startnovnc""");
+export DATA_DIR=${G.dataPath}
+export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
+export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
+cd \$DATA_DIR
+export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
+export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
+export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
+${Util.getCurrentProp("boot")}
+${G.prefs.getBool("autoLaunchVnc")!?Util.getCurrentProp("vnc"):""}
+clear""");
   }
 
   static Future<void> waitForConnection() async {
-    // Future<bool> testConnection(String url) async {
-    //   try {
-    //     return (await http.get(Uri.parse(url))).statusCode == 200;
-    //   } catch (e) {
-    //     return false;
-    //   }
-    // }
-    // for (;;) {
-    //   await Future.delayed(const Duration(milliseconds: 1000), () async {
-    //     print("meow");
-    //     if (await testConnection(G.vncUrl)) {
-    //       return;
-    //     }
-    //   }
-    //   );
-    // }
     await retry(
       // Make a GET request
-      () => http.get(Uri.parse(G.vncUrl)).timeout(const Duration(milliseconds: 250)),
+      () => http.get(Uri.parse(Util.getCurrentProp("vncUrl"))).timeout(const Duration(milliseconds: 250)),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
   }
 
   static Future<void> launchBrowser() async {
-    G.controller.loadRequest(Uri.parse(G.vncUrl));
+    G.controller.loadRequest(Uri.parse(Util.getCurrentProp("vncUrl")));
     Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,overlays: []);
       SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
@@ -244,12 +519,13 @@ startnovnc""");
   static Future<void> workflow() async {
     grantPermissions();
     await initData();
-    await initTerminal();
-    if (Util.isFirstTime()) {
-      await setupBootstrap();
+    await initAds();
+    await initTerminalForCurrent();
+    setupAudio();
+    launchCurrentContainer();
+    if (G.prefs.getBool("autoLaunchVnc")!) {
+      waitForConnection().then((value) => launchBrowser());
     }
-    launchDefaultContainer();
-    waitForConnection().then((value) => launchBrowser());
   }
 }
 
