@@ -4,7 +4,7 @@
 
 即开即用的类PC环境，内置火狐浏览器和fcitx输入法等常用软件
 
-Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyin input method and wps office preinstalled. No termux required.
+Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyin input method preinstalled. No termux required.
 
 ## 原理
 
