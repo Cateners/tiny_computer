@@ -114,13 +114,62 @@ class Util {
   }
 }
 
+//来自xterms关于操作ctrl, shift, alt键的示例
+class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
+  final TerminalInputHandler _inputHandler;
+
+  VirtualKeyboard(this._inputHandler);
+
+  bool _ctrl = false;
+
+  bool get ctrl => _ctrl;
+
+  set ctrl(bool value) {
+    if (_ctrl != value) {
+      _ctrl = value;
+      notifyListeners();
+    }
+  }
+
+  bool _shift = false;
+
+  bool get shift => _shift;
+
+  set shift(bool value) {
+    if (_shift != value) {
+      _shift = value;
+      notifyListeners();
+    }
+  }
+
+  bool _alt = false;
+
+  bool get alt => _alt;
+
+  set alt(bool value) {
+    if (_alt != value) {
+      _alt = value;
+      notifyListeners();
+    }
+  }
+
+  @override
+  String? call(TerminalKeyboardEvent event) {
+    return _inputHandler.call(event.copyWith(
+      ctrl: event.ctrl || _ctrl,
+      shift: event.shift || _shift,
+      alt: event.alt || _alt,
+    ));
+  }
+}
+
 //一个结合terminal和pty的类
 class TermPty {
   late final Terminal terminal;
   late final Pty pty;
 
   TermPty() {
-    terminal = Terminal();
+    terminal = Terminal(inputHandler: G.keyboard);
     pty = Pty.start(
       "/system/bin/sh",
       workingDirectory: G.dataPath,
@@ -177,6 +226,7 @@ class G {
   static late int currentContainer; //目前运行第几个容器
   static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
   static late AdManager ads;//广告实例
+  static late VirtualKeyboard keyboard;
 
 
   //看广告可以获得的奖励。
@@ -203,6 +253,7 @@ class G {
   //bool bannerAdsCanBeClosed = false 看一次视频广告永久开启，历史遗留
   //bool isTerminalWriteEnabled = false
   //bool terminalWriteCanBeEnabled = false 看一次视频广告永久开启，历史遗留
+  //bool isTerminalCommandsEnabled = false 
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"}, ...]}
@@ -332,8 +383,8 @@ ln -s \$DATA_DIR/busybox \$DATA_DIR/bin/xz
     //这个是容器rootfs，被split命令分成了xa*
     //首次启动，就用这个，别让用户另选了
     //TODO: 这个字符串列表太丑陋了
-    //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan"]) {
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai"]) {
+    //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao", "xap", "xaq"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     //-J
@@ -346,8 +397,8 @@ export PATH=\$DATA_DIR/bin:\$PATH
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
-export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
-\$DATA_DIR/bin/proot --link2symlink -H sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
+#export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
+\$DATA_DIR/bin/proot --link2symlink sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
 #Script from proot-distro
 chmod u+rw "\$CONTAINER_DIR/etc/passwd" "\$CONTAINER_DIR/etc/shadow" "\$CONTAINER_DIR/etc/group" "\$CONTAINER_DIR/etc/gshadow"
 echo "aid_\$(id -un):x:\$(id -u):\$(id -g):Termux:/:/sbin/nologin" >> "\$CONTAINER_DIR/etc/passwd"
@@ -366,28 +417,29 @@ done
 """);
     //一些数据初始化
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
-    //容器根目录会有一个fake-proc文件夹存放一些假的proc文件供挂载
-    //"boot":"\$DATA_DIR/bin/proot --link2symlink -H --kill-on-exit --tcsetsf2tcsetsw --root-id --pwd=/root --rootfs=\$CONTAINER_DIR -L --kernel-release=6.2.1-PRoot-Distro --bind=\$DATA_DIR/tmp:/dev/shm --bind=/sys --bind=/proc/self/fd/2:/dev/stderr --bind=/proc/self/fd/1:/dev/stdout --bind=/proc/self/fd/0:/dev/stdin --bind=/proc/self/fd:/dev/fd --bind=/proc --bind=/dev/urandom:/dev/random --bind=/dev --bind=\$CONTAINER_DIR/fake-proc/.loadavg:/proc/loadavg --bind=\$CONTAINER_DIR/fake-proc/.stat:/proc/stat --bind=\$CONTAINER_DIR/fake-proc/.uptime:/proc/uptime --bind=\$CONTAINER_DIR/fake-proc/.version:/proc/version --bind=\$CONTAINER_DIR/fake-proc/.vmstat:/proc/vmstat --bind=\$CONTAINER_DIR/fake-proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap /usr/bin/env -i HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMPDIR=/tmp DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
     await G.prefs.setStringList("containersInfo", ["""{
-"name":"Ubuntu Jammy",
-"boot":"\$DATA_DIR/bin/proot --link2symlink --ashmem-memfd --sysvipc -H --kill-on-exit --root-id --pwd=/root --rootfs=\$CONTAINER_DIR -L --kernel-release=6.2.1-PRoot-Distro --mount=\$DATA_DIR/share:/media/share  --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary:/media/storage/shared --mount=/storage/self/primary/Pictures:/media/storage/Pictures --mount=/storage/self/primary/Music:/media/storage/Music --mount=/storage/self/primary/Movies:/media/storage/Movies --mount=/storage/self/primary/Download:/media/storage/Download --mount=/storage/self/primary/DCIM:/media/storage/DCIM --mount=/storage/self/primary/Documents:/media/storage/Documents --bind=\$DATA_DIR/tmp:/dev/shm --bind=/sys --bind=/proc/self/fd/2:/dev/stderr --bind=/proc/self/fd/1:/dev/stdout --bind=/proc/self/fd/0:/dev/stdin --bind=/proc/self/fd:/dev/fd --bind=/proc --bind=/dev/urandom:/dev/random --bind=/dev --bind=\$CONTAINER_DIR/fake-proc/.loadavg:/proc/loadavg --bind=\$CONTAINER_DIR/fake-proc/.stat:/proc/stat --bind=\$CONTAINER_DIR/fake-proc/.uptime:/proc/uptime --bind=\$CONTAINER_DIR/fake-proc/.version:/proc/version --bind=\$CONTAINER_DIR/fake-proc/.vmstat:/proc/vmstat --bind=\$CONTAINER_DIR/fake-proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap /usr/bin/env -i HOME=/root USER=root TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\\\\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMPDIR=/tmp DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
-"vnc":"tigervncserver :4 -SecurityTypes none && .local/share/noVNC/utils/novnc_proxy --vnc localhost:5904 --listen localhost:36082 &",
-"vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote",
-"commands":[{"name":"检查更新并升级", "command":"apt update && apt upgrade -y"},
-{"name":"查看系统信息", "command":"uname -a"},
+"name":"Debian Bookworm",
+"boot":"\$DATA_DIR/bin/proot --change-id=1000:1000 --pwd=/home/tiny --rootfs=\$CONTAINER_DIR --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --sysvipc -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=\$CONTAINER_DIR/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary:/media/sd --mount=\$DATA_DIR/share:/home/tiny/公共 --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary/Pictures:/home/tiny/图片 --mount=/storage/self/primary/Music:/home/tiny/音乐 --mount=/storage/self/primary/Movies:/home/tiny/视频 --mount=/storage/self/primary/Download:/home/tiny/下载 --mount=/storage/self/primary/DCIM:/home/tiny/照片 --mount=/storage/self/primary/Documents:/home/tiny/文档 --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linuxproot_proc/kpageflags:/proc/kpageflags --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=/data/data/com.termux/files/home/.local/share/tmoe-linux/containersproot/debian-bookworm_arm64/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=TINY HOME=/home/tiny USER=tiny TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp MOZ_FAKE_NO_SANDBOX=1 DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
+"vnc":"startnovnc &",
+"vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
+"commands":[{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y"},
+{"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
 {"name":"清屏", "command":"clear"},
-{"name":"安装图形处理软件Krita", "command":"apt update && apt install -y krita krita-l10n"},
-{"name":"卸载图形处理软件Krita", "command":"apt autoremove --purge -y krita krita-l10n"},
-{"name":"安装视频剪辑软件Kdenlive", "command":"apt update && apt install -y kdenlive"},
-{"name":"卸载视频剪辑软件Kdenlive", "command":"apt autoremove --purge -y kdenlive"},
-{"name":"安装科学计算软件Octave", "command":"apt update && apt install -y octave"},
-{"name":"卸载科学计算软件Octave", "command":"apt autoremove --purge -y octave"},
-{"name":"???", "command":"timeout 8 /root/.local/bin/cmatrix"}]
+{"name":"安装图形处理软件Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
+{"name":"卸载图形处理软件Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
+{"name":"安装视频剪辑软件Kdenlive", "command":"sudo apt update && sudo apt install -y kdenlive"},
+{"name":"卸载视频剪辑软件Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
+{"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
+{"name":"卸载科学计算软件Octave", "command":"sudo apt autoremove --purge -y octave"},
+{"name":"安装WPS", "command":"wget https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11704/wps-office_11.1.0.11704_arm64.deb -O /tmp/wps.deb; sudo apt update; sudo apt install /tmp/wps.deb -y; rm /tmp/wps.deb"},
+{"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
+{"name":"???", "command":"timeout 8 cmatrix"}]
 }"""]);
     await G.prefs.setStringList("adsBonus", []);
     await G.prefs.setInt("adsWatchedTotal", 0);
     //await G.prefs.setBool("terminalWriteCanBeEnabled", false);
     //G.prefs.setBool("isTerminalWriteEnabled", false);
+    await G.prefs.setBool("isTerminalCommandsEnabled", false);
     await G.prefs.setBool("isTerminalWriteEnabled", false);
     //await G.prefs.setBool("bannerAdsCanBeClosed", false);
     await G.prefs.setBool("isBannerAdsClosed", false);
@@ -402,6 +454,8 @@ done
     G.dataPath = (await getApplicationSupportDirectory()).path;
 
     G.termPtys = {};
+
+    G.keyboard = VirtualKeyboard(defaultInputHandler);
     
     G.prefs = await SharedPreferences.getInstance();
 
@@ -466,7 +520,7 @@ exit
 """
 export DATA_DIR=${G.dataPath}
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
-export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
+#export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
 cd \$DATA_DIR
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader

@@ -21,6 +21,8 @@ import 'dart:convert';
 import 'dart:math';
 //import 'dart:convert';
 
+//import 'package:flutter/services.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:xterm/xterm.dart';
@@ -93,7 +95,7 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
-  final List<bool> _expandState = [false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false];
   @override
   Widget build(BuildContext context) {
     return ExpansionPanelList(
@@ -129,8 +131,8 @@ class _InfoPageState extends State<InfoPage> {
 所以不能帮你修复
 
 如果你给了存储权限
-那么可以从主目录下的
-storage目录访问手机存储
+那么通过主目录下的文件夹
+就可以访问手机存储
 
 如果认为界面大小比例不合适
 可以通过调整左栏设置-高级设置里的scale
@@ -146,14 +148,20 @@ quality(图像质量)和compression(压缩等级)
 可以适当调低
 
 如果你想安装其他软件
-可以在网上搜索
+可以使用容器自带的tmoe
+(事实上, 目前容器里的
+VSCode、输入法
+都是用tmoe安装的
+就连系统本身也是用tmoe安装的)
+
+也可以在网上搜索
 "ubuntu安装xxx教程"
 "linux安装xxx教程"等等
 本软件也提供一些基本软件安装按钮
 包括图形处理, 视频剪辑, 科学计算相关的软件
 稍后你就会看到
 
-如果你想安装更多字体
+如果你需要更多字体
 在给了存储权限的情况下
 直接将字体复制到手机存储的Fonts文件夹即可
 一些常用的办公字体
@@ -182,26 +190,8 @@ Vivo Pad，安卓13，看不见鼠标移动
 
 感谢使用!
 
-项目原理：
-项目采用proot运行ubuntu虚拟容器系统
-图形界面是经过kali-undercover提供的Win10主题美化的xfce
-系统预装了WPS, VSCode、火狐浏览器和fcitx输入法
-
-这个项目没有使用Termux
-因为我不太喜欢Termux的路径硬编码
-路径硬编码会导致软件在多用户/分身等场景无法使用
-当然这样一来就用不了Termux的软件生态了
-
-...如果你不知道什么是Termux
-那也无所谓
-即使完全不懂原理也不影响使用本软件
-但假如有一天你有了其他高级需求
-比如想换系统、换架构等等
-那么请学习并使用Termux
-届时本软件的使命已经达成...
-
-(顺带一提, 全部解压完大概需要7GB空间
-解压途中占用空间可能达到9GB
+(顺带一提, 全部解压完大概需要4~5GB空间
+解压途中占用空间可能更多
 请确保有足够的空间
 (这样真的Tiny吗><))
 
@@ -212,15 +202,440 @@ Vivo Pad，安卓13，看不见鼠标移动
       ExpansionPanel(
         isExpanded: _expandState[1],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("隐私政策"));
-        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("不知道怎么写"))),
+          return const ListTile(title: Text("开源许可"));
+        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
+Flutter, path_provider, webview_flutter, url_launcher, shared_preferences
+
+Copyright 2014 The Flutter Authors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------
+xterm
+
+The MIT License (MIT)
+
+Copyright (c) 2020 xuty
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------
+flutter_pty
+
+The MIT License (MIT)
+
+Copyright (c) 2022 xuty
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------
+permission_handler
+
+MIT License
+
+Copyright (c) 2018 Baseflow
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------
+http
+
+Copyright 2014, the Dart project authors. 
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google LLC nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------
+retry
+
+Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+------------
+intl
+
+Copyright 2013, the Dart project authors.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google LLC nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------
+unity_ads_plugin
+
+MIT License
+
+Copyright (c) 2021 Pavel Zaichyk
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""))),
       ExpansionPanel(
         isExpanded: _expandState[2],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("服务条款"));
-        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("要写什么"))),
+          return const ListTile(title: Text("隐私政策"));
+        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
+除由Unity提供的广告功能外, 本软件不会收集你的隐私信息。
+关于广告获取隐私信息的说明, 在第一次看广告时Unity会向你做出告知。
+届时你可以选择要向Unity提供哪些信息。
+"""))),
       ExpansionPanel(
         isExpanded: _expandState[3],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("服务条款"));
+        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
+小小电脑: 即开即用的类PC环境
+
+版权所有(C) 2023 Caten Hu
+
+本程序是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是（按你的决定）任何以后版都可以。
+发布该程序是希望它能有用，但是并无保障;甚至连可销售和符合某个特定的目的都不保证。请参看 GNU 通用公共许可证，了解详情。
+你应该随程序获得一份 GNU 通用公共许可证的复本。如果没有，请看 <https://www.gnu.org/licenses/>。
+
+你可能注意到本软件使用了Unity广告服务，
+那么它是否与本项目有冲突？
+
+事实上，这个项目不依赖广告，
+你完全可以自行编译一份不包含广告的版本；
+
+不管怎么说，我希望这不是一个问题......
+
+另外！
+我也不希望你们去编译一个不含广告的版本！！！
+或者把收款账户改为其他人的！！！
+
+"""))),
+      ExpansionPanel(
+        isExpanded: _expandState[4],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("支持作者"));
         }), body: Column(
@@ -236,14 +651,28 @@ Vivo Pad，安卓13，看不见鼠标移动
 
 本软件的广告分为横幅广告和视频广告
 横幅广告在终端和控制页面的顶端出现
-只需完整观看一次视频广告即可永久关闭
-视频广告目前只在"关闭横幅广告"和"启用终端"两个功能中出现
-看一个视频即可永久启用对应功能
-我认为还是比较良心的...吧?
+视频广告在需要解锁某些功能时自行观看
+
+这些功能需要累计完整观看对应数目广告后永久解锁：
+启用终端: 观看2个广告
+启用小键盘: 观看3个广告
+关闭横幅广告: 观看5个广告
+
+(本来最开始设置是看一个广告就能全部解锁的
+然后我自己测试的时候
+看了17个广告才差不多赚1毛钱
+不得已才出此下策...)
 
 总之为了良好的体验
 在图形界面是不会出现广告的
 这点还请放心
+
+---下面是赛博乞讨环节---
+
+(*>ω<*)
+虽然感觉不太可能有人捐赠
+但转念一想这个可能性不是比中彩票大多了吗
+所以还是保留了下来
 """)),
           const FractionallySizedBox(
             widthFactor: 0.8,
@@ -322,10 +751,19 @@ class _MyHomePageState extends State<MyHomePage> {
   //主界面索引
   int pageIndex = 0;
 
-  final ButtonStyle buttonStyle = OutlinedButton.styleFrom(
+  final ButtonStyle commandButtonStyle = OutlinedButton.styleFrom(
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-     minimumSize: const Size(0, 0), padding: const EdgeInsets.fromLTRB(4, 2, 4, 2)
-   );
+    minimumSize: const Size(0, 0),
+    padding: const EdgeInsets.fromLTRB(4, 2, 4, 2)
+  );
+
+  final ButtonStyle controlButtonStyle = OutlinedButton.styleFrom(
+    textStyle: const TextStyle(fontWeight: FontWeight.w400),
+    side: const BorderSide(color: Color(0x1F000000)),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    minimumSize: const Size(0, 0),
+    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4)
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +785,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
-        G.prefs.getBool("isBannerAdsClosed")!||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0),):UnityBannerAd(
+        G.prefs.getBool("isBannerAdsClosed")!||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
           placementId: AdManager.bannerAdPlacementId,
           onLoad: (placementId) => print('Banner loaded: $placementId'),
           onClick: (placementId) => print('Banner clicked: $placementId'),
@@ -359,7 +797,80 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),Expanded(flex: 1, child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 256),
-        child: [TerminalView(G.termPtys[G.currentContainer]!.terminal), Padding(
+        child: [
+          Column(children: [Expanded(child: TerminalView(G.termPtys[G.currentContainer]!.terminal)), 
+            G.prefs.getBool("isTerminalCommandsEnabled")!?Padding(padding: const EdgeInsets.all(8), child:
+            SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
+              animation: G.keyboard,
+              builder: (context, child) => ToggleButtons(
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                isSelected: [G.keyboard.ctrl, G.keyboard.alt, G.keyboard.shift],
+                onPressed: (index) {
+                  switch (index) {
+                    case 0:
+                      G.keyboard.ctrl = !G.keyboard.ctrl;
+                      break;
+                    case 1:
+                      G.keyboard.alt = !G.keyboard.alt;
+                      break;
+                    case 2:
+                      G.keyboard.shift = !G.keyboard.shift;
+                      break;
+                  }
+                },
+                children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
+              ),
+              //TODO: 丑陋的实现，不知道列表有没有更方便的操作
+            ), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.escape);
+            }, child: const Text("Esc")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.tab);
+            }, child: const Text("Tab")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowUp);
+            }, child: const Text("↑")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowDown);
+            }, child: const Text("↓")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowLeft);
+            }, child: const Text("←")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowRight);
+            }, child: const Text("→")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.delete);
+            }, child: const Text("Del")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.pageUp);
+            }, child: const Text("PgUp")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.pageDown);
+            }, child: const Text("PgDn")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.home);
+            }, child: const Text("Home")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.end);
+            }, child: const Text("End")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f1);
+            }, child: const Text("F1")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f2);
+            }, child: const Text("F2")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f3);
+            }, child: const Text("F3")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f4);
+            }, child: const Text("F4")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f5);
+            }, child: const Text("F5")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f6);
+            }, child: const Text("F6")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f7);
+            }, child: const Text("F7")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f8);
+            }, child: const Text("F8")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f9);
+            }, child: const Text("F9")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f10);
+            }, child: const Text("F10")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f11);
+            }, child: const Text("F11")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
+              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f12);
+            }, child: const Text("F12")), SizedBox.fromSize(size: const Size(72, 0))]))):SizedBox.fromSize(size: const Size.square(0))
+          ]), Padding(
               padding: const EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(child: Column(
                 children: [
@@ -378,7 +889,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),*/
                   Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: Util.getCurrentProp("commands")
                     .asMap().entries.map<Widget>((e) {
-                    return OutlinedButton(style: buttonStyle, child: Text(e.value["name"]!), onPressed: () {
+                    return OutlinedButton(style: commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
                       setState(() {
                         Util.termWrite(e.value["command"]!);
                         pageIndex = 0;
@@ -416,7 +927,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ]);
                       },);
                     },);
-                  }).toList()..add(OutlinedButton(style: buttonStyle, onPressed:() {
+                  }).toList()..add(OutlinedButton(style: commandButtonStyle, onPressed:() {
                       String name = "";
                       String command = "";
                       showDialog(context: context, builder: (context) {
@@ -484,10 +995,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }),
                                 SizedBox.fromSize(size: const Size.square(8)),
                                 SwitchListTile(title: const Text("关闭横幅广告"), value: G.prefs.getBool("isBannerAdsClosed")!, onChanged:(value) {
-                                  if (value && (G.prefs.getInt("adsWatchedTotal")! == 0)) {
+                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 5)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("观看一个视频广告解锁><"))
+                                      const SnackBar(content: Text("观看五次视频广告永久解锁><"))
                                     );
                                     return;
                                   }
@@ -496,10 +1007,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
                                 SwitchListTile(title: const Text("启用终端"), value: G.prefs.getBool("isTerminalWriteEnabled")!, onChanged:(value) {
-                                  if (value && (G.prefs.getInt("adsWatchedTotal")! == 0)) {
+                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 2)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: const Text("观看一个视频广告解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
+                                      SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
                                         G.prefs.setBool("isTerminalWriteEnabled", value);
                                         setState(() {});
                                       },))
@@ -507,6 +1018,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                     return;
                                   }
                                   G.prefs.setBool("isTerminalWriteEnabled", value);
+                                  setState(() {});
+                                },),
+                                SizedBox.fromSize(size: const Size.square(8)),
+                                SwitchListTile(title: const Text("启用终端小键盘"), value: G.prefs.getBool("isTerminalCommandsEnabled")!, onChanged:(value) {
+                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 3)) {
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("观看三次视频广告永久解锁><"))
+                                    );
+                                    return;
+                                  }
+                                  G.prefs.setBool("isTerminalCommandsEnabled", value);
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
