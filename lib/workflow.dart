@@ -28,6 +28,7 @@ import 'package:retry/retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:xterm/xterm.dart';
@@ -39,6 +40,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
+import 'package:clipboard/clipboard.dart';
 
 class Util {
 
@@ -110,7 +113,6 @@ class Util {
       ret.add("""{"name": "${bonus["name"]}", "amount": ${bonus["amount"]}}""");
     }
     await G.prefs.setStringList("adsBonus", ret);
-    print(G.prefs.getStringList("adsBonus")!);
   }
 }
 
@@ -185,19 +187,30 @@ class TermPty {
       if (code == 0) {
         SystemChannels.platform.invokeMethod("SystemNavigator.pop");
       }
-      //TODO: Singal 9 hint, 改成对话框
+      //TODO: Signal 9 hint, 改成对话框?
       if (code == -9) {
         Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
           const TextStyle ts = TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.normal);
-          return const Scaffold(backgroundColor: Colors.deepPurple,
+          const String helperLink = "https://www.vmos.cn/zhushou.htm";
+          return Scaffold(backgroundColor: Colors.deepPurple,
             body: Center(
             child: Scrollbar(child:
               SingleChildScrollView(
                 child: Column(children: [
-                  Text("发生了什么？", textScaleFactor: 2, style: ts, textAlign: TextAlign.center,),
-                  Text("终端异常退出, 返回错误码9\n此错误通常是高版本安卓系统(12+)限制进程造成的, \n可以使用以下工具修复:", style: ts, textAlign: TextAlign.center),
-                  SelectableText("https://www.vmos.cn/zhushou.htm", style: ts, textAlign: TextAlign.center),
-                  Text("(复制链接到浏览器查看)", style: ts, textAlign: TextAlign.center),
+                  const Text(":(\n发生了什么？", textScaleFactor: 2, style: ts, textAlign: TextAlign.center,),
+                  const Text("终端异常退出, 返回错误码9\n此错误通常是高版本安卓系统(12+)限制进程造成的, \n可以使用以下工具修复:", style: ts, textAlign: TextAlign.center),
+                  const SelectableText(helperLink, style: ts, textAlign: TextAlign.center),
+                  const Text("(复制链接到浏览器查看)", style: ts, textAlign: TextAlign.center),
+                  OutlinedButton(onPressed: () {
+                    FlutterClipboard.copy(helperLink).then(( value ) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: const Text("已复制"), action: SnackBarAction(label: "跳转", onPressed: () {
+                          launchUrl(Uri.parse(helperLink), mode: LaunchMode.externalApplication);
+                        },))
+                      );
+                    });
+                  }, child: const Text("复制", style: ts, textAlign: TextAlign.center))
                 ]),
               )
             )
@@ -280,10 +293,10 @@ class AdManager {
     UnityAds.load(
       placementId: placementId,
       onComplete: (placementId) {
-        print('Load Complete $placementId');
+        debugPrint('Load Complete $placementId');
         placements[placementId] = true;
       },
-      onFailed: (placementId, error, message) => print('Load Failed $placementId: $error $message'),
+      onFailed: (placementId, error, message) => debugPrint('Load Failed $placementId: $error $message'),
     );
   }
 
@@ -298,20 +311,20 @@ class AdManager {
     UnityAds.showVideoAd(
       placementId: placementId,
       onComplete: (placementId) async {
-        print('Video Ad $placementId completed');
+        debugPrint('Video Ad $placementId completed');
         loadAd(placementId);
         await G.prefs.setInt("adsWatchedTotal", G.prefs.getInt("adsWatchedTotal")!+1);
         await G.prefs.setInt("adsWatchedToday", G.prefs.getInt("adsWatchedToday")!+1);
         completeExtra();
       },
       onFailed: (placementId, error, message) {
-        print('Video Ad $placementId failed: $error $message');
+        debugPrint('Video Ad $placementId failed: $error $message');
         loadAd(placementId);
       },
-      onStart: (placementId) => print('Video Ad $placementId started'),
-      onClick: (placementId) => print('Video Ad $placementId click'),
+      onStart: (placementId) => debugPrint('Video Ad $placementId started'),
+      onClick: (placementId) => debugPrint('Video Ad $placementId click'),
       onSkipped: (placementId) {
-        print('Video Ad $placementId skipped');
+        debugPrint('Video Ad $placementId skipped');
         loadAd(placementId);
       },
     );
@@ -419,7 +432,7 @@ done
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
     await G.prefs.setStringList("containersInfo", ["""{
 "name":"Debian Bookworm",
-"boot":"\$DATA_DIR/bin/proot --change-id=1000:1000 --pwd=/home/tiny --rootfs=\$CONTAINER_DIR --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --sysvipc -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=\$CONTAINER_DIR/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary:/media/sd --mount=\$DATA_DIR/share:/home/tiny/公共 --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary/Pictures:/home/tiny/图片 --mount=/storage/self/primary/Music:/home/tiny/音乐 --mount=/storage/self/primary/Movies:/home/tiny/视频 --mount=/storage/self/primary/Download:/home/tiny/下载 --mount=/storage/self/primary/DCIM:/home/tiny/照片 --mount=/storage/self/primary/Documents:/home/tiny/文档 --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linuxproot_proc/kpageflags:/proc/kpageflags --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=/data/data/com.termux/files/home/.local/share/tmoe-linux/containersproot/debian-bookworm_arm64/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=TINY HOME=/home/tiny USER=tiny TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=\@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp MOZ_FAKE_NO_SANDBOX=1 DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
+"boot":"\$DATA_DIR/bin/proot --change-id=1000:1000 --pwd=/home/tiny --rootfs=\$CONTAINER_DIR --mount=/system --mount=/apex --kill-on-exit --mount=/storage:/storage --sysvipc -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=\$CONTAINER_DIR/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary:/media/sd --mount=\$DATA_DIR/share:/home/tiny/公共 --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary/Pictures:/home/tiny/图片 --mount=/storage/self/primary/Music:/home/tiny/音乐 --mount=/storage/self/primary/Movies:/home/tiny/视频 --mount=/storage/self/primary/Download:/home/tiny/下载 --mount=/storage/self/primary/DCIM:/home/tiny/照片 --mount=/storage/self/primary/Documents:/home/tiny/文档 --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linuxproot_proc/kpageflags:/proc/kpageflags --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=/data/data/com.termux/files/home/.local/share/tmoe-linux/containersproot/debian-bookworm_arm64/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo /usr/bin/env -i HOSTNAME=TINY HOME=/home/tiny USER=tiny TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp MOZ_FAKE_NO_SANDBOX=1 DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games /bin/bash -l",
 "vnc":"startnovnc &",
 "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
 "commands":[{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y"},
@@ -487,10 +500,10 @@ done
       gameId: AdManager.gameId,
       testMode: true,
       onComplete: () {
-        print('Initialization Complete');
+        debugPrint('Initialization Complete');
         AdManager.loadAds();
       },
-      onFailed: (error, message) => print('Initialization Failed: $error $message'),
+      onFailed: (error, message) => debugPrint('Initialization Failed: $error $message'),
     );
   }
 

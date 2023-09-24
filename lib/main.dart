@@ -115,6 +115,11 @@ class _InfoPageState extends State<InfoPage> {
 第一次加载, 大概需要5到10分钟...
 请不要在安装时退出软件
 
+如果过了很长时间都没有加载完成
+可以去设置里看看小小电脑占用空间是不是一直没变
+如果是说明卡在什么地方了
+建议清除本软件数据重来一次
+
 一些注意事项：
 此软件以GPL协议免费开源
 如果是买的就是被骗了, 请举报
@@ -617,7 +622,7 @@ SOFTWARE.
 
 版权所有(C) 2023 Caten Hu
 
-本程序是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是（按你的决定）任何以后版都可以。
+本程序是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是任何以后版都可以。
 发布该程序是希望它能有用，但是并无保障;甚至连可销售和符合某个特定的目的都不保证。请参看 GNU 通用公共许可证，了解详情。
 你应该随程序获得一份 GNU 通用公共许可证的复本。如果没有，请看 <https://www.gnu.org/licenses/>。
 
@@ -631,8 +636,6 @@ SOFTWARE.
 
 ...但是！
 我还是不想看到你们去编译一个不含广告的版本><
-或者把收款账户改为其他人的！！！
-
 """))),
       ExpansionPanel(
         isExpanded: _expandState[4],
@@ -651,6 +654,8 @@ SOFTWARE.
 
 本软件的广告分为横幅广告和视频广告
 横幅广告在终端和控制页面的顶端出现
+(但不知道是不是因为代码没写对
+反正我从没见横幅广告成功加载过)
 视频广告在需要解锁某些功能时自行观看
 
 这些功能需要累计完整观看对应数目广告后永久解锁：
@@ -680,7 +685,7 @@ SOFTWARE.
           ),
           ElevatedButton(
             onPressed: () {
-              launchUrl(Uri.parse("https://github.com/Cateners/tiny_computer"));
+              launchUrl(Uri.parse("https://github.com/Cateners/tiny_computer"), mode: LaunchMode.externalApplication);
             },
             child: const Text("项目地址"),
           ),
@@ -787,10 +792,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
         G.prefs.getBool("isBannerAdsClosed")!||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
           placementId: AdManager.bannerAdPlacementId,
-          onLoad: (placementId) => print('Banner loaded: $placementId'),
-          onClick: (placementId) => print('Banner clicked: $placementId'),
+          onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
+          onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
           onFailed: (placementId, error, message) {
-            print('Banner Ad $placementId failed: $error $message');
+            debugPrint('Banner Ad $placementId failed: $error $message');
             setState(() {
               bannerAdsFailedToLoad = true;
             });
