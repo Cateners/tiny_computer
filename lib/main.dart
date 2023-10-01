@@ -23,6 +23,8 @@ import 'dart:math';
 
 //import 'package:flutter/services.dart';
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:xterm/xterm.dart';
@@ -140,17 +142,9 @@ class _InfoPageState extends State<InfoPage> {
 就可以访问手机存储
 
 如果认为界面大小比例不合适
-可以通过调整左栏设置-高级设置里的scale
-快捷调整界面缩放
-这个功能是原本的noVNC里没有的哦!
-具体的改动可以在这里看到:
-https://github.com/Cateners/noVNC/tree/scale_factor
-
-其余两个选项是
-quality(图像质量)和compression(压缩等级)
-...是noVNC中本来就有的选项。
+可以通过调整图形界面左栏设置-高级里的屏幕缩放比例
 如果感觉界面卡卡的
-可以适当调低
+可以适当调低图像质量或压缩等级
 
 如果你想安装其他软件
 可以使用容器自带的tmoe
@@ -184,7 +178,7 @@ VSCode、输入法
 三星Galaxy S21 Ultra, 安卓13, 黑屏
 红米Note 12, 安卓13（miui14）, 黑屏
 红米Note 11T Pro+， miui13.0.4，“无法连接”
-Vivo Pad，安卓13，看不见鼠标移动
+Vivo Pad，安卓13，看不见鼠标移动（可以去左栏设置开启显示原系统光标替代）
 关于这个
 我目前没有什么好的解决办法
 (毕竟我没有这些设备
@@ -662,6 +656,10 @@ SOFTWARE.
 启用终端: 观看2个广告
 启用小键盘: 观看3个广告
 关闭横幅广告: 观看5个广告
+终端最大行数修改: 观看6个广告
+
+我设置了每天最多可以看5个广告。
+只要看满5个广告, 就可以临时解锁全部功能。
 
 (本来最开始设置是看一个广告就能全部解锁的
 然后我自己测试的时候
@@ -734,6 +732,31 @@ class LoadingPage extends StatelessWidget {
   }
 }
 
+class ForceScaleGestureRecognizer extends ScaleGestureRecognizer {
+  @override
+  void rejectGesture(int pointer) {
+    super.acceptGesture(pointer);
+  }
+}
+
+RawGestureDetector forceScaleGestureDetector({
+  GestureScaleUpdateCallback? onScaleUpdate,
+  GestureScaleEndCallback? onScaleEnd,
+  Widget? child,
+}) {
+  return RawGestureDetector(
+    gestures: {
+      ForceScaleGestureRecognizer:GestureRecognizerFactoryWithHandlers<ForceScaleGestureRecognizer>(() {
+        return ForceScaleGestureRecognizer();
+      }, (detector) {
+        detector.onUpdate = onScaleUpdate;
+        detector.onEnd = onScaleEnd;
+      })
+    },
+    child: child,
+  );
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -800,10 +823,16 @@ class _MyHomePageState extends State<MyHomePage> {
               bannerAdsFailedToLoad = true;
             });
           },
-        ),Expanded(flex: 1, child: AnimatedSwitcher(
+        ), Expanded(flex: 1, child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 256),
         child: [
-          Column(children: [Expanded(child: TerminalView(G.termPtys[G.currentContainer]!.terminal)), 
+          Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
+            setState(() {
+              G.termFontScale = (details.scale * G.prefs.getDouble("termFontScale")!).clamp(0.2, 5);
+            });
+          }, onScaleEnd: (details) async {
+            await G.prefs.setDouble("termFontScale", G.termFontScale);
+          }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale))), 
             G.prefs.getBool("isTerminalCommandsEnabled")!?Padding(padding: const EdgeInsets.all(8), child:
             SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
               animation: G.keyboard,
@@ -995,12 +1024,33 @@ class _MyHomePageState extends State<MyHomePage> {
                               headerBuilder: ((context, isExpanded) {
                                 return const ListTile(title: Text("全局设置"), subtitle: Text("在这里关广告、开启终端编辑"));
                               }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                TextFormField(maxLines: null, initialValue: G.prefs.getString("defaultAudioPort"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"), onChanged: (value) async {
-                                  await G.prefs.setString("defaultAudioPort", value);
-                                }),
-                                SizedBox.fromSize(size: const Size.square(8)),
+                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: G.prefs.getInt("termMaxLines")!.toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(6),
+                                  keyboardType: TextInputType.number,
+                                  onTap: () {
+                                    if (Util.shouldWatchAds(6)) {
+                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("观看六次视频广告永久解锁><"))
+                                      );
+                                    }
+                                  },
+                                  validator: (value) {
+                                    return Util.validateBetween(value, 1024, 2147483647, () async {
+                                      await G.prefs.setInt("termMaxLines", int.parse(value!));
+                                    });
+                                  },),
+                                SizedBox.fromSize(size: const Size.square(16)),
+                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: G.prefs.getInt("defaultAudioPort")!.toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
+                                  keyboardType: TextInputType.number,
+                                  validator: (value) {
+                                    return Util.validateBetween(value, 0, 65535, () async {
+                                      await G.prefs.setInt("defaultAudioPort", int.parse(value!));
+                                    });
+                                  }
+                                ),
+                                SizedBox.fromSize(size: const Size.square(16)),
                                 SwitchListTile(title: const Text("关闭横幅广告"), value: G.prefs.getBool("isBannerAdsClosed")!, onChanged:(value) {
-                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 5)) {
+                                  if (value && Util.shouldWatchAds(5)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text("观看五次视频广告永久解锁><"))
@@ -1012,7 +1062,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
                                 SwitchListTile(title: const Text("启用终端"), value: G.prefs.getBool("isTerminalWriteEnabled")!, onChanged:(value) {
-                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 2)) {
+                                  if (value && Util.shouldWatchAds(2)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
@@ -1027,7 +1077,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
                                 SwitchListTile(title: const Text("启用终端小键盘"), value: G.prefs.getBool("isTerminalCommandsEnabled")!, onChanged:(value) {
-                                  if (value && (G.prefs.getInt("adsWatchedTotal")! < 3)) {
+                                  if (value && Util.shouldWatchAds(3)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text("观看三次视频广告永久解锁><"))

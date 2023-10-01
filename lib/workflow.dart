@@ -114,6 +114,27 @@ class Util {
     }
     await G.prefs.setStringList("adsBonus", ret);
   }
+
+  //根据已看广告量判断是否应该继续看广告
+  static bool shouldWatchAds(int expectNum) {
+    return (G.prefs.getInt("adsWatchedTotal")! < expectNum) && (G.prefs.getInt("vip")! < 1) && (G.prefs.getInt("adsWatchedToday")! < 5);
+  }
+
+  //限定字符串在min和max之间, 给文本框的validator
+  static String? validateBetween(String? value, int min, int max, Function opr) {
+    if (value == null || value.isEmpty) {
+      return "请输入数字";
+    }
+    int? parsedValue = int.tryParse(value);
+    if (parsedValue == null) {
+      return "请输入有效的数字";
+    }
+    if (parsedValue < min || parsedValue > max) {
+      return "请输入$min到$max之间的数字";
+    }
+    opr();
+    return null;
+  }
 }
 
 //来自xterms关于操作ctrl, shift, alt键的示例
@@ -171,7 +192,7 @@ class TermPty {
   late final Pty pty;
 
   TermPty() {
-    terminal = Terminal(inputHandler: G.keyboard);
+    terminal = Terminal(inputHandler: G.keyboard, maxLines: G.prefs.getInt("termMaxLines")!);
     pty = Pty.start(
       "/system/bin/sh",
       workingDirectory: G.dataPath,
@@ -240,6 +261,8 @@ class G {
   static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
   static late AdManager ads;//广告实例
   static late VirtualKeyboard keyboard;
+  //终端字体大小，存储为G.prefs的termFontScale
+  static double termFontScale = 1;
 
 
   //看广告可以获得的奖励。
@@ -257,7 +280,7 @@ class G {
 
   //所有key
   //int defaultContainer = 0: 默认启动第0个容器
-  //String defaultAudioPort = 4713: 默认pulseaudio端口(为了避免和其它软件冲突改成4718了) !!!注意!这个值是String类型
+  //int defaultAudioPort = 4718: 默认pulseaudio端口(为了避免和其它软件冲突改成4718了，原默认4713)
   //bool autoLaunchVnc = true: 是否自动启动VNC并跳转
   //String lastDate: 上次启动软件的日期，yyyy-MM-dd
   //int adsWatchedToday: 今日视频广告观看数量
@@ -267,6 +290,9 @@ class G {
   //bool isTerminalWriteEnabled = false
   //bool terminalWriteCanBeEnabled = false 看一次视频广告永久开启，历史遗留
   //bool isTerminalCommandsEnabled = false 
+  //int termMaxLines = 4095 终端最大行数
+  //double termFontScale = 1 终端字体大小
+  //int vip = 0 用户等级，vip免广告，你要改吗？(ToT)
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"}, ...]}
@@ -362,7 +388,7 @@ class Workflow {
     //给proot的tmp文件夹，虽然我不知道为什么proot要这个
     Util.createDirFromString("${G.dataPath}/proot_tmp");
     //解压后得到bin文件夹和libexec文件夹
-    //bin存放了proot和pulseaudio
+    //bin存放了proot, pulseaudio, tar等
     //libexec存放了proot loader
     await Util.copyAsset(
     "assets/assets.zip",
@@ -410,7 +436,7 @@ export PATH=\$DATA_DIR/bin:\$PATH
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
-#export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
+export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
 \$DATA_DIR/bin/proot --link2symlink sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
 #Script from proot-distro
 chmod u+rw "\$CONTAINER_DIR/etc/passwd" "\$CONTAINER_DIR/etc/shadow" "\$CONTAINER_DIR/etc/group" "\$CONTAINER_DIR/etc/gshadow"
@@ -444,22 +470,27 @@ done
 {"name":"卸载视频剪辑软件Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
 {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
 {"name":"卸载科学计算软件Octave", "command":"sudo apt autoremove --purge -y octave"},
-{"name":"安装WPS", "command":"wget https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11704/wps-office_11.1.0.11704_arm64.deb -O /tmp/wps.deb; sudo apt update; sudo apt install /tmp/wps.deb -y; rm /tmp/wps.deb"},
+{"name":"安装WPS", "command":"wget https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11704/wps-office_11.1.0.11704_arm64.deb -O /tmp/wps.deb && sudo apt update && sudo apt install -y /tmp/wps.deb; rm /tmp/wps.deb"},
 {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
+{"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
+{"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
+{"name":"安装亿图图示", "command":"wget https://www.edrawsoft.cn/2download/aarch64/edrawmax_11.5.6-3_arm64.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
+{"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
+{"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
+{"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
 {"name":"???", "command":"timeout 8 cmatrix"}]
 }"""]);
     await G.prefs.setStringList("adsBonus", []);
     await G.prefs.setInt("adsWatchedTotal", 0);
-    //await G.prefs.setBool("terminalWriteCanBeEnabled", false);
-    //G.prefs.setBool("isTerminalWriteEnabled", false);
     await G.prefs.setBool("isTerminalCommandsEnabled", false);
     await G.prefs.setBool("isTerminalWriteEnabled", false);
-    //await G.prefs.setBool("bannerAdsCanBeClosed", false);
     await G.prefs.setBool("isBannerAdsClosed", false);
-    //G.prefs.setBool("autoLaunchVnc", true);
     await G.prefs.setBool("autoLaunchVnc", true);
-    await G.prefs.setString("defaultAudioPort", "4718");
+    await G.prefs.setInt("defaultAudioPort", 4718);
     await G.prefs.setInt("defaultContainer", 0);
+    await G.prefs.setInt("termMaxLines", 4095);
+    await G.prefs.setDouble("termFontScale", 1);
+    await G.prefs.setInt("vip", 0);
   }
 
   static Future<void> initData() async {
@@ -485,6 +516,8 @@ done
     }
     G.currentContainer = G.prefs.getInt("defaultContainer")!;
 
+    G.termFontScale = G.prefs.getDouble("termFontScale")!;
+
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
 
   }
@@ -498,7 +531,7 @@ done
   static Future<void> initAds() async {
     UnityAds.init(
       gameId: AdManager.gameId,
-      testMode: true,
+      testMode: false,
       onComplete: () {
         debugPrint('Initialization Complete');
         AdManager.loadAds();
@@ -521,7 +554,7 @@ export TMPDIR=\$PWD/cache
 cd \$DATA_DIR
 export HOME=\$DATA_DIR/share
 export LD_LIBRARY_PATH=\$DATA_DIR/bin
-\$DATA_DIR/busybox sed "s/4713/${G.prefs.getString("defaultAudioPort")!}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
+\$DATA_DIR/busybox sed "s/4713/${G.prefs.getInt("defaultAudioPort")!}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
 \$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
 exit
 """));
@@ -533,7 +566,7 @@ exit
 """
 export DATA_DIR=${G.dataPath}
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
-#export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
+export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
 cd \$DATA_DIR
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
