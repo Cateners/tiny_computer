@@ -138,6 +138,7 @@ class Util {
 }
 
 //来自xterms关于操作ctrl, shift, alt键的示例
+//这个类应该只能有一个实例G.keyboard
 class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
   final TerminalInputHandler _inputHandler;
 
@@ -183,10 +184,12 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
       shift: event.shift || _shift,
       alt: event.alt || _alt,
     ));
+    G.maybeCtrlJ = event.key.name == "keyJ";
+    print(G.maybeCtrlJ);
     if (!G.prefs.getBool("isStickyKey")!) {
-      _ctrl = false;
-      _shift = false;
-      _alt = false;
+      G.keyboard.ctrl = false;
+      G.keyboard.shift = false;
+      G.keyboard.alt = false;
     }
     return ret;
   }
@@ -249,12 +252,13 @@ class TermPty {
       if (!G.prefs.getBool("isTerminalWriteEnabled")!) {
         return;
       }
-      //由于pty对回车的处理似乎存在问题，所以拿出来单独处理
+      //由于对回车的处理似乎存在问题，所以拿出来单独处理
       data.split("").forEach((element) {
-        if (element == "\n") {
+        if (element == "\n" && !G.maybeCtrlJ) {
           terminal.keyInput(TerminalKey.enter);
           return;
         }
+        G.maybeCtrlJ = false;
         pty.write(const Utf8Encoder().convert(element));
       });
     };
@@ -273,10 +277,10 @@ class G {
   static late BuildContext homePageStateContext;
   static late int currentContainer; //目前运行第几个容器
   static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
-  static late AdManager ads;//广告实例
-  static late VirtualKeyboard keyboard;
-  //终端字体大小，存储为G.prefs的termFontScale
-  static double termFontScale = 1;
+  static late AdManager ads; //广告实例
+  static late VirtualKeyboard keyboard; //存储ctrl, shift, alt状态
+  static bool maybeCtrlJ = false; //为了区分按下的ctrl+J和enter而准备的变量
+  static double termFontScale = 1; //终端字体大小，存储为G.prefs的termFontScale
 
 
   //看广告可以获得的奖励。
