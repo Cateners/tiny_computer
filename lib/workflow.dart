@@ -178,11 +178,17 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
 
   @override
   String? call(TerminalKeyboardEvent event) {
-    return _inputHandler.call(event.copyWith(
+    final ret = _inputHandler.call(event.copyWith(
       ctrl: event.ctrl || _ctrl,
       shift: event.shift || _shift,
       alt: event.alt || _alt,
     ));
+    if (!G.prefs.getBool("isStickyKey")!) {
+      _ctrl = false;
+      _shift = false;
+      _alt = false;
+    }
+    return ret;
   }
 }
 
@@ -240,9 +246,17 @@ class TermPty {
       }
     });
     terminal.onOutput = (data) {
-      if (G.prefs.getBool("isTerminalWriteEnabled")!) {
-        pty.write(const Utf8Encoder().convert(data));
+      if (!G.prefs.getBool("isTerminalWriteEnabled")!) {
+        return;
       }
+      //由于pty对回车的处理似乎存在问题，所以拿出来单独处理
+      data.split("").forEach((element) {
+        if (element == "\n") {
+          terminal.keyInput(TerminalKey.enter);
+          return;
+        }
+        pty.write(const Utf8Encoder().convert(element));
+      });
     };
     terminal.onResize = (w, h, pw, ph) {
       pty.resize(h, w);
@@ -293,6 +307,7 @@ class G {
   //int termMaxLines = 4095 终端最大行数
   //double termFontScale = 1 终端字体大小
   //int vip = 0 用户等级，vip免广告，你要改吗？(ToT)
+  //bool isStickyKey = true 终端ctrl, shift, alt键是否粘滞
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"}, ...]}
@@ -491,6 +506,7 @@ done
     await G.prefs.setInt("termMaxLines", 4095);
     await G.prefs.setDouble("termFontScale", 1);
     await G.prefs.setInt("vip", 0);
+    await G.prefs.setBool("isStickyKey", true);
   }
 
   static Future<void> initData() async {

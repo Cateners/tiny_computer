@@ -24,7 +24,7 @@ import 'dart:math';
 //import 'package:flutter/services.dart';
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:xterm/xterm.dart';
@@ -832,7 +832,7 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           }, onScaleEnd: (details) async {
             await G.prefs.setDouble("termFontScale", G.termFontScale);
-          }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale))), 
+          }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale, keyboardType: TextInputType.multiline,))), 
             G.prefs.getBool("isTerminalCommandsEnabled")!?Padding(padding: const EdgeInsets.all(8), child:
             SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
               animation: G.keyboard,
@@ -1085,6 +1085,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                     return;
                                   }
                                   G.prefs.setBool("isTerminalCommandsEnabled", value);
+                                  setState(() {});
+                                },),
+                                SizedBox.fromSize(size: const Size.square(8)),
+                                SwitchListTile(title: const Text("终端粘滞键"), value: G.prefs.getBool("isStickyKey")!, onChanged:(value) {
+                                  G.prefs.setBool("isStickyKey", value);
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
