@@ -34,10 +34,10 @@ assets的文件来源如下:
 - 使用kali-undercover提供的Win10主题美化xfce；
 - (使用tmoe)安装了fcitx输入法和云拼音组件。按<Ctrl+空格>切换输入法。
   - 强烈建议**不要**使用安卓中文输入法直接输入中文，而是使用英文键盘通过容器的输入法输入中文，避免丢字错字。
-- 对noVNC进行[修改](https://github.com/Cateners/noVNC)，添加了scale factor滑块控制缩放(scale_factor分支)，添加了上下左右shift等按键(arrow_key分支)
-- 在主目录下可以方便地访问手机存储(如果提供了存储权限的话)
-- 启动时会尝试挂载手机的一些字体目录(AppFiles/Fonts、Fonts和/system/fonts), 如果这些目录下有字体文件的话会一并加载到系统中，无需额外安装
-- 最后采用tar.xz压缩，用split命令分成了xa*等多个文件
+- 对noVNC进行[修改](https://github.com/Cateners/noVNC)，添加了scale factor滑块控制缩放(scale_factor分支)，添加了上下左右shift等按键(arrow_key分支)，添加了强制显示原系统光标的功能(force_cursor分支)，添加了中文翻译(translation_zh_cn分支)；
+- 在主目录下可以方便地访问手机存储(如果提供了存储权限的话)；
+- 启动时会尝试挂载手机的一些字体目录(AppFiles/Fonts、Fonts和/system/fonts), 如果这些目录下有字体文件的话会一并加载到系统中，无需额外安装；
+- 最后采用tar.xz压缩，用split命令分成了xa*等多个文件(低内存设备一次性拷贝大文件会导致软件闪退)。
 
 数据包不再在assets中更新，而是随releases提供，主要是为了避免git越来越大
 

@@ -499,6 +499,7 @@ done
 {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
 {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
 {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
+{"name":"关机", "command":"stopvnc\\nexit\\nexit"},
 {"name":"???", "command":"timeout 8 cmatrix"}]
 }"""]);
     await G.prefs.setStringList("adsBonus", []);
