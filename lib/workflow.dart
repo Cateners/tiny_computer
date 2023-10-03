@@ -455,7 +455,7 @@ export PATH=\$DATA_DIR/bin:\$PATH
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
-export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
+#export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
 \$DATA_DIR/bin/proot --link2symlink sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
 #Script from proot-distro
 chmod u+rw "\$CONTAINER_DIR/etc/passwd" "\$CONTAINER_DIR/etc/shadow" "\$CONTAINER_DIR/etc/group" "\$CONTAINER_DIR/etc/gshadow"
@@ -495,6 +495,8 @@ done
 {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
 {"name":"安装亿图图示", "command":"wget https://www.edrawsoft.cn/2download/aarch64/edrawmax_11.5.6-3_arm64.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
 {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
+{"name":"安装QQ", "command":"wget https://dldir1.qq.com/qqfile/qq/QQNT/b69de82d/linuxqq_3.2.1-17153_arm64.deb -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"},
+{"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
 {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
 {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
 {"name":"???", "command":"timeout 8 cmatrix"}]
@@ -586,7 +588,7 @@ exit
 """
 export DATA_DIR=${G.dataPath}
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
-export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
+#export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
 cd \$DATA_DIR
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
