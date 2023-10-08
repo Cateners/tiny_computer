@@ -25,6 +25,7 @@ import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 import 'package:permission_handler/permission_handler.dart';
 //import 'package:flutter/services.dart';
@@ -677,6 +678,7 @@ SOFTWARE.
 启用小键盘: 观看3个广告
 关闭横幅广告: 观看5个广告
 终端最大行数修改: 观看6个广告
+推流参数修改: 观看8个广告
 
 我设置了每天最多可以看5个广告。
 只要看满1个广告, 就可以在本次使用期间临时解锁全部功能。
@@ -1179,7 +1181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   switch (value) {
                                     case true: {
                                       G.streamServerPty = Pty.start("/system/bin/sh");
-                                      G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml &\n"));
+                                      G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml & pid=\$(echo \$!)\n"));
                                       G.streamServerPty.exitCode.then((value) {
                                         G.isStreamServerStarted = false;
                                         setState(() {});
@@ -1187,12 +1189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     }
                                     break;
                                     case false: {
-                                      G.streamServerPty.write(const Utf8Encoder().convert("""
-pids=${G.dataPath}/busybox pgrep '${G.dataPath}/bin/mediamtx';
-for pid in \$pids; do
-    kill \$pid
-done
-exit\n"""));
+                                      G.streamServerPty.write(const Utf8Encoder().convert("kill \$pid\nexit\n"));
                                     }
                                     break;
                                   }

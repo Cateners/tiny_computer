@@ -23,6 +23,7 @@ assets的文件来源如下:
 
 - [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
 - [busybox](https://github.com/meefik/busybox)
+- [mediamtx相关](https://github.com/bluenviron/mediamtx)
 - [tar](https://github.com/Rprop/tar-android-static)
 - [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
 - [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)

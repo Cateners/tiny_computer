@@ -587,6 +587,9 @@ done
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
 
     //恢复临时开启的功能
+    if (Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!)) {
+      await G.prefs.remove("defaultFFmpegCommand");
+    }
     if (Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!)) {
       await G.prefs.setInt("termMaxLines", 4095);
     }
