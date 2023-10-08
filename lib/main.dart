@@ -23,7 +23,10 @@ import 'dart:math';
 
 //import 'package:flutter/services.dart';
 
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_pty/flutter_pty.dart';
+import 'package:permission_handler/permission_handler.dart';
 //import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +35,8 @@ import 'package:xterm/xterm.dart';
 import 'package:tiny_computer/workflow.dart';
 
 import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -621,6 +626,11 @@ SOFTWARE.
           return const ListTile(title: Text("隐私政策"));
         }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
 除由Unity提供的广告功能外, 本软件不会收集你的隐私信息。
+
+申请的权限用于以下目的：
+文件相关权限：用于系统访问手机目录；
+相机和麦克风：用于推流，默认不会开启。
+
 关于广告获取隐私信息的说明, 在第一次看广告时Unity会向你做出告知。
 届时你可以选择要向Unity提供哪些信息。
 """))),
@@ -669,12 +679,8 @@ SOFTWARE.
 终端最大行数修改: 观看6个广告
 
 我设置了每天最多可以看5个广告。
-只要看满5个广告, 就可以临时解锁全部功能。
-
-(本来最开始设置是看一个广告就能全部解锁的
-然后我自己测试的时候
-看了17个广告才差不多赚1毛钱
-不得已才出此下策...)
+只要看满1个广告, 就可以在本次使用期间临时解锁全部功能。
+只要看满2个广告, 就可以在当日使用期间临时解锁全部功能。
 
 总之为了良好的体验
 在图形界面是不会出现广告的
@@ -786,7 +792,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   //高级设置，全局设置
-  final List<bool> _expandState = [false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false];
 
   bool bannerAdsFailedToLoad = false;
 
@@ -830,7 +836,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
-        G.prefs.getBool("isBannerAdsClosed")!||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
+        (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
           placementId: AdManager.bannerAdPlacementId,
           onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
           onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
@@ -845,13 +851,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: [
           Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
             setState(() {
-              G.termFontScale = (details.scale * G.prefs.getDouble("termFontScale")!).clamp(0.2, 5);
+              G.termFontScale = (details.scale * (Util.getGlobal("termFontScale") as double)).clamp(0.2, 5);
             });
           }, onScaleEnd: (details) async {
             await G.prefs.setDouble("termFontScale", G.termFontScale);
           }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale, keyboardType: TextInputType.multiline,))), 
-            G.prefs.getBool("isTerminalCommandsEnabled")!?Padding(padding: const EdgeInsets.all(8), child:
-            SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
+            (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child:
+            SingleChildScrollView(restorationId: "commands-bar", scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
               animation: G.keyboard,
               builder: (context, child) => ToggleButtons(
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
@@ -923,7 +929,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }, child: const Text("F12")), SizedBox.fromSize(size: const Size(72, 0))]))):SizedBox.fromSize(size: const Size.square(0))
           ]), Padding(
               padding: const EdgeInsets.all(8),
-              child: Scrollbar(child: SingleChildScrollView(child: Column(
+              child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(16),
@@ -1041,10 +1047,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               headerBuilder: ((context, isExpanded) {
                                 return const ListTile(title: Text("全局设置"), subtitle: Text("在这里关广告、开启终端编辑"));
                               }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: G.prefs.getInt("termMaxLines")!.toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(6),
+                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!),
                                   keyboardType: TextInputType.number,
                                   onTap: () {
-                                    if (Util.shouldWatchAds(6)) {
+                                    if (Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!)) {
                                       ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(content: Text("观看六次视频广告永久解锁><"))
@@ -1057,7 +1063,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     });
                                   },),
                                 SizedBox.fromSize(size: const Size.square(16)),
-                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: G.prefs.getInt("defaultAudioPort")!.toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
+                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
                                   keyboardType: TextInputType.number,
                                   validator: (value) {
                                     return Util.validateBetween(value, 0, 65535, () async {
@@ -1066,8 +1072,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   }
                                 ),
                                 SizedBox.fromSize(size: const Size.square(16)),
-                                SwitchListTile(title: const Text("关闭横幅广告"), value: G.prefs.getBool("isBannerAdsClosed")!, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(5)) {
+                                SwitchListTile(title: const Text("关闭横幅广告"), value: Util.getGlobal("isBannerAdsClosed") as bool, onChanged:(value) {
+                                  if (value && Util.shouldWatchAds(G.adsRequired["closeBannerAds"]!)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text("观看五次视频广告永久解锁><"))
@@ -1078,8 +1084,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("启用终端"), value: G.prefs.getBool("isTerminalWriteEnabled")!, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(2)) {
+                                SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
+                                  if (value && Util.shouldWatchAds(G.adsRequired["enableTerminalWrite"]!)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
@@ -1093,8 +1099,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("启用终端小键盘"), value: G.prefs.getBool("isTerminalCommandsEnabled")!, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(3)) {
+                                SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
+                                  if (value && Util.shouldWatchAds(G.adsRequired["enableTerminalCommands"]!)) {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text("观看三次视频广告永久解锁><"))
@@ -1105,12 +1111,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("终端粘滞键"), value: G.prefs.getBool("isStickyKey")!, onChanged:(value) {
+                                SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
                                   G.prefs.setBool("isStickyKey", value);
                                   setState(() {});
                                 },),
                                 SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("开启时启动图形界面"), value: G.prefs.getBool("autoLaunchVnc")!, onChanged:(value) {
+                                SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
                                   G.prefs.setBool("autoLaunchVnc", value);
                                   setState(() {});
                                 },),
@@ -1118,7 +1124,124 @@ class _MyHomePageState extends State<MyHomePage> {
                             ExpansionPanel(
                               isExpanded: _expandState[2],
                               headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("广告记录"));
+                                return const ListTile(title: Text("相机推流"), subtitle: Text("实验性功能"));
+                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+                                const Text("成功启动推流后可以点击快捷指令\"拉流测试\"并前往图形界面查看效果。\n注意这并不能为系统创建一个虚拟相机；\n另外使用相机是高耗电行为，不用时需及时关闭。"),
+                                const SizedBox.square(dimension: 16),
+                                Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请相机权限"), onPressed: () {
+                                    Permission.camera.request();
+                                  }),
+                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请麦克风权限"), onPressed: () {
+                                    Permission.microphone.request();
+                                  }),
+                                  OutlinedButton(style: commandButtonStyle, child: const Text("查看输出"), onPressed: () {
+                                    if (G.streamingOutput == "") {
+                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("无输出"))
+                                      );
+                                      return;
+                                    }
+                                    showDialog(context: context, builder: (context) {
+                                      return AlertDialog(content: SingleChildScrollView(child:
+                                        Text(G.streamingOutput)), actions: [
+                                      TextButton(onPressed:() {
+                                        FlutterClipboard.copy(G.streamingOutput).then(( value ) {
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("已复制")));
+                                        });
+                                        Navigator.of(context).pop();
+                                      }, child: const Text("复制")),
+                                      TextButton(onPressed:() {
+                                        Navigator.of(context).pop();
+                                      }, child: const Text("取消")),
+                                    ]);
+                                    });
+                                  }),
+                                ]),
+                                const SizedBox.square(dimension: 16),
+                                TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), readOnly: Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!),
+                                  onTap: () {
+                                    if (Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!)) {
+                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("观看八次视频广告永久解锁><"))
+                                      );
+                                    }
+                                  },
+                                  onChanged: (value) async {
+                                    await G.prefs.setString("defaultFFmpegCommand", value);
+                                  },
+                                ),
+                                const SizedBox.square(dimension: 16),
+                                SwitchListTile(title: const Text("启动推流服务器"), subtitle: const Text("mediamtx"), value: G.isStreamServerStarted, onChanged:(value) {
+                                  switch (value) {
+                                    case true: {
+                                      G.streamServerPty = Pty.start("/system/bin/sh");
+                                      G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml &\n"));
+                                      G.streamServerPty.exitCode.then((value) {
+                                        G.isStreamServerStarted = false;
+                                        setState(() {});
+                                      });
+                                    }
+                                    break;
+                                    case false: {
+                                      G.streamServerPty.write(const Utf8Encoder().convert("""
+pids=${G.dataPath}/busybox pgrep '${G.dataPath}/bin/mediamtx';
+for pid in \$pids; do
+    kill \$pid
+done
+exit\n"""));
+                                    }
+                                    break;
+                                  }
+                                  G.isStreamServerStarted = value;
+                                  setState(() {});
+                                },),
+                                SizedBox.fromSize(size: const Size.square(8)),
+                                SwitchListTile(title: const Text("启动推流"), value: G.isStreaming, onChanged:(value) {
+                                  switch (value) {
+                                    case true: {
+                                      FFmpegKit.execute(Util.getGlobal("defaultFFmpegCommand") as String).then((session) {
+                                        session.getOutput().then((value) async {
+                                          G.isStreaming = false;
+                                          G.streamingOutput = value??"";
+                                          setState(() {});
+                                        });
+                                      });
+                                    }
+                                    break;
+                                    case false: {
+                                      FFmpegKit.cancel();
+                                    }
+                                    break;
+                                  }
+                                  G.isStreaming = value;
+                                  setState(() {});
+                                },),
+                                SizedBox.fromSize(size: const Size.square(8))
+                              ],))),
+                            ExpansionPanel(
+                              isExpanded: _expandState[3],
+                              headerBuilder: ((context, isExpanded) {
+                                return const ListTile(title: Text("文件访问"));
+                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+                                const Text("通过这里获取更多文件权限，以实现对特殊目录的访问。"),
+                                SizedBox.fromSize(size: const Size.square(16)),
+                                Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请存储权限"), onPressed: () {
+                                    Permission.storage.request();
+                                  }),
+                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请所有文件访问权限"), onPressed: () {
+                                    Permission.manageExternalStorage.request();
+                                  }),
+                                ]),
+                              ],))),
+                            ExpansionPanel(
+                              isExpanded: _expandState[4],
+                              headerBuilder: ((context, isExpanded) {
+                                return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
                               }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
                                 OutlinedButton(child: const Text("看一个广告"), onPressed: () {
                                    if (AdManager.placements[AdManager.rewardedVideoAdPlacementId]!) {
@@ -1141,7 +1264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                    }
                                   }),
                                   const SizedBox.square(dimension: 8),
-                                  Text(G.prefs.getStringList("adsBonus")!.map((element) {
+                                  Text(Util.getGlobal("adsBonus").map((element) {
                                     final e = jsonDecode(element);
                                     return e["amount"]==0?"":"${e["name"]}*${e["amount"]}\n";
                                   }).join())
