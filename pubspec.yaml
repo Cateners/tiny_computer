@@ -43,6 +43,8 @@ dependencies:
   unity_ads_plugin: ^0.3.8
   clipboard: ^0.1.3
   ffmpeg_kit_flutter_full_gpl: ^6.0.3
+  saf:
+    git: https://github.com/Cateners/saf
 
 
   # The following adds the Cupertino Icons font to your application.

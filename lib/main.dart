@@ -25,9 +25,9 @@ import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:saf/saf.dart';
 //import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
@@ -1011,6 +1011,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           }, child: const Text("添加")),
                         ]);
                       },);
+                  }, onLongPress: () {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(content: const Text("是否重置所有快捷指令？"), actions: [
+                        TextButton(onPressed:() {
+                          Navigator.of(context).pop();
+                        }, child: const Text("取消")),
+                        TextButton(onPressed:() async {
+                          await Util.setCurrentProp("commands", D.commands);
+                          setState(() {});
+                          if (!context.mounted) return;
+                          Navigator.of(context).pop();
+                        }, child: const Text("是")),
+                      ]);
+                    });
                   }, child: const Text("添加快捷指令")))),
                   Padding(padding: const EdgeInsets.all(8), child: Card(child: Padding(padding: const EdgeInsets.all(8), child: 
                         Column(children: [
@@ -1234,6 +1248,120 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Permission.manageExternalStorage.request();
                                   }),
                                 ]),
+                                const Text("这里可以将设备上的文件夹与软件容器内的文件夹绑定，在下次启动软件时生效。"),
+                                ListView.builder(itemBuilder: (context, index) {
+                                  final Map<String, dynamic> e = jsonDecode(Util.getGlobal("customMounts")[index]);
+                                  return GestureDetector(onLongPress: () {
+                                    String name = e["name"]!;
+                                    bool isNameValid = false;
+                                    Saf pathSaf = Saf(e["path"]!);
+                                    bool isPathValid = false;
+                                    showDialog(context: context, builder: (context) {
+                                      return AlertDialog(title: const Text("选项编辑"), content: SingleChildScrollView(child: Column(children: [
+                                        TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "挂载到主文件夹的名称"), validator: (value) {
+                                          if (!RegExp("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]\$").hasMatch(value!)) {
+                                            return "非法文件名";
+                                          }
+                                          isNameValid = true;
+                                          return null;
+                                        }),
+                                        SizedBox.fromSize(size: const Size.square(8)),
+                                        TextFormField(maxLines: null, initialValue: pathSaf.directory, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "在本机的路径"), readOnly: true, onTap: () async {
+                                          isPathValid = (await pathSaf.getDirectoryPermission(isDynamic: true))??false;
+                                        }),
+                                      ])), actions: [
+                                        TextButton(onPressed:() async {
+                                          await G.prefs.setStringList("customMounts", Util.getGlobal("customMounts")
+                                            ..removeAt(index));
+                                          setState(() {});
+                                          if (!context.mounted) return;
+                                          Navigator.of(context).pop();
+                                        }, child: const Text("删除该项")),
+                                        TextButton(onPressed:() {
+                                          Navigator.of(context).pop();
+                                        }, child: const Text("取消")),
+                                        TextButton(onPressed:() async {
+                                          if (!isNameValid || !isPathValid) {
+                                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text("名称非法或路径无效"))
+                                            );
+                                            return;
+                                          }
+                                          await G.prefs.setStringList("customMounts", Util.getGlobal("customMounts")
+                                            ..setAll(index, [{"name": name, "path": pathSaf.directory, "isEnabled": e["isEnabled"]}]));
+                                          setState(() {});
+                                          if (!context.mounted) return;
+                                          Navigator.of(context).pop();
+                                        }, child: const Text("保存")),
+                                      ]);
+                                    },);
+                                    
+                                  }, child: CheckboxListTile(title: Text(e["name"]), subtitle: Text(e["path"]), value: e["isEnabled"], onChanged: (value) async {
+                                    await G.prefs.setStringList("customMounts", Util.getGlobal("customMounts")..setAll(index, [jsonEncode(e..update("isEnabled", (v) {
+                                      return value!;
+                                    }))]));
+                                    setState(() {});
+                                  }));
+                                }, shrinkWrap: true, itemCount: Util.getGlobal("customMounts").length),
+                                ListTile(title: const Text("添加路径"), onTap: () async {
+                                  Saf pathSaf = Saf("/storage/self/primary/Download");
+                                  bool hasPermission = (await pathSaf.getDirectoryPermission(isDynamic: true))??false;
+                                  if (!hasPermission) {
+                                    return;
+                                  }
+                                  String name = "新路径";
+                                  bool isNameValid = false;
+                                  bool isPathValid = false;
+                                  if (!context.mounted) return;
+                                  showDialog(context: context, builder: (context) {
+                                      return AlertDialog(title: const Text("选项编辑"), content: SingleChildScrollView(child: Column(children: [
+                                        TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "挂载到主文件夹的名称"), validator: (value) {
+                                          if (!RegExp("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]\$").hasMatch(value!)) {
+                                            return "非法文件名";
+                                          }
+                                          isNameValid = true;
+                                          return null;
+                                        }),
+                                        SizedBox.fromSize(size: const Size.square(8)),
+                                        TextFormField(maxLines: null, initialValue: pathSaf.directory, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "在本机的路径"), readOnly: true, onTap: () async {
+                                          isPathValid = (await pathSaf.getDirectoryPermission(isDynamic: true))??false;
+                                        }),
+                                      ])), actions: [
+                                        TextButton(onPressed:() {
+                                          Navigator.of(context).pop();
+                                        }, child: const Text("取消")),
+                                        TextButton(onPressed:() async {
+                                          if (!isNameValid || !isPathValid) {
+                                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text("名称非法或路径无效"))
+                                            );
+                                            return;
+                                          }
+                                          await G.prefs.setStringList("customMounts", Util.getGlobal("customMounts")
+                                            ..add({"name": name, "path": pathSaf.directory, "isEnabled": true}));
+                                          setState(() {});
+                                          if (!context.mounted) return;
+                                          Navigator.of(context).pop();
+                                        }, child: const Text("保存")),
+                                      ]);
+                                    });
+                                }, onLongPress: () {
+                                  showDialog(context: context, builder: (context) {
+                                    return AlertDialog(content: const Text("是否清空所有路径？"), actions: [
+                                      TextButton(onPressed:() {
+                                        Navigator.of(context).pop();
+                                      }, child: const Text("取消")),
+                                      TextButton(onPressed:() async {
+                                        await G.prefs.setStringList("customMounts", []);
+                                        setState(() {});
+                                        if (!context.mounted) return;
+                                        Navigator.of(context).pop();
+                                      }, child: const Text("是")),
+                                    ]);
+                                  });
+                                })
                               ],))),
                             ExpansionPanel(
                               isExpanded: _expandState[4],
