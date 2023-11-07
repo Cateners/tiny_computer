@@ -108,7 +108,7 @@ class Util {
       case "termFontScale" : return b ? G.prefs.getDouble(key)! : (value){G.prefs.setDouble(key, value); return value;}(1.0);
       case "vip" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(0);
       case "isStickyKey" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
-      case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
+      case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "containersInfo" : return G.prefs.getStringList(key)!;
       case "adsBonus" : return b ? G.prefs.getStringList(key)! : (value){G.prefs.setStringList(key, value); return value;}([].cast<String>());
     }
@@ -267,6 +267,7 @@ class TermPty {
         Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
           const TextStyle ts = TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.normal);
           const String helperLink = "https://www.vmos.cn/zhushou.htm";
+          const String helperLink2 = "https://b23.tv/WwqOqW6";
           return Scaffold(backgroundColor: Colors.deepPurple,
             body: Center(
             child: Scrollbar(child:
@@ -285,7 +286,18 @@ class TermPty {
                         },))
                       );
                     });
-                  }, child: const Text("复制", style: ts, textAlign: TextAlign.center))
+                  }, child: const Text("复制", style: ts, textAlign: TextAlign.center)), 
+                  const Text("如果不能解决请参考此教程: ", style: ts, textAlign: TextAlign.center),
+                  OutlinedButton(onPressed: () {
+                    FlutterClipboard.copy(helperLink2).then(( value ) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: const Text("已复制"), action: SnackBarAction(label: "跳转", onPressed: () {
+                          launchUrl(Uri.parse(helperLink2), mode: LaunchMode.externalApplication);
+                        },))
+                      );
+                    });
+                  }, child: const Text("查看", style: ts, textAlign: TextAlign.center))
                 ]),
               )
             )
@@ -326,7 +338,7 @@ class D {
 {"name":"卸载视频剪辑软件Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
 {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
 {"name":"卸载科学计算软件Octave", "command":"sudo apt autoremove --purge -y octave"},
-{"name":"安装WPS", "command":"wget https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11704/wps-office_11.1.0.11704_arm64.deb -O /tmp/wps.deb && sudo apt update && sudo apt install -y /tmp/wps.deb; rm /tmp/wps.deb"},
+{"name":"安装WPS", "command":"wget https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11708/wps-office_11.1.0.11708_arm64.deb -O /tmp/wps.deb && sudo apt update && sudo apt install -y /tmp/wps.deb; rm /tmp/wps.deb"},
 {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
 {"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
 {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
@@ -340,6 +352,32 @@ class D {
 {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
 {"name":"关机", "command":"stopvnc\nexit\nexit"},
 {"name":"???", "command":"timeout 8 cmatrix"}];
+  //默认快捷指令
+  static const termCommands = [
+  {"name": "Esc", "key": TerminalKey.escape},
+  {"name": "Tab", "key": TerminalKey.tab},
+  {"name": "↑", "key": TerminalKey.arrowUp},
+  {"name": "↓", "key": TerminalKey.arrowDown},
+  {"name": "←", "key": TerminalKey.arrowLeft},
+  {"name": "→", "key": TerminalKey.arrowRight},
+  {"name": "Del", "key": TerminalKey.delete},
+  {"name": "PgUp", "key": TerminalKey.pageUp},
+  {"name": "PgDn", "key": TerminalKey.pageDown},
+  {"name": "Home", "key": TerminalKey.home},
+  {"name": "End", "key": TerminalKey.end},
+  {"name": "F1", "key": TerminalKey.f1},
+  {"name": "F2", "key": TerminalKey.f2},
+  {"name": "F3", "key": TerminalKey.f3},
+  {"name": "F4", "key": TerminalKey.f4},
+  {"name": "F5", "key": TerminalKey.f5},
+  {"name": "F6", "key": TerminalKey.f6},
+  {"name": "F7", "key": TerminalKey.f7},
+  {"name": "F8", "key": TerminalKey.f8},
+  {"name": "F9", "key": TerminalKey.f9},
+  {"name": "F10", "key": TerminalKey.f10},
+  {"name": "F11", "key": TerminalKey.f11},
+  {"name": "F12", "key": TerminalKey.f12},
+];
 }
 
 // Global variables

@@ -847,7 +847,7 @@ class _MyHomePageState extends State<MyHomePage> {
               bannerAdsFailedToLoad = true;
             });
           },
-        ), Expanded(flex: 1, child: AnimatedSwitcher(
+        ), Expanded(child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 256),
         child: [
           Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
@@ -857,8 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }, onScaleEnd: (details) async {
             await G.prefs.setDouble("termFontScale", G.termFontScale);
           }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale, keyboardType: TextInputType.multiline,))), 
-            (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child:
-            SingleChildScrollView(restorationId: "commands-bar", scrollDirection: Axis.horizontal, child: Row(children: [AnimatedBuilder(
+            (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
               animation: G.keyboard,
               builder: (context, child) => ToggleButtons(
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
@@ -880,54 +879,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
               ),
-              //TODO: 丑陋的实现，不知道列表有没有更方便的操作
-            ), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.escape);
-            }, child: const Text("Esc")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.tab);
-            }, child: const Text("Tab")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowUp);
-            }, child: const Text("↑")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowDown);
-            }, child: const Text("↓")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowLeft);
-            }, child: const Text("←")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.arrowRight);
-            }, child: const Text("→")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.delete);
-            }, child: const Text("Del")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.pageUp);
-            }, child: const Text("PgUp")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.pageDown);
-            }, child: const Text("PgDn")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.home);
-            }, child: const Text("Home")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.end);
-            }, child: const Text("End")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f1);
-            }, child: const Text("F1")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f2);
-            }, child: const Text("F2")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f3);
-            }, child: const Text("F3")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f4);
-            }, child: const Text("F4")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f5);
-            }, child: const Text("F5")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f6);
-            }, child: const Text("F6")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f7);
-            }, child: const Text("F7")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f8);
-            }, child: const Text("F8")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f9);
-            }, child: const Text("F9")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f10);
-            }, child: const Text("F10")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f11);
-            }, child: const Text("F11")), SizedBox.fromSize(size: const Size.square(4)), OutlinedButton(style: controlButtonStyle, onPressed: () {
-              G.termPtys[G.currentContainer]!.terminal.keyInput(TerminalKey.f12);
-            }, child: const Text("F12")), SizedBox.fromSize(size: const Size(72, 0))]))):SizedBox.fromSize(size: const Size.square(0))
+            ),
+            SizedBox.fromSize(size: const Size.square(8)), 
+            Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
+              return OutlinedButton(style: controlButtonStyle, onPressed: () {
+                G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
+              }, child: Text(D.termCommands[index]["name"]! as String));
+            }, separatorBuilder:(context, index) {
+              return SizedBox.fromSize(size: const Size.square(4));
+            }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0))
           ]), Padding(
               padding: const EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
