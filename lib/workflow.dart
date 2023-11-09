@@ -132,16 +132,16 @@ class Util {
   //返回单个G.bonusTable定义的item
   static Map<String, dynamic> getRandomBonus() {
     final random = Random();
-    final totalWeight = G.bonusTable.fold(0.0, (sum, item) => sum + item['weight']);
+    final totalWeight = D.bonusTable.fold(0.0, (sum, item) => sum + item['weight']);
     final randomIndex = random.nextDouble() * totalWeight;
     var cumulativeWeight = 0.0;
-    for (final item in G.bonusTable) {
+    for (final item in D.bonusTable) {
       cumulativeWeight += item['weight'];
       if (randomIndex <= cumulativeWeight) {
         return item;
       }
     }
-    return G.bonusTable[0];
+    return D.bonusTable[0];
   }
 
   //由getRandomBonus返回的数据
@@ -163,7 +163,7 @@ class Util {
 
   //根据已看广告量判断是否应该继续看广告
   static bool shouldWatchAds(int expectNum) {
-    return ((Util.getGlobal("adsWatchedTotal") as int) < expectNum) && ((Util.getGlobal("vip") as int) < 1) && ((Util.getGlobal("adsWatchedToday") as int) < G.adsRequired["unlockToday"]!) && (G.adsWatchedThisTime < G.adsRequired["unlockOnce"]!);
+    return ((Util.getGlobal("adsWatchedTotal") as int) < expectNum) && ((Util.getGlobal("vip") as int) < 1) && ((Util.getGlobal("adsWatchedToday") as int) < D.adsRequired["unlockToday"]!) && (G.adsWatchedThisTime < D.adsRequired["unlockOnce"]!);
   }
 
   //限定字符串在min和max之间, 给文本框的validator
@@ -230,7 +230,7 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
       shift: event.shift || _shift,
       alt: event.alt || _alt,
     ));
-    G.maybeCtrlJ = event.key.name == "keyJ";
+    G.maybeCtrlJ = event.key.name == "keyJ"; //这个是为了稍后区分按键到底是Enter还是Ctrl+J
     if (!(Util.getGlobal("isStickyKey") as bool)) {
       G.keyboard.ctrl = false;
       G.keyboard.shift = false;
@@ -352,7 +352,7 @@ class D {
 {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
 {"name":"关机", "command":"stopvnc\nexit\nexit"},
 {"name":"???", "command":"timeout 8 cmatrix"}];
-  //默认快捷指令
+  //默认小键盘
   static const termCommands = [
   {"name": "Esc", "key": TerminalKey.escape},
   {"name": "Tab", "key": TerminalKey.tab},
@@ -378,27 +378,6 @@ class D {
   {"name": "F11", "key": TerminalKey.f11},
   {"name": "F12", "key": TerminalKey.f12},
 ];
-}
-
-// Global variables
-class G {
-  static late final String dataPath;
-  static Pty? audioPty;
-  static late WebViewController controller;
-  static late BuildContext homePageStateContext;
-  static late int currentContainer; //目前运行第几个容器
-  static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
-  static late AdManager ads; //广告实例
-  static late VirtualKeyboard keyboard; //存储ctrl, shift, alt状态
-  static bool maybeCtrlJ = false; //为了区分按下的ctrl+J和enter而准备的变量
-  static double termFontScale = 1; //终端字体大小，存储为G.prefs的termFontScale
-  static int adsWatchedThisTime = 0; //本次启动应用看的广告数
-  static bool isStreamServerStarted = false;
-  static bool isStreaming = false;
-  static int? streamingId;
-  static String streamingOutput = "";
-  static late Pty streamServerPty;
-
 
   //看广告可以获得的奖励。
   //weight抽奖权重，singleUse使用一次花费的数量，amount抽中可以获得的数量
@@ -425,6 +404,44 @@ class G {
     "unlockToday" : 2, //当日解锁需要看的广告数
 
   };
+
+  static final ButtonStyle commandButtonStyle = OutlinedButton.styleFrom(
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    minimumSize: const Size(0, 0),
+    padding: const EdgeInsets.fromLTRB(4, 2, 4, 2)
+  );
+
+  
+  static final ButtonStyle controlButtonStyle = OutlinedButton.styleFrom(
+    textStyle: const TextStyle(fontWeight: FontWeight.w400),
+    side: const BorderSide(color: Color(0x1F000000)),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    minimumSize: const Size(0, 0),
+    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4)
+  );
+
+}
+
+// Global variables
+class G {
+  static late final String dataPath;
+  static Pty? audioPty;
+  static late WebViewController controller;
+  static late BuildContext homePageStateContext;
+  static late int currentContainer; //目前运行第几个容器
+  static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
+  static late AdManager ads; //广告实例
+  static late VirtualKeyboard keyboard; //存储ctrl, shift, alt状态
+  static bool maybeCtrlJ = false; //为了区分按下的ctrl+J和enter而准备的变量
+  static ValueNotifier<double> termFontScale = ValueNotifier(1); //终端字体大小，存储为G.prefs的termFontScale
+  static int adsWatchedThisTime = 0; //本次启动应用看的广告数
+  static bool isStreamServerStarted = false;
+  static bool isStreaming = false;
+  static int? streamingId;
+  static String streamingOutput = "";
+  static late Pty streamServerPty;
+  static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
+
 
   static late SharedPreferences prefs;
 }
@@ -592,18 +609,6 @@ done
 "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
 "commands":${jsonEncode(D.commands)}
 }"""]);
-    // await G.prefs.setStringList("adsBonus", []);
-    // await G.prefs.setInt("adsWatchedTotal", 0);
-    // await G.prefs.setBool("isTerminalCommandsEnabled", false);
-    // await G.prefs.setBool("isTerminalWriteEnabled", false);
-    // await G.prefs.setBool("isBannerAdsClosed", false);
-    // await G.prefs.setBool("autoLaunchVnc", true);
-    // await G.prefs.setInt("defaultAudioPort", 4718);
-    // await G.prefs.setInt("defaultContainer", 0);
-    // await G.prefs.setInt("termMaxLines", 4095);
-    // await G.prefs.setDouble("termFontScale", 1);
-    // await G.prefs.setInt("vip", 0);
-    // await G.prefs.setBool("isStickyKey", true);
   }
 
   static Future<void> initData() async {
@@ -629,24 +634,24 @@ done
     }
     G.currentContainer = Util.getGlobal("defaultContainer") as int;
 
-    G.termFontScale = Util.getGlobal("termFontScale") as double;
+    G.termFontScale.value = Util.getGlobal("termFontScale") as double;
 
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
 
     //恢复临时开启的功能
-    if (Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!)) {
+    if (Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!)) {
       await G.prefs.remove("defaultFFmpegCommand");
     }
-    if (Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!)) {
+    if (Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!)) {
       await G.prefs.setInt("termMaxLines", 4095);
     }
-    if (Util.shouldWatchAds(G.adsRequired["closeBannerAds"]!)) {
+    if (Util.shouldWatchAds(D.adsRequired["closeBannerAds"]!)) {
       await G.prefs.setBool("isBannerAdsClosed", false);
     }
-    if (Util.shouldWatchAds(G.adsRequired["enableTerminalWrite"]!)) {
+    if (Util.shouldWatchAds(D.adsRequired["enableTerminalWrite"]!)) {
       await G.prefs.setBool("isTerminalWriteEnabled", false);
     }
-    if (Util.shouldWatchAds(G.adsRequired["enableTerminalCommands"]!)) {
+    if (Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
       await G.prefs.setBool("isTerminalCommandsEnabled", false);
     }
 

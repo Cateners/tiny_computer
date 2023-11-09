@@ -94,6 +94,276 @@ class _FakeLoadingStatusState extends State<FakeLoadingStatus> {
   }
 }
 
+class SettingPage extends StatefulWidget {
+  const SettingPage({super.key});
+
+  @override
+  State<SettingPage> createState() => _SettingPageState();
+}
+
+class _SettingPageState extends State<SettingPage> {
+
+  final List<bool> _expandState = [false, false, false, false, false];
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionPanelList(
+      elevation: 1,
+      expandedHeaderPadding: const EdgeInsets.all(0),
+      expansionCallback: (panelIndex, isExpanded) {
+      setState(() {
+        _expandState[panelIndex] = isExpanded;
+      });
+    },children: [
+      ExpansionPanel(
+        isExpanded: _expandState[0],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("高级设置"), subtitle: Text("修改后重启生效"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
+            await Util.setCurrentProp("name", value);
+            //setState(() {});
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
+            await Util.setCurrentProp("boot", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
+            await Util.setCurrentProp("vnc", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
+            await Util.setCurrentProp("vncUrl", value);
+          }),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[1],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("全局设置"), subtitle: Text("在这里关广告、开启终端编辑"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!),
+            keyboardType: TextInputType.number,
+            onTap: () {
+              if (Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!)) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("观看六次视频广告永久解锁><"))
+                );
+              }
+            },
+            validator: (value) {
+              return Util.validateBetween(value, 1024, 2147483647, () async {
+                await G.prefs.setInt("termMaxLines", int.parse(value!));
+              });
+            },),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              return Util.validateBetween(value, 0, 65535, () async {
+                await G.prefs.setInt("defaultAudioPort", int.parse(value!));
+              });
+            }
+          ),
+          SizedBox.fromSize(size: const Size.square(16)),
+          SwitchListTile(title: const Text("关闭横幅广告"), value: Util.getGlobal("isBannerAdsClosed") as bool, onChanged:(value) {
+            if (value && Util.shouldWatchAds(D.adsRequired["closeBannerAds"]!)) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("观看五次视频广告永久解锁><"))
+              );
+              return;
+            }
+            G.prefs.setBool("isBannerAdsClosed", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
+            if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalWrite"]!)) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
+                  G.prefs.setBool("isTerminalWriteEnabled", value);
+                  setState(() {});
+                },))
+              );
+              return;
+            }
+            G.prefs.setBool("isTerminalWriteEnabled", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
+            if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("观看三次视频广告永久解锁><"))
+              );
+              return;
+            }
+            G.prefs.setBool("isTerminalCommandsEnabled", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
+            G.prefs.setBool("isStickyKey", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
+            G.prefs.setBool("autoLaunchVnc", value);
+            setState(() {});
+          },),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[2],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("相机推流"), subtitle: Text("实验性功能"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const Text("成功启动推流后可以点击快捷指令\"拉流测试\"并前往图形界面查看效果。\n注意这并不能为系统创建一个虚拟相机；\n另外使用相机是高耗电行为，不用时需及时关闭。"),
+          const SizedBox.square(dimension: 16),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请相机权限"), onPressed: () {
+              Permission.camera.request();
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请麦克风权限"), onPressed: () {
+              Permission.microphone.request();
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("查看输出"), onPressed: () {
+              if (G.streamingOutput == "") {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("无输出"))
+                );
+                return;
+              }
+              showDialog(context: context, builder: (context) {
+                return AlertDialog(content: SingleChildScrollView(child:
+                  Text(G.streamingOutput)), actions: [
+                TextButton(onPressed:() {
+                  FlutterClipboard.copy(G.streamingOutput).then(( value ) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("已复制")));
+                  });
+                  Navigator.of(context).pop();
+                }, child: const Text("复制")),
+                TextButton(onPressed:() {
+                  Navigator.of(context).pop();
+                }, child: const Text("取消")),
+              ]);
+              });
+            }),
+          ]),
+          const SizedBox.square(dimension: 16),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), readOnly: Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!),
+            onTap: () {
+              if (Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!)) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("观看八次视频广告永久解锁><"))
+                );
+              }
+            },
+            onChanged: (value) async {
+              await G.prefs.setString("defaultFFmpegCommand", value);
+            },
+          ),
+          const SizedBox.square(dimension: 16),
+          SwitchListTile(title: const Text("启动推流服务器"), subtitle: const Text("mediamtx"), value: G.isStreamServerStarted, onChanged:(value) {
+            switch (value) {
+              case true: {
+                G.streamServerPty = Pty.start("/system/bin/sh");
+                G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml & pid=\$(echo \$!)\n"));
+                G.streamServerPty.exitCode.then((value) {
+                  G.isStreamServerStarted = false;
+                  setState(() {});
+                });
+              }
+              break;
+              case false: {
+                G.streamServerPty.write(const Utf8Encoder().convert("kill \$pid\nexit\n"));
+              }
+              break;
+            }
+            G.isStreamServerStarted = value;
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("启动推流"), value: G.isStreaming, onChanged:(value) {
+            switch (value) {
+              case true: {
+                FFmpegKit.execute(Util.getGlobal("defaultFFmpegCommand") as String).then((session) {
+                  session.getOutput().then((value) async {
+                    G.isStreaming = false;
+                    G.streamingOutput = value??"";
+                    setState(() {});
+                  });
+                });
+              }
+              break;
+              case false: {
+                FFmpegKit.cancel();
+              }
+              break;
+            }
+            G.isStreaming = value;
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8))
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[3],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("文件访问"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const Text("通过这里获取更多文件权限，以实现对特殊目录的访问。"),
+          SizedBox.fromSize(size: const Size.square(16)),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请存储权限"), onPressed: () {
+              Permission.storage.request();
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请所有文件访问权限"), onPressed: () {
+              Permission.manageExternalStorage.request();
+            }),
+          ]),
+          SizedBox.fromSize(size: const Size.square(16)),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[4],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          OutlinedButton(child: const Text("看一个广告"), onPressed: () {
+              if (AdManager.placements[AdManager.rewardedVideoAdPlacementId]!) {
+              AdManager.showAd(AdManager.rewardedVideoAdPlacementId, () {
+                final bonus = Util.getRandomBonus();
+                Util.applyBonus(bonus);
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("你获得了 ${bonus["name"]}*${bonus["amount"]}"))
+                );
+                setState(() {
+                  
+                });
+              }, () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("已经看5个广告了, 今天也非常感谢><"))
+                );
+              });
+              }
+            }),
+            const SizedBox.square(dimension: 8),
+            Text(Util.getGlobal("adsBonus").map((element) {
+              final e = jsonDecode(element);
+              return e["amount"]==0?"":"${e["name"]}*${e["amount"]}\n";
+            }).join())
+        ],))),
+    ],);
+  }
+}
+
 class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
 
@@ -119,7 +389,12 @@ class _InfoPageState extends State<InfoPage> {
           return const ListTile(title: Text("使用说明"));
         },
         body: const Padding(padding: EdgeInsets.all(8), child: Text("""
-第一次加载, 大概需要5到10分钟...
+第一次加载大概需要5到10分钟...
+加载完成后，软件会自动跳转到图形界面
+
+在图形界面返回，可以回到终端界面和控制界面
+你可以在控制界面安装更多软件或者阅读帮助信息
+
 请不要在安装时退出软件
 
 如果过了很长时间都没有加载完成
@@ -723,36 +998,34 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-              padding: EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                    child: FractionallySizedBox(
-                      widthFactor: 0.4,
-                      child: Image(
-                        image: AssetImage("images/icon.png")
-                      )
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                    child: Text("小小电脑", textScaleFactor: 2),
-                  ),
-                  FakeLoadingStatus(),
-                  Expanded(child:
-                  Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
-                  
-                    Scrollbar(child:
-                      SingleChildScrollView(
-                        child: InfoPage()
-                      )
-                    )
-                  ))
-                  ,))
-                ]
+      padding: EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: FractionallySizedBox(
+              widthFactor: 0.4,
+              child: Image(
+                image: AssetImage("images/icon.png")
               )
-            );
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+            child: Text("小小电脑", textScaleFactor: 2),
+          ),
+          FakeLoadingStatus(),
+          Expanded(child: Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
+            Scrollbar(child:
+              SingleChildScrollView(
+                child: InfoPage()
+              )
+            )
+          ))
+          ,))
+        ]
+      )
+    );
   }
 }
 
@@ -781,6 +1054,145 @@ RawGestureDetector forceScaleGestureDetector({
   );
 }
 
+class TerminalPage extends StatelessWidget {
+  const TerminalPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
+      G.termFontScale.value = (details.scale * (Util.getGlobal("termFontScale") as double)).clamp(0.2, 5);
+    }, onScaleEnd: (details) async {
+      await G.prefs.setDouble("termFontScale", G.termFontScale.value);
+    }, child: ValueListenableBuilder(valueListenable: G.termFontScale, builder:(context, value, child) {
+      return TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale.value, keyboardType: TextInputType.multiline);
+    },) )), 
+      (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
+        animation: G.keyboard,
+        builder: (context, child) => ToggleButtons(
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          isSelected: [G.keyboard.ctrl, G.keyboard.alt, G.keyboard.shift],
+          onPressed: (index) {
+            switch (index) {
+              case 0:
+                G.keyboard.ctrl = !G.keyboard.ctrl;
+                break;
+              case 1:
+                G.keyboard.alt = !G.keyboard.alt;
+                break;
+              case 2:
+                G.keyboard.shift = !G.keyboard.shift;
+                break;
+            }
+          },
+          children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
+        ),
+      ),
+      SizedBox.fromSize(size: const Size.square(8)), 
+      Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
+        return OutlinedButton(style: D.controlButtonStyle, onPressed: () {
+          G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
+        }, child: Text(D.termCommands[index]["name"]! as String));
+      }, separatorBuilder:(context, index) {
+        return SizedBox.fromSize(size: const Size.square(4));
+      }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0))
+    ]);
+  }
+}
+
+class FastCommands extends StatefulWidget {
+  const FastCommands({super.key});
+
+  @override
+  State<FastCommands> createState() => _FastCommandsState();
+}
+
+class _FastCommandsState extends State<FastCommands> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: Util.getCurrentProp("commands")
+      .asMap().entries.map<Widget>((e) {
+      return OutlinedButton(style: D.commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
+        Util.termWrite(e.value["command"]!);
+        G.pageIndex.value = 0;
+      }, onLongPress: () {
+        String name = e.value["name"]!;
+        String command = e.value["command"]!;
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
+            TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
+              name = value;
+            }),
+            SizedBox.fromSize(size: const Size.square(8)),
+            TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
+              command = value;
+            }),
+          ])), actions: [
+            TextButton(onPressed:() async {
+              await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
+                ..removeAt(e.key));
+              setState(() {});
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+            }, child: const Text("删除该项")),
+            TextButton(onPressed:() {
+              Navigator.of(context).pop();
+            }, child: const Text("取消")),
+            TextButton(onPressed:() async {
+              await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
+                ..setAll(e.key, [{"name": name, "command": command}]));
+              setState(() {});
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+            }, child: const Text("保存")),
+          ]);
+        },);
+      },);
+    }).toList()..add(OutlinedButton(style: D.commandButtonStyle, onPressed:() {
+        String name = "";
+        String command = "";
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
+            TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
+              name = value;
+            }),
+            SizedBox.fromSize(size: const Size.square(8)),
+            TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
+              command = value;
+            }),
+          ])), actions: [
+            TextButton(onPressed:() {
+              Navigator.of(context).pop();
+            }, child: const Text("取消")),
+            TextButton(onPressed:() async {
+              await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
+                ..add({"name": name, "command": command}));
+              setState(() {});
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+            }, child: const Text("添加")),
+          ]);
+        },);
+    }, onLongPress: () {
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(content: const Text("是否重置所有快捷指令？"), actions: [
+          TextButton(onPressed:() {
+            Navigator.of(context).pop();
+          }, child: const Text("取消")),
+          TextButton(onPressed:() async {
+            await Util.setCurrentProp("commands", D.commands);
+            setState(() {});
+            if (!context.mounted) return;
+            Navigator.of(context).pop();
+          }, child: const Text("是")),
+        ]);
+      });
+    }, child: const Text("添加快捷指令"))));
+  }
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -792,30 +1204,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  //高级设置，全局设置
-  final List<bool> _expandState = [false, false, false, false, false];
-
   bool bannerAdsFailedToLoad = false;
 
   //安装完成了吗？
   //完成后从加载界面切换到主界面
   bool isLoadingComplete = false;
-  //主界面索引
-  int pageIndex = 0;
-
-  final ButtonStyle commandButtonStyle = OutlinedButton.styleFrom(
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    minimumSize: const Size(0, 0),
-    padding: const EdgeInsets.fromLTRB(4, 2, 4, 2)
-  );
-
-  final ButtonStyle controlButtonStyle = OutlinedButton.styleFrom(
-    textStyle: const TextStyle(fontWeight: FontWeight.w400),
-    side: const BorderSide(color: Color(0x1F000000)),
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    minimumSize: const Size(0, 0),
-    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4)
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -847,48 +1240,8 @@ class _MyHomePageState extends State<MyHomePage> {
               bannerAdsFailedToLoad = true;
             });
           },
-        ), Expanded(child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 256),
-        child: [
-          Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
-            setState(() {
-              G.termFontScale = (details.scale * (Util.getGlobal("termFontScale") as double)).clamp(0.2, 5);
-            });
-          }, onScaleEnd: (details) async {
-            await G.prefs.setDouble("termFontScale", G.termFontScale);
-          }, child: TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale, keyboardType: TextInputType.multiline,))), 
-            (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
-              animation: G.keyboard,
-              builder: (context, child) => ToggleButtons(
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                isSelected: [G.keyboard.ctrl, G.keyboard.alt, G.keyboard.shift],
-                onPressed: (index) {
-                  switch (index) {
-                    case 0:
-                      G.keyboard.ctrl = !G.keyboard.ctrl;
-                      break;
-                    case 1:
-                      G.keyboard.alt = !G.keyboard.alt;
-                      break;
-                    case 2:
-                      G.keyboard.shift = !G.keyboard.shift;
-                      break;
-                  }
-                },
-                children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
-              ),
-            ),
-            SizedBox.fromSize(size: const Size.square(8)), 
-            Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
-              return OutlinedButton(style: controlButtonStyle, onPressed: () {
-                G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
-              }, child: Text(D.termCommands[index]["name"]! as String));
-            }, separatorBuilder:(context, index) {
-              return SizedBox.fromSize(size: const Size.square(4));
-            }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0))
-          ]), Padding(
+        ), Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
+          return IndexedStack(index: G.pageIndex.value, children: [const TerminalPage(), Padding(
               padding: const EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
                 children: [
@@ -905,374 +1258,39 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                     child: Text(Util.getCurrentProp("name"), textScaleFactor: 2),
                   ),*/
-                  Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: Util.getCurrentProp("commands")
-                    .asMap().entries.map<Widget>((e) {
-                    return OutlinedButton(style: commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
-                      setState(() {
-                        Util.termWrite(e.value["command"]!);
-                        pageIndex = 0;
-                      });
-                    }, onLongPress: () {
-                      String name = e.value["name"]!;
-                      String command = e.value["command"]!;
-                      showDialog(context: context, builder: (context) {
-                        return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
-                          TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
-                            name = value;
-                          }),
-                          SizedBox.fromSize(size: const Size.square(8)),
-                          TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
-                            command = value;
-                          }),
-                        ])), actions: [
-                          TextButton(onPressed:() async {
-                            await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
-                              ..removeAt(e.key));
-                            setState(() {});
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          }, child: const Text("删除该项")),
-                          TextButton(onPressed:() {
-                            Navigator.of(context).pop();
-                          }, child: const Text("取消")),
-                          TextButton(onPressed:() async {
-                            await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
-                              ..setAll(e.key, [{"name": name, "command": command}]));
-                            setState(() {});
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          }, child: const Text("保存")),
-                        ]);
-                      },);
-                    },);
-                  }).toList()..add(OutlinedButton(style: commandButtonStyle, onPressed:() {
-                      String name = "";
-                      String command = "";
-                      showDialog(context: context, builder: (context) {
-                        return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
-                          TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
-                            name = value;
-                          }),
-                          SizedBox.fromSize(size: const Size.square(8)),
-                          TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
-                            command = value;
-                          }),
-                        ])), actions: [
-                          TextButton(onPressed:() {
-                            Navigator.of(context).pop();
-                          }, child: const Text("取消")),
-                          TextButton(onPressed:() async {
-                            await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
-                              ..add({"name": name, "command": command}));
-                            setState(() {});
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          }, child: const Text("添加")),
-                        ]);
-                      },);
-                  }, onLongPress: () {
-                    showDialog(context: context, builder: (context) {
-                      return AlertDialog(content: const Text("是否重置所有快捷指令？"), actions: [
-                        TextButton(onPressed:() {
-                          Navigator.of(context).pop();
-                        }, child: const Text("取消")),
-                        TextButton(onPressed:() async {
-                          await Util.setCurrentProp("commands", D.commands);
-                          setState(() {});
-                          if (!context.mounted) return;
-                          Navigator.of(context).pop();
-                        }, child: const Text("是")),
-                      ]);
-                    });
-                  }, child: const Text("添加快捷指令")))),
+                  const FastCommands(),
                   Padding(padding: const EdgeInsets.all(8), child: Card(child: Padding(padding: const EdgeInsets.all(8), child: 
-                        Column(children: [
-                          ExpansionPanelList(
-                            elevation: 1,
-                            expandedHeaderPadding: const EdgeInsets.all(0),
-                            expansionCallback: (panelIndex, isExpanded) {
-                            setState(() {
-                              _expandState[panelIndex] = isExpanded;
-                            });
-                          },children: [
-                            ExpansionPanel(
-                              isExpanded: _expandState[0],
-                              headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("高级设置"), subtitle: Text("修改后重启生效"));
-                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
-                                  await Util.setCurrentProp("name", value);
-                                  setState(() {});
-                                }),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
-                                  await Util.setCurrentProp("boot", value);
-                                }),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
-                                  await Util.setCurrentProp("vnc", value);
-                                }),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
-                                  await Util.setCurrentProp("vncUrl", value);
-                                }),
-                              ],))),
-                            ExpansionPanel(
-                              isExpanded: _expandState[1],
-                              headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("全局设置"), subtitle: Text("在这里关广告、开启终端编辑"));
-                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!),
-                                  keyboardType: TextInputType.number,
-                                  onTap: () {
-                                    if (Util.shouldWatchAds(G.adsRequired["changeTermMaxLines"]!)) {
-                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("观看六次视频广告永久解锁><"))
-                                      );
-                                    }
-                                  },
-                                  validator: (value) {
-                                    return Util.validateBetween(value, 1024, 2147483647, () async {
-                                      await G.prefs.setInt("termMaxLines", int.parse(value!));
-                                    });
-                                  },),
-                                SizedBox.fromSize(size: const Size.square(16)),
-                                TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) {
-                                    return Util.validateBetween(value, 0, 65535, () async {
-                                      await G.prefs.setInt("defaultAudioPort", int.parse(value!));
-                                    });
-                                  }
-                                ),
-                                SizedBox.fromSize(size: const Size.square(16)),
-                                SwitchListTile(title: const Text("关闭横幅广告"), value: Util.getGlobal("isBannerAdsClosed") as bool, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(G.adsRequired["closeBannerAds"]!)) {
-                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("观看五次视频广告永久解锁><"))
-                                    );
-                                    return;
-                                  }
-                                  G.prefs.setBool("isBannerAdsClosed", value);
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(G.adsRequired["enableTerminalWrite"]!)) {
-                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
-                                        G.prefs.setBool("isTerminalWriteEnabled", value);
-                                        setState(() {});
-                                      },))
-                                    );
-                                    return;
-                                  }
-                                  G.prefs.setBool("isTerminalWriteEnabled", value);
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
-                                  if (value && Util.shouldWatchAds(G.adsRequired["enableTerminalCommands"]!)) {
-                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("观看三次视频广告永久解锁><"))
-                                    );
-                                    return;
-                                  }
-                                  G.prefs.setBool("isTerminalCommandsEnabled", value);
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
-                                  G.prefs.setBool("isStickyKey", value);
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
-                                  G.prefs.setBool("autoLaunchVnc", value);
-                                  setState(() {});
-                                },),
-                              ],))),
-                            ExpansionPanel(
-                              isExpanded: _expandState[2],
-                              headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("相机推流"), subtitle: Text("实验性功能"));
-                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                const Text("成功启动推流后可以点击快捷指令\"拉流测试\"并前往图形界面查看效果。\n注意这并不能为系统创建一个虚拟相机；\n另外使用相机是高耗电行为，不用时需及时关闭。"),
-                                const SizedBox.square(dimension: 16),
-                                Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请相机权限"), onPressed: () {
-                                    Permission.camera.request();
-                                  }),
-                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请麦克风权限"), onPressed: () {
-                                    Permission.microphone.request();
-                                  }),
-                                  OutlinedButton(style: commandButtonStyle, child: const Text("查看输出"), onPressed: () {
-                                    if (G.streamingOutput == "") {
-                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("无输出"))
-                                      );
-                                      return;
-                                    }
-                                    showDialog(context: context, builder: (context) {
-                                      return AlertDialog(content: SingleChildScrollView(child:
-                                        Text(G.streamingOutput)), actions: [
-                                      TextButton(onPressed:() {
-                                        FlutterClipboard.copy(G.streamingOutput).then(( value ) {
-                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("已复制")));
-                                        });
-                                        Navigator.of(context).pop();
-                                      }, child: const Text("复制")),
-                                      TextButton(onPressed:() {
-                                        Navigator.of(context).pop();
-                                      }, child: const Text("取消")),
-                                    ]);
-                                    });
-                                  }),
-                                ]),
-                                const SizedBox.square(dimension: 16),
-                                TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), readOnly: Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!),
-                                  onTap: () {
-                                    if (Util.shouldWatchAds(G.adsRequired["changeFFmpegCommand"]!)) {
-                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("观看八次视频广告永久解锁><"))
-                                      );
-                                    }
-                                  },
-                                  onChanged: (value) async {
-                                    await G.prefs.setString("defaultFFmpegCommand", value);
-                                  },
-                                ),
-                                const SizedBox.square(dimension: 16),
-                                SwitchListTile(title: const Text("启动推流服务器"), subtitle: const Text("mediamtx"), value: G.isStreamServerStarted, onChanged:(value) {
-                                  switch (value) {
-                                    case true: {
-                                      G.streamServerPty = Pty.start("/system/bin/sh");
-                                      G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml & pid=\$(echo \$!)\n"));
-                                      G.streamServerPty.exitCode.then((value) {
-                                        G.isStreamServerStarted = false;
-                                        setState(() {});
-                                      });
-                                    }
-                                    break;
-                                    case false: {
-                                      G.streamServerPty.write(const Utf8Encoder().convert("kill \$pid\nexit\n"));
-                                    }
-                                    break;
-                                  }
-                                  G.isStreamServerStarted = value;
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8)),
-                                SwitchListTile(title: const Text("启动推流"), value: G.isStreaming, onChanged:(value) {
-                                  switch (value) {
-                                    case true: {
-                                      FFmpegKit.execute(Util.getGlobal("defaultFFmpegCommand") as String).then((session) {
-                                        session.getOutput().then((value) async {
-                                          G.isStreaming = false;
-                                          G.streamingOutput = value??"";
-                                          setState(() {});
-                                        });
-                                      });
-                                    }
-                                    break;
-                                    case false: {
-                                      FFmpegKit.cancel();
-                                    }
-                                    break;
-                                  }
-                                  G.isStreaming = value;
-                                  setState(() {});
-                                },),
-                                SizedBox.fromSize(size: const Size.square(8))
-                              ],))),
-                            ExpansionPanel(
-                              isExpanded: _expandState[3],
-                              headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("文件访问"));
-                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                const Text("通过这里获取更多文件权限，以实现对特殊目录的访问。"),
-                                SizedBox.fromSize(size: const Size.square(16)),
-                                Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请存储权限"), onPressed: () {
-                                    Permission.storage.request();
-                                  }),
-                                  OutlinedButton(style: commandButtonStyle, child: const Text("申请所有文件访问权限"), onPressed: () {
-                                    Permission.manageExternalStorage.request();
-                                  }),
-                                ]),
-                                SizedBox.fromSize(size: const Size.square(16)),
-                              ],))),
-                            ExpansionPanel(
-                              isExpanded: _expandState[4],
-                              headerBuilder: ((context, isExpanded) {
-                                return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
-                              }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-                                OutlinedButton(child: const Text("看一个广告"), onPressed: () {
-                                   if (AdManager.placements[AdManager.rewardedVideoAdPlacementId]!) {
-                                    AdManager.showAd(AdManager.rewardedVideoAdPlacementId, () {
-                                      final bonus = Util.getRandomBonus();
-                                      Util.applyBonus(bonus);
-                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text("你获得了 ${bonus["name"]}*${bonus["amount"]}"))
-                                      );
-                                      setState(() {
-                                        
-                                      });
-                                    }, () {
-                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("已经看5个广告了, 今天也非常感谢><"))
-                                      );
-                                    });
-                                   }
-                                  }),
-                                  const SizedBox.square(dimension: 8),
-                                  Text(Util.getGlobal("adsBonus").map((element) {
-                                    final e = jsonDecode(element);
-                                    return e["amount"]==0?"":"${e["name"]}*${e["amount"]}\n";
-                                  }).join())
-                              ],))),
-                          ],),
-                          SizedBox.fromSize(size: const Size.square(8)),
-                          const InfoPage()
-                        ]
-                    )
-                  ))
-                  ,)
+                    Column(children: [
+                      const SettingPage(),
+                      SizedBox.fromSize(size: const Size.square(8)),
+                      const InfoPage()
+                    ])
+                  )))
                 ]
               )))
-            )][pageIndex],
-        transitionBuilder: (child, animation) {
-          return FadeTransition(opacity: animation, child: child);
-        },))]):const LoadingPage(),
-      bottomNavigationBar: Visibility(visible: isLoadingComplete,
-        child: BottomNavigationBar(currentIndex: pageIndex, 
-          onTap: (index) {
-            setState(() {
-              pageIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
-            BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
-          ],
-        )
-      ),
-      floatingActionButton: Visibility(visible: isLoadingComplete && (pageIndex == 0),
-        child: FloatingActionButton(
-          onPressed: () => Workflow.launchBrowser(),
-          tooltip: "进入图形界面",
-          child: const Icon(Icons.play_arrow),
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          )]);
+        }))]):const LoadingPage(),
+      bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
+        return Visibility(visible: isLoadingComplete,
+          child: BottomNavigationBar(currentIndex: G.pageIndex.value, 
+            onTap: (index) {
+              G.pageIndex.value = index;
+            },
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
+              BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
+            ],
+          )
+        );}),
+      floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
+        return Visibility(visible: isLoadingComplete && (value == 0),
+          child: FloatingActionButton(
+            onPressed: () => Workflow.launchBrowser(),
+            tooltip: "进入图形界面",
+            child: const Icon(Icons.play_arrow),
+          ),
+        );
+      }), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
