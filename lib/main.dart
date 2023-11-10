@@ -125,8 +125,10 @@ class _SettingPageState extends State<SettingPage> {
             //setState(() {});
           }),
           SizedBox.fromSize(size: const Size.square(8)),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
-            await Util.setCurrentProp("boot", value);
+          ValueListenableBuilder(valueListenable: G.bootTextChange, builder:(context, v, child) {
+            return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
+              await Util.setCurrentProp("boot", value);
+            });
           }),
           SizedBox.fromSize(size: const Size.square(8)),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
@@ -135,6 +137,22 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(8)),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
             await Util.setCurrentProp("vncUrl", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          OutlinedButton(style: D.commandButtonStyle, child: const Text("重置启动命令"), onPressed: () {
+            showDialog(context: context, builder: (context) {
+              return AlertDialog(title: const Text("注意"), content: const Text("是否重置启动命令？"), actions: [
+                TextButton(onPressed:() {
+                  Navigator.of(context).pop();
+                }, child: const Text("取消")),
+                TextButton(onPressed:() async {
+                  await Util.setCurrentProp("boot", D.boot);
+                  G.bootTextChange.value = !G.bootTextChange.value;
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
+                }, child: const Text("是")),
+              ]);
+            });
           }),
         ],))),
       ExpansionPanel(
@@ -176,7 +194,9 @@ class _SettingPageState extends State<SettingPage> {
               return;
             }
             G.prefs.setBool("isBannerAdsClosed", value);
-            setState(() {});
+            setState(() {
+              G.bannerAdsChange.value = !G.bannerAdsChange.value;
+            });
           },),
           SizedBox.fromSize(size: const Size.square(8)),
           SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
@@ -203,7 +223,9 @@ class _SettingPageState extends State<SettingPage> {
               return;
             }
             G.prefs.setBool("isTerminalCommandsEnabled", value);
-            setState(() {});
+            setState(() {
+              G.terminalPageChange.value = !G.terminalPageChange.value;
+            });
           },),
           SizedBox.fromSize(size: const Size.square(8)),
           SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
@@ -213,6 +235,16 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(8)),
           SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
             G.prefs.setBool("autoLaunchVnc", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("重新安装引导包"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
+            G.prefs.setBool("reinstallBootstrap", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("getifaddrs桥接"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
+            G.prefs.setBool("getifaddrsBridge", value);
             setState(() {});
           },),
         ],))),
@@ -365,7 +397,9 @@ class _SettingPageState extends State<SettingPage> {
 }
 
 class InfoPage extends StatefulWidget {
-  const InfoPage({super.key});
+  final bool openFirstInfo;
+
+  const InfoPage({super.key, this.openFirstInfo=false});
 
   @override
   State<InfoPage> createState() => _InfoPageState();
@@ -373,6 +407,13 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage> {
   final List<bool> _expandState = [false, false, false, false, false];
+  
+  @override
+  void initState() {
+    super.initState();
+    _expandState[0] = widget.openFirstInfo;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ExpansionPanelList(
@@ -390,7 +431,11 @@ class _InfoPageState extends State<InfoPage> {
         },
         body: const Padding(padding: EdgeInsets.all(8), child: Text("""
 第一次加载大概需要5到10分钟...
-加载完成后，软件会自动跳转到图形界面
+正常情况下，加载完成后软件会自动跳转到图形界面
+
+在图形界面时，点击即鼠标左键
+双指点击为鼠标右键
+双指划动为鼠标滚轮
 
 在图形界面返回，可以回到终端界面和控制界面
 你可以在控制界面安装更多软件或者阅读帮助信息
@@ -418,8 +463,8 @@ class _InfoPageState extends State<InfoPage> {
 可能会在使用过程中异常退出(返回错误码9)
 届时本软件会提供方案指引你修复
 并不难
-此软件因为没有权限
-所以不能帮你修复
+但是软件没有权限
+不能帮你修复
 
 如果你给了存储权限
 那么通过主目录下的文件夹
@@ -477,11 +522,11 @@ Vivo Pad，安卓13，看不见鼠标移动（可以去左栏设置开启显示�
 也不方便定位原因)
 如果你遇到了类似问题
 不管解没解决
-都可以去https://github.com/Cateners/tiny_computer/issues/1留个言
+都可以去https://github.com/Cateners/tiny_computer/issues/留个言
 
 如果软件里有程序正在正常运行
 请不要强行关闭本软件
-否则可能会损坏本容器
+否则可能会损坏容器
 特别是在安装某些比较大的软件的时候
 
 感谢使用!
@@ -902,7 +947,9 @@ SOFTWARE.
         }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
 除由Unity提供的广告功能外, 本软件不会收集你的隐私信息。
 
-申请的权限用于以下目的：
+当然，你在容器系统内部安装或使用的软件行为就不受我控制了，所以我不对其负责。
+
+本软件申请的权限用于以下目的：
 文件相关权限：用于系统访问手机目录；
 相机和麦克风：用于推流，默认不会开启。
 
@@ -921,17 +968,6 @@ SOFTWARE.
 本程序是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是任何以后版都可以。
 发布该程序是希望它能有用，但是并无保障;甚至连可销售和符合某个特定的目的都不保证。请参看 GNU 通用公共许可证，了解详情。
 你应该随程序获得一份 GNU 通用公共许可证的复本。如果没有，请看 <https://www.gnu.org/licenses/>。
-
-你可能注意到本软件使用了Unity广告服务，
-那么它是否与本项目有冲突？
-
-事实上，这个项目不依赖广告，
-你完全可以自行编译一份不包含广告的版本；
-
-不管怎么说，我希望这不是一个问题...
-
-...当然！
-我还是不想看到你们去编译一个不含广告的版本><
 """))),
       ExpansionPanel(
         isExpanded: _expandState[4],
@@ -997,11 +1033,11 @@ class LoadingPage extends StatelessWidget {
   const LoadingPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
+    return Padding(
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: FractionallySizedBox(
               widthFactor: 0.4,
@@ -1011,14 +1047,16 @@ class LoadingPage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-            child: Text("小小电脑", textScaleFactor: 2),
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+            child: ValueListenableBuilder(valueListenable: G.updateText, builder:(context, value, child) {
+              return Text(value, textScaleFactor: 2);
+            }),
           ),
-          FakeLoadingStatus(),
-          Expanded(child: Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
+          const FakeLoadingStatus(),
+          const Expanded(child: Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
             Scrollbar(child:
               SingleChildScrollView(
-                child: InfoPage()
+                child: InfoPage(openFirstInfo: true)
               )
             )
           ))
@@ -1060,43 +1098,45 @@ class TerminalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [Expanded(child: forceScaleGestureDetector(onScaleUpdate: (details) {
-      G.termFontScale.value = (details.scale * (Util.getGlobal("termFontScale") as double)).clamp(0.2, 5);
-    }, onScaleEnd: (details) async {
-      await G.prefs.setDouble("termFontScale", G.termFontScale.value);
-    }, child: ValueListenableBuilder(valueListenable: G.termFontScale, builder:(context, value, child) {
-      return TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale.value, keyboardType: TextInputType.multiline);
-    },) )), 
-      (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
-        animation: G.keyboard,
-        builder: (context, child) => ToggleButtons(
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          isSelected: [G.keyboard.ctrl, G.keyboard.alt, G.keyboard.shift],
-          onPressed: (index) {
-            switch (index) {
-              case 0:
-                G.keyboard.ctrl = !G.keyboard.ctrl;
-                break;
-              case 1:
-                G.keyboard.alt = !G.keyboard.alt;
-                break;
-              case 2:
-                G.keyboard.shift = !G.keyboard.shift;
-                break;
-            }
-          },
-          children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
+        G.termFontScale.value = (details.scale * (Util.getGlobal("termFontScale") as double)).clamp(0.2, 5);
+      }, onScaleEnd: (details) async {
+        await G.prefs.setDouble("termFontScale", G.termFontScale.value);
+      }, child: ValueListenableBuilder(valueListenable: G.termFontScale, builder:(context, value, child) {
+        return TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale.value, keyboardType: TextInputType.multiline);
+      },) )), 
+      ValueListenableBuilder(valueListenable: G.terminalPageChange, builder:(context, value, child) {
+      return (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
+          animation: G.keyboard,
+          builder: (context, child) => ToggleButtons(
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            isSelected: [G.keyboard.ctrl, G.keyboard.alt, G.keyboard.shift],
+            onPressed: (index) {
+              switch (index) {
+                case 0:
+                  G.keyboard.ctrl = !G.keyboard.ctrl;
+                  break;
+                case 1:
+                  G.keyboard.alt = !G.keyboard.alt;
+                  break;
+                case 2:
+                  G.keyboard.shift = !G.keyboard.shift;
+                  break;
+              }
+            },
+            children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
+          ),
         ),
-      ),
-      SizedBox.fromSize(size: const Size.square(8)), 
-      Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
-        return OutlinedButton(style: D.controlButtonStyle, onPressed: () {
-          G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
-        }, child: Text(D.termCommands[index]["name"]! as String));
-      }, separatorBuilder:(context, index) {
-        return SizedBox.fromSize(size: const Size.square(4));
-      }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0))
+        SizedBox.fromSize(size: const Size.square(8)), 
+        Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
+          return OutlinedButton(style: D.controlButtonStyle, onPressed: () {
+            G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
+          }, child: Text(D.termCommands[index]["name"]! as String));
+        }, separatorBuilder:(context, index) {
+          return SizedBox.fromSize(size: const Size.square(4));
+        }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0));
+      })
     ]);
   }
 }
@@ -1177,7 +1217,7 @@ class _FastCommandsState extends State<FastCommands> {
         },);
     }, onLongPress: () {
       showDialog(context: context, builder: (context) {
-        return AlertDialog(content: const Text("是否重置所有快捷指令？"), actions: [
+        return AlertDialog(title: const Text("重置指令"), content: const Text("是否重置所有快捷指令？"), actions: [
           TextButton(onPressed:() {
             Navigator.of(context).pop();
           }, child: const Text("取消")),
@@ -1230,17 +1270,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
-        (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
-          placementId: AdManager.bannerAdPlacementId,
-          onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
-          onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
-          onFailed: (placementId, error, message) {
-            debugPrint('Banner Ad $placementId failed: $error $message');
-            setState(() {
-              bannerAdsFailedToLoad = true;
-            });
-          },
-        ), Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
+        ValueListenableBuilder(valueListenable: G.bannerAdsChange, builder:(context, value, child) {
+          return (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
+            placementId: AdManager.bannerAdPlacementId,
+            onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
+            onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
+            onFailed: (placementId, error, message) {
+              debugPrint('Banner Ad $placementId failed: $error $message');
+              setState(() {
+                bannerAdsFailedToLoad = true;
+              });
+            },
+          );
+        }), Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
           return IndexedStack(index: G.pageIndex.value, children: [const TerminalPage(), Padding(
               padding: const EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
@@ -1263,7 +1305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Column(children: [
                       const SettingPage(),
                       SizedBox.fromSize(size: const Size.square(8)),
-                      const InfoPage()
+                      const InfoPage(openFirstInfo: false)
                     ])
                   )))
                 ]
