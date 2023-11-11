@@ -103,7 +103,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +306,7 @@ class _SettingPageState extends State<SettingPage> {
             switch (value) {
               case true: {
                 G.streamServerPty = Pty.start("/system/bin/sh");
-                G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml & pid=\$(echo \$!)\n"));
+                G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml\nexit\n"));
                 G.streamServerPty.exitCode.then((value) {
                   G.isStreamServerStarted = false;
                   setState(() {});
@@ -314,7 +314,7 @@ class _SettingPageState extends State<SettingPage> {
               }
               break;
               case false: {
-                G.streamServerPty.write(const Utf8Encoder().convert("kill \$pid\nexit\n"));
+                G.streamServerPty.write(const Utf8Encoder().convert("${String.fromCharCode(3)}exit\n"));
               }
               break;
             }
@@ -364,6 +364,63 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[4],
         headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("virgl加速"), subtitle: Text("实验性功能"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const Text("""virgl加速可部分利用设备GPU提升系统图形处理表现，但由于设备差异也可能导致容器系统及软件运行不稳定甚至异常退出。
+
+请先开启测试按钮启动virgl服务器，如果按钮没有自动关闭说明至少启动没问题；
+
+不过运行情况依然无法保证。
+"""),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl服务器参数"),
+            onChanged: (value) async {
+              await G.prefs.setString("defaultVirglCommand", value);
+            },
+          ),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("测试"), subtitle: const Text("启动virgl_test_server"), value: G.isVirglServerStarted, onChanged:(value) {
+            switch (value) {
+              case true: {
+                G.virglServerPty = Pty.start("/system/bin/sh");
+                G.virglServerPty.write(const Utf8Encoder().convert("export CONTAINER_DIR=${G.dataPath}/containers/0\n${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}\nexit\n"));
+                G.virglServerPty.exitCode.then((value) {
+                  G.isVirglServerStarted = false;
+                  setState(() {});
+                });
+              }
+              break;
+              case false: {
+                G.virglServerPty.write(const Utf8Encoder().convert("${String.fromCharCode(3)}exit\n"));
+              }
+              break;
+            }
+            G.isVirglServerStarted = value;
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "图形环境变量"),
+            onChanged: (value) async {
+              await G.prefs.setString("defaultVirglOpt", value);
+            },
+          ),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("启用virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
+            if (value && Util.shouldWatchAds(D.adsRequired["enableVirgl"]!)) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("观看十次视频广告永久解锁><"))
+              );
+              return;
+            }
+            G.prefs.setBool("virgl", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[5],
+        headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           OutlinedButton(child: const Text("看一个广告"), onPressed: () {
@@ -375,9 +432,7 @@ class _SettingPageState extends State<SettingPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("你获得了 ${bonus["name"]}*${bonus["amount"]}"))
                 );
-                setState(() {
-                  
-                });
+                setState(() {});
               }, () {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -465,6 +520,11 @@ class _InfoPageState extends State<InfoPage> {
 并不难
 但是软件没有权限
 不能帮你修复
+
+如果你的系统版本大于等于android 13
+那么很可能一些网页应用如jupyter notebook
+bilibili客户端等等不可用
+可以去全局设置开启getifaddrs桥接
 
 如果你给了存储权限
 那么通过主目录下的文件夹
@@ -989,6 +1049,7 @@ SOFTWARE.
 关闭横幅广告: 观看5个广告
 终端最大行数修改: 观看6个广告
 推流参数修改: 观看8个广告
+启用virgl加速: 观看10个广告
 
 我设置了每天最多可以看5个广告。
 只要看满1个广告, 就可以在本次使用期间临时解锁全部功能。

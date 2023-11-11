@@ -56,12 +56,12 @@ class Util {
     Directory.fromRawPath(const Utf8Encoder().convert(dir)).createSync(recursive: true);
   }
 
-  static Future<void> execute(String str) async {
+  static Future<int> execute(String str) async {
     Pty pty = Pty.start(
       "/system/bin/sh"
     );
-    pty.write(const Utf8Encoder().convert("$str\nexit\n"));
-    await pty.exitCode;
+    pty.write(const Utf8Encoder().convert("$str\nexit \$!\n"));
+    return await pty.exitCode;
   }
 
   static void termWrite(String str) {
@@ -85,7 +85,11 @@ class Util {
   //int vip = 0 用户等级，vip免广告，你要改吗？(ToT)
   //bool isStickyKey = true 终端ctrl, shift, alt键是否粘滞
   //String defaultFFmpegCommand 默认推流命令
+  //String defaultVirglCommand 默认virgl参数
+  //String defaultVirglOpt 默认virgl环境变量
   //bool reinstallBootstrap = false 下次启动是否重装引导包
+  //bool getifaddrsBridge = false 下次启动是否桥接getifaddrsBridge
+  //bool virgl = false 下次启动是否启用virgl
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"},
@@ -111,7 +115,10 @@ class Util {
       case "isStickyKey" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "reinstallBootstrap" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "getifaddrsBridge" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
+      case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
+      case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe MESA_GL_VERSION_OVERRIDE=4.0");
       case "containersInfo" : return G.prefs.getStringList(key)!;
       case "adsBonus" : return b ? G.prefs.getStringList(key)! : (value){G.prefs.setStringList(key, value); return value;}([].cast<String>());
     }
@@ -403,6 +410,7 @@ class D {
     "enableTerminalCommands" : 3,
     "changeTermMaxLines" : 6,
     "changeFFmpegCommand" : 8,
+    "enableVirgl" : 10,
     
     "unlockOnce" : 1, //临时解锁需要看的广告数
     "unlockToday" : 2, //当日解锁需要看的广告数
@@ -443,9 +451,12 @@ class G {
   static int adsWatchedThisTime = 0; //本次启动应用看的广告数
   static bool isStreamServerStarted = false;
   static bool isStreaming = false;
-  static int? streamingId;
+  //static int? streamingPid;
   static String streamingOutput = "";
   static late Pty streamServerPty;
+  static bool isVirglServerStarted = false;
+  static late Pty virglServerPty;
+  //static int? virglPid;
   static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
   static ValueNotifier<bool> bannerAdsChange = ValueNotifier(true); //更改值，用于刷新banner广告
@@ -686,6 +697,9 @@ done
     if (Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
       await G.prefs.setBool("isTerminalCommandsEnabled", false);
     }
+    if (Util.shouldWatchAds(D.adsRequired["enableVirgl"]!)) {
+      await G.prefs.setBool("virgl", false);
+    }
 
   }
 
@@ -728,6 +742,13 @@ exit
     if (Util.getGlobal("getifaddrsBridge")) {
       Util.execute("${G.dataPath}/bin/getifaddrs_bridge_server ${G.dataPath}/containers/${G.currentContainer}/tmp/.getifaddrs-bridge");
       extraOpt += "LD_PRELOAD=/home/tiny/.local/share/tiny/extra/getifaddrs_bridge_client_lib.so ";
+    }
+    if (Util.getGlobal("virgl")) {
+      Util.execute("""
+export DATA_DIR=${G.dataPath}
+export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
+${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""");
+      extraOpt += "${Util.getGlobal("defaultVirglOpt")} ";
     }
     Util.termWrite(
 """
