@@ -2,9 +2,32 @@
 
 <img decoding="async" src="readme/cover0.png" width="50%">
 
-即开即用的类PC环境，内置火狐浏览器和fcitx输入法等常用软件
+给所有安卓arm64设备的“PC应用引擎”平替
 
 Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyin input method preinstalled. No termux required.
+
+## 特点
+
+- 一键安装，即开即用
+- 来自kali-undercover的win10主题(仅xfce版本)，友好的界面
+
+<img decoding="async" src="readme/img1.png" width="50%">
+
+- 提供常用软件的一键安装指令
+
+<img decoding="async" src="readme/img2.png" width="50%">
+
+- 可方便地改变屏幕缩放，不用担心屏幕过大或过小
+
+<img decoding="async" src="readme/img3.gif" width="50%">
+
+- 便捷访问设备文件，或通过设备SAF访问软件文件
+
+<img decoding="async" src="readme/img4.png" width="50%">
+
+- 提供终端和众多可调节参数供高级用户使用
+
+<img decoding="async" src="readme/img5.png" width="50%">
 
 ## 原理
 
@@ -12,35 +35,9 @@ Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyi
 
 内置[noVNC](https://github.com/novnc/noVNC)显示图形界面
 
-初次启动由于解压的缘故要点时间
-以后点开就能用
-
-只支持arm64安卓
-
 ## 项目结构
 
-assets的文件来源如下:
-
-- [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
-- [busybox](https://github.com/meefik/busybox)
-- [mediamtx相关](https://github.com/bluenviron/mediamtx)
-- [tar](https://github.com/Rprop/tar-android-static)
-- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
-- [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)
-
-其中tar、busybox和pulseaudio相关文件都是直接用了二进制文件。
-
-更多信息可以在[这里](extra/readme)找到。
-
-对debian容器进行了如下修改：
-- 使用tmoe安装了xfce环境和全套VNC；
-- 使用kali-undercover提供的Win10主题美化xfce；
-- (使用tmoe)安装了fcitx输入法和云拼音组件。按<Ctrl+空格>切换输入法。
-  - 强烈建议**不要**使用安卓中文输入法直接输入中文，而是使用英文键盘通过容器的输入法输入中文，避免丢字错字。
-- 对noVNC进行[修改](https://github.com/Cateners/noVNC)，添加了scale factor滑块控制缩放(scale_factor分支)，添加了上下左右shift等按键(arrow_key分支)，添加了强制显示原系统光标的功能(force_cursor分支)，添加了中文翻译(translation_zh_cn分支)；
-- 在主目录下可以方便地访问手机存储(如果提供了存储权限的话)；
-- 启动时会尝试挂载手机的一些字体目录(AppFiles/Fonts、Fonts和/system/fonts), 如果这些目录下有字体文件的话会一并加载到系统中，无需额外安装；
-- 最后采用tar.xz压缩，用split命令分成了xa*等多个文件(低内存设备一次性拷贝大文件会导致软件闪退)。
+assets的文件来源信息可以在[这里](extra/readme.md)找到。
 
 完整的容器制作过程可以在[这里](extra/build-tiny-rootfs.md)看到。
 
@@ -48,7 +45,7 @@ assets的文件来源如下:
 
 lib目录：
 
-- main.dart文件，页面布局，老实说已经有点乱了
+- main.dart文件，页面布局，有点乱
 - workflow.dart文件，逻辑部分，目前也还可以理解
   - Util 工具类
   - TermPty 一个终端
