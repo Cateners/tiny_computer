@@ -30,6 +30,8 @@ assets的文件来源如下:
 
 其中tar、busybox和pulseaudio相关文件都是直接用了二进制文件。
 
+更多信息可以在[这里](extra/readme)找到。
+
 对debian容器进行了如下修改：
 - 使用tmoe安装了xfce环境和全套VNC；
 - 使用kali-undercover提供的Win10主题美化xfce；
@@ -40,7 +42,7 @@ assets的文件来源如下:
 - 启动时会尝试挂载手机的一些字体目录(AppFiles/Fonts、Fonts和/system/fonts), 如果这些目录下有字体文件的话会一并加载到系统中，无需额外安装；
 - 最后采用tar.xz压缩，用split命令分成了xa*等多个文件(低内存设备一次性拷贝大文件会导致软件闪退)。
 
-完整的容器制作过程可以在[这里](https://github.com/Cateners/build-tiny-rootfs)看到。
+完整的容器制作过程可以在[这里](extra/build-tiny-rootfs.md)看到。
 
 数据包不再在assets中更新，而是随releases提供，主要是为了避免git越来越大
 
@@ -57,7 +59,7 @@ lib目录：
 
 你需要配置好flutter和安卓sdk，然后克隆此项目。
 
-在编译之前，需要在release中下载系统rootfs(或者[自行制作](https://github.com/Cateners/build-tiny-rootfs))，之后使用split命令分割，拷贝到assets。一般我将其分为98MB。
+在编译之前，需要在release中下载系统rootfs(或者[自行制作](extra/build-tiny-rootfs.md))，之后使用split命令分割，拷贝到assets。一般我将其分为98MB。
 
 `split -b 98M debian.tar.xz`
 

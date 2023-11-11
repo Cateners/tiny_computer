@@ -354,7 +354,7 @@ class D {
 {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
 {"name":"安装亿图图示", "command":"wget https://www.edrawsoft.cn/2download/aarch64/edrawmax_11.5.6-3_arm64.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
 {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
-{"name":"安装QQ", "command":"wget https://dldir1.qq.com/qqfile/qq/QQNT/b69de82d/linuxqq_3.2.1-17153_arm64.deb -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"},
+{"name":"安装QQ", "command":"wget https://dldir1.qq.com/qqfile/qq/QQNT/fd2e886e/linuxqq_3.2.2-18394_arm64.deb -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"},
 {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
 {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
 {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
@@ -601,7 +601,7 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
     //这个是容器rootfs，被split命令分成了xa*
     //首次启动，就用这个，别让用户另选了
     //TODO: 这个字符串列表太丑陋了
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj"]) {
     //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao", "xap", "xaq"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
