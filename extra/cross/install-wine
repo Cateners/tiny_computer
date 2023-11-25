@@ -1,0 +1,97 @@
+#!/bin/bash
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y nano cabextract libfreetype6 libfreetype6:armhf libfontconfig libfontconfig:armhf libxext6 libxext6:armhf libxinerama-dev libxinerama-dev:armhf libxxf86vm1 libxxf86vm1:armhf libxrender1 libxrender1:armhf libxcomposite1 libxcomposite1:armhf libxrandr2 libxrandr2:armhf libxi6 libxi6:armhf libxcursor1 libxcursor1:armhf libvulkan-dev libvulkan-dev:armhf zenity
+
+mkdir $HOME/.local/share/tiny/tmp
+cd $HOME/.local/share/tiny/tmp
+
+wget https://github.com/Kron4ek/Wine-Builds/releases/download/8.20/wine-8.20-x86.tar.xz
+if [ $? -ne 0 ]; then
+  wget https://mirror.ghproxy.com/https://github.com/Kron4ek/Wine-Builds/releases/download/8.20/wine-8.20-x86.tar.xz
+  if [ $? -ne 0 ]; then
+    rm -rf $HOME/.local/share/tiny/tmp
+    echo '下载失败...退出安装...'
+    exit
+  fi
+fi
+
+wget https://github.com/Kron4ek/Wine-Builds/releases/download/8.20/wine-8.20-amd64.tar.xz
+if [ $? -ne 0 ]; then
+  wget https://mirror.ghproxy.com/https://github.com/Kron4ek/Wine-Builds/releases/download/8.20/wine-8.20-amd64.tar.xz
+  if [ $? -ne 0 ]; then
+    rm -rf $HOME/.local/share/tiny/tmp
+    echo '下载失败...退出安装...'
+    exit
+  fi
+fi
+
+wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+if [ $? -ne 0 ]; then
+  wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+  if [ $? -ne 0 ]; then
+    rm -rf $HOME/.local/share/tiny/tmp
+    echo '下载失败...退出安装...'
+    exit
+  fi
+fi
+
+tar xvf wine-8.20-x86.tar.xz
+tar xvf wine-8.20-amd64.tar.xz
+mv wine-8.20-x86 ../cross/wine32
+mv wine-8.20-amd64 ../cross/wine64
+mv winetricks ../cross/winetricks-executable
+chmod +x $HOME/.local/share/tiny/cross/winetricks-executable
+cd ..
+rm -rf tmp
+
+echo '#!/bin/bash
+export WINEPREFIX=~/.wine32
+box86 '"$HOME/.local/share/tiny/cross/wine32 "'"$@"' > $HOME/.local/share/tiny/cross/wine32-executable
+chmod +x $HOME/.local/share/tiny/cross/wine32-executable
+
+echo '#!/bin/bash
+export WINEPREFIX=~/.wine64
+box64 '"$HOME/.local/share/tiny/cross/wine64 "'"$@"' > $HOME/.local/share/tiny/cross/wine64-executable
+chmod +x $HOME/.local/share/tiny/cross/wine64-executable
+
+echo '#!/bin/bash
+export BOX86_NOBANNER=1 WINE=wine32 WINEPREFIX=~/.wine32 WINESERVER=~/.local/share/tiny/cross/wine32/bin/wineserver
+wine32 '"$HOME/.local/share/tiny/cross/winetricks-executable "'"$@"' > $HOME/.local/share/tiny/cross/winetricks32-executable
+chmod +x $HOME/.local/share/tiny/cross/winetricks32-executable
+
+echo '#!/bin/bash
+export BOX64_NOBANNER=1 WINE=wine64 WINEPREFIX=~/.wine64 WINESERVER=~/.local/share/tiny/cross/wine64/bin/wineserver
+wine64 '"$HOME/.local/share/tiny/cross/winetricks-executable "'"$@"' > $HOME/.local/share/tiny/cross/winetricks64-executable
+chmod +x $HOME/.local/share/tiny/cross/winetricks64-executable
+
+echo '[Desktop Entry]
+Name=Wine32 启动器
+Exec=wine32 start /unix %F
+Icon=wine
+Type=Application' > $HOME/.local/share/tiny/cross/wine32.desktop
+chmod +x $HOME/.local/share/tiny/cross/wine32.desktop
+
+echo '[Desktop Entry]
+Name=Wine64 启动器
+Exec=wine64 start /unix %F
+Icon=wine
+Type=Application' > $HOME/.local/share/tiny/cross/wine64.desktop
+chmod +x $HOME/.local/share/tiny/cross/wine64.desktop
+
+echo '[Desktop Entry]
+Name=Wine32 winetricks 实用工具
+Exec=winetricks32
+Icon=wine
+Type=Application' > $HOME/.local/share/tiny/cross/winetricks32.desktop
+chmod +x $HOME/.local/share/tiny/cross/winetricks32.desktop
+
+echo '[Desktop Entry]
+Name=Wine64 winetricks 实用工具
+Exec=winetricks64
+Icon=wine
+Type=Application' > $HOME/.local/share/tiny/cross/winetricks64.desktop
+chmod +x $HOME/.local/share/tiny/cross/winetricks64.desktop
+
+echo '安装完成'

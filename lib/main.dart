@@ -238,13 +238,22 @@ class _SettingPageState extends State<SettingPage> {
             setState(() {});
           },),
           SizedBox.fromSize(size: const Size.square(8)),
-          SwitchListTile(title: const Text("重新安装引导包"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("以下选项修改后将在下次启动软件时生效。"),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("重新安装引导包"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
             G.prefs.setBool("reinstallBootstrap", value);
             setState(() {});
           },),
           SizedBox.fromSize(size: const Size.square(8)),
-          SwitchListTile(title: const Text("getifaddrs桥接"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
+          SwitchListTile(title: const Text("getifaddrs桥接"), subtitle: const Text("修复安卓13设备getifaddrs无权限"), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
             G.prefs.setBool("getifaddrsBridge", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("伪装系统为UOS"), subtitle: const Text("修复UOS微信无法启动"), value: Util.getGlobal("uos") as bool, onChanged:(value) {
+            G.prefs.setBool("uos", value);
             setState(() {});
           },),
         ],))),
