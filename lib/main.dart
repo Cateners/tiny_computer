@@ -18,6 +18,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 //import 'dart:convert';
 
@@ -103,7 +104,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -120,25 +121,6 @@ class _SettingPageState extends State<SettingPage> {
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("高级设置"), subtitle: Text("修改后重启生效"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
-            await Util.setCurrentProp("name", value);
-            //setState(() {});
-          }),
-          SizedBox.fromSize(size: const Size.square(8)),
-          ValueListenableBuilder(valueListenable: G.bootTextChange, builder:(context, v, child) {
-            return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
-              await Util.setCurrentProp("boot", value);
-            });
-          }),
-          SizedBox.fromSize(size: const Size.square(8)),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
-            await Util.setCurrentProp("vnc", value);
-          }),
-          SizedBox.fromSize(size: const Size.square(8)),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
-            await Util.setCurrentProp("vncUrl", value);
-          }),
-          SizedBox.fromSize(size: const Size.square(8)),
           OutlinedButton(style: D.commandButtonStyle, child: const Text("重置启动命令"), onPressed: () {
             showDialog(context: context, builder: (context) {
               return AlertDialog(title: const Text("注意"), content: const Text("是否重置启动命令？"), actions: [
@@ -154,6 +136,30 @@ class _SettingPageState extends State<SettingPage> {
               ]);
             });
           }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
+            await Util.setCurrentProp("name", value);
+            //setState(() {});
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          ValueListenableBuilder(valueListenable: G.bootTextChange, builder:(context, v, child) {
+            return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
+              await Util.setCurrentProp("boot", value);
+            });
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
+            await Util.setCurrentProp("vnc", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("你可以在当前所有同一网络下的设备（如：连接同一路由器的手机，电脑等）里使用小小电脑。\n\n将下面的链接复制到其他设备，在其他设备上把链接localhost字样改为当前设备的IP地址（可以通过快捷指令查看），然后使用浏览器打开链接即可。"),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
+            await Util.setCurrentProp("vncUrl", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[1],
@@ -429,6 +435,104 @@ class _SettingPageState extends State<SettingPage> {
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[5],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("跨架构/跨系统支持"), subtitle: Text("实验性功能"),);
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const Text("""你的梦想是在你的小小电脑上，运行着那些你熟悉的x86/x64或windows的程序。你不惧怕任何困难，你勇敢地使用box86/box64或wine，让你的梦想成为现实。但是，你也要知道，这是一条漫长而艰辛的道路，你需要付出很多的代价。你的程序要经过两层的模拟，就像穿越两个世界，它们的速度会变得缓慢而沉重。你需要有足够的耐心，即使你的眼前一片空白，你的终端还在默默地工作。你要时刻关注它的输出，看看它是否还在前进，还是遇到了难以逾越的障碍。或者，你也可以选择另一条路，去寻找那些为linux arm64而生的程序，它们或许能让你的梦想更加顺畅。
+
+你的选择就在下面，你只需勾选你想要的选项，然后重新启动你的小小电脑，你的梦想就会有所不同。
+
+......人话：
+
+使用box86/box64运行x86/x64架构的程序，或使用wine运行windows程序。
+
+运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待。程序崩溃也是常有的。
+
+你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
+
+或者寻找该windows软件官方是否提供linux arm64版本。
+
+以下选项启用后下次启动时生效。
+"""),
+          SizedBox.fromSize(size: const Size.square(16)),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装box86和box64"), onPressed: () {
+              Util.termWrite("bash ~/.local/share/tiny/extra/install-box");
+              G.pageIndex.value = 0;
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装wine与winetricks"), onPressed: () async {
+              if (!await File("${G.dataPath}/tiny/cross/box64").exists()) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("请先安装box86/box64"))
+                );
+                return;
+              }
+              Util.termWrite("bash ~/.local/share/tiny/extra/install-wine");
+              G.pageIndex.value = 0;
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("移除所有安装"), onPressed: () async {
+              if (G.wasBoxEnabled) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("请关闭跨架构支持后重试"))
+                );
+                return;
+              }
+              Util.termWrite("rm -rf ~/.local/share/tiny/cross");
+              G.pageIndex.value = 0;
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("清空wine数据"), onPressed: () async {
+              Util.termWrite("rm -rf ~/.wine");
+              G.pageIndex.value = 0;
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("配置wine"), onPressed: () async {
+              Util.termWrite("wine64 winecfg");
+              G.pageIndex.value = 0;
+              Workflow.launchBrowser();
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("启动winetricks"), onPressed: () async {
+              Util.termWrite("winetricks64");
+              G.pageIndex.value = 0;
+              Workflow.launchBrowser();
+            }),
+          ]),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("启用box86/box64"), subtitle: const Text("运行跨架构软件"), value: Util.getGlobal("isBoxEnabled") as bool, onChanged:(value) async {
+            //检测box64是否存在，存在才开启
+            if (value && !await File("${G.dataPath}/tiny/cross/box64").exists()) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("请先安装box86/box64"))
+              );
+              return;
+            }
+            G.prefs.setBool("isBoxEnabled", value);
+            if (!value && Util.getGlobal("isWineEnabled")) {
+              G.prefs.setBool("isWineEnabled", false);
+            }
+            setState(() {});
+          },),
+          SwitchListTile(title: const Text("启用wine"), subtitle: const Text("运行windows exe软件"), value: Util.getGlobal("isWineEnabled") as bool, onChanged:(value) async {
+            //检测wine是否存在且box64是否开启
+            if (value && !(Util.getGlobal("isBoxEnabled") && await File("${G.dataPath}/tiny/cross/wine64-executable").exists())) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("请先安装wine并启用box86/box64"))
+              );
+              return;
+            }
+            G.prefs.setBool("isWineEnabled", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[6],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [

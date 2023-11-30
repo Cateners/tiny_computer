@@ -8,12 +8,13 @@ sudo apt reinstall -y libc6-dev
 
 mkdir $HOME/.local/share/tiny/cross
 
+rm -rf $HOME/.local/share/tiny/tmp
 mkdir $HOME/.local/share/tiny/tmp
 cd $HOME/.local/share/tiny/tmp
 
-git clone https://github.com/ptitSeb/box86
+git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box86
 if [ $? -ne 0 ]; then
-  git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box86
+  git clone https://github.com/ptitSeb/box86
   if [ $? -ne 0 ]; then
     rm -rf $HOME/.local/share/tiny/tmp
     echo '仓库克隆失败...退出安装...'
@@ -21,9 +22,9 @@ if [ $? -ne 0 ]; then
   fi
 fi
 
-git clone https://github.com/ptitSeb/box64
+git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box64
 if [ $? -ne 0 ]; then
-  git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box64
+  git clone https://github.com/ptitSeb/box64
   if [ $? -ne 0 ]; then
     rm -rf $HOME/.local/share/tiny/tmp
     echo '仓库克隆失败...退出安装...'
@@ -35,17 +36,19 @@ cd box86
 mkdir build
 cd build
 cmake .. -DARM64=1 -DBAD_SIGNAL=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
-make
+make -j
 cd ../..
 mv box86/build/box86 ../cross
+mv box86/x86lib ../cross
 
 cd box64
 mkdir build
 cd build
 cmake .. -DARM64=1 -DBAD_SIGNAL=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
-make
+make -j
 cd ../..
 mv box64/build/box64 ../cross
+mv box64/x64lib ../cross
 
 cd ..
 rm -rf tmp
