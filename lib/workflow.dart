@@ -43,6 +43,8 @@ import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 
 import 'package:clipboard/clipboard.dart';
 
+import 'package:wakelock_plus/wakelock_plus.dart';
+
 class Util {
 
   static Future<void> copyAsset(String src, String dst) async {
@@ -60,7 +62,7 @@ class Util {
     Pty pty = Pty.start(
       "/system/bin/sh"
     );
-    pty.write(const Utf8Encoder().convert("$str\nexit \$!\n"));
+    pty.write(const Utf8Encoder().convert("$str\nexit \$?\n"));
     return await pty.exitCode;
   }
 
@@ -93,6 +95,7 @@ class Util {
   //bool isBoxEnabled = false 下次启动是否开启box86/box64
   //bool isWineEnabled = false 下次启动是否开启wine
   //bool virgl = false 下次启动是否启用virgl
+  //bool wakelock = false 屏幕常亮
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"},
@@ -122,6 +125,7 @@ class Util {
       case "isBoxEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isWineEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe MESA_GL_VERSION_OVERRIDE=4.0");
@@ -197,6 +201,7 @@ class Util {
     opr();
     return null;
   }
+
 }
 
 //来自xterms关于操作ctrl, shift, alt键的示例
@@ -289,7 +294,7 @@ class TermPty {
             child: Scrollbar(child:
               SingleChildScrollView(
                 child: Column(children: [
-                  const Text(":(\n发生了什么？", textScaleFactor: 2, style: ts, textAlign: TextAlign.center,),
+                  const Text(":(\n发生了什么？", textScaler: TextScaler.linear(2), style: ts, textAlign: TextAlign.center,),
                   const Text("终端异常退出, 返回错误码9\n此错误通常是高版本安卓系统(12+)限制进程造成的, \n可以使用以下工具修复:", style: ts, textAlign: TextAlign.center),
                   const SelectableText(helperLink, style: ts, textAlign: TextAlign.center),
                   const Text("(复制链接到浏览器查看)", style: ts, textAlign: TextAlign.center),
@@ -349,6 +354,7 @@ class D {
 {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
 {"name":"清屏", "command":"clear"},
 {"name":"查看IP", "command":"hostname -I | awk '{print \$NF}' # 如果显示无权限(Permission denied)，请在全局设置里开启getifaddrs桥接"},
+{"name":"中断任务", "command":"\x03"},
 {"name":"安装图形处理软件Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
 {"name":"卸载Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
 {"name":"安装视频剪辑软件Kdenlive", "command":"sudo apt update && sudo apt install -y kdenlive"},
@@ -373,6 +379,19 @@ class D {
 {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
 {"name":"关机", "command":"stopvnc\nexit\nexit"},
 {"name":"???", "command":"timeout 8 cmatrix"}];
+
+  //默认wine快捷指令
+  static const wineCommands = [{"name":"wine配置", "command":"wine64 winecfg"},
+{"name":"我的电脑", "command":"wine64 explorer"},
+{"name":"记事本", "command":"wine64 notepad"},
+{"name":"扫雷", "command":"wine64 winemine"},
+{"name":"注册表", "command":"wine64 regedit"},
+{"name":"控制面板", "command":"wine64 control"},
+{"name":"文件管理器", "command":"wine64 winefile"},
+{"name":"任务管理器", "command":"wine64 taskmgr"},
+{"name":"ie浏览器", "command":"wine64 iexplore"},
+{"name":"强制关闭wine", "command":"wineserver -k"}];
+
   //默认小键盘
   static const termCommands = [
   {"name": "Esc", "key": TerminalKey.escape},
@@ -475,6 +494,7 @@ class G {
   static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
 
   static bool wasBoxEnabled = false; //本次启动时是否启用了box86/64
+  static bool wasWineEnabled = false; //本次启动时是否启用了wine
 
 
   static late SharedPreferences prefs;
@@ -714,6 +734,8 @@ done
       await G.prefs.setBool("virgl", false);
     }
 
+    //设置屏幕常亮
+    WakelockPlus.toggle(enable: Util.getGlobal("wakelock"));
   }
 
   static Future<void> initTerminalForCurrent() async {
@@ -750,7 +772,11 @@ exit
   }
 
   static Future<void> launchCurrentContainer() async {
-    String extraMount = "";
+    String box86BinPath = "";
+    String box64BinPath = "";
+    String box86LibraryPath = "";
+    String box64LibraryPath = "";
+    String extraMount = ""; //mount options and other proot options
     String extraOpt = "";
     if (Util.getGlobal("getifaddrsBridge")) {
       Util.execute("${G.dataPath}/bin/getifaddrs_bridge_server ${G.dataPath}/containers/${G.currentContainer}/tmp/.getifaddrs-bridge");
@@ -769,13 +795,25 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     }
     if (Util.getGlobal("isBoxEnabled")) {
       G.wasBoxEnabled = true;
+      extraMount += "--x86=/home/tiny/.local/bin/box86 --x64=/home/tiny/.local/bin/box64 ";
       extraMount += "--mount=\$DATA_DIR/tiny/cross/box86:/home/tiny/.local/bin/box86 --mount=\$DATA_DIR/tiny/cross/box64:/home/tiny/.local/bin/box64 ";
+      extraOpt += "BOX86_NOBANNER=1 BOX64_NOBANNER=1 ";
     }
     if (Util.getGlobal("isWineEnabled")) {
-      extraOpt += "BOX86_PATH=/home/tiny/.local/share/tiny/cross/wine/bin/ BOX86_LD_LIBRARY_PATH=/home/tiny/.local/share/tiny/cross/wine/lib/wine/i386-unix/:/lib/i386-linux-gnu/:/lib/aarch64-linux-gnu/:/lib/arm-linux-gnueabihf/:/usr/lib/aarch64-linux-gnu/:/usr/lib/arm-linux-gnueabihf/:/usr/lib/i386-linux-gnu/:/home/tiny/.local/share/tiny/cross/x86lib/ ";
-      extraOpt += "BOX64_PATH=/home/tiny/.local/share/tiny/cross/wine/bin/ BOX64_LD_LIBRARY_PATH=/home/tiny/.local/share/tiny/cross/wine/lib/wine/i386-unix/:/home/tiny/.local/share/tiny/cross/wine/lib/wine/x86_64-unix/:/lib/i386-linux-gnu/:/lib/x86_64-linux-gnu:/lib/aarch64-linux-gnu/:/lib/arm-linux-gnueabihf/:/usr/lib/aarch64-linux-gnu/:/usr/lib/arm-linux-gnueabihf/:/usr/lib/i386-linux-gnu/:/usr/lib/x86_64-linux-gnu/:/home/tiny/.local/share/tiny/cross/x64lib/ ";
-      extraMount += "--mount=\$DATA_DIR/tiny/cross/wine-executable:/home/tiny/.local/bin/wine --mount=\$DATA_DIR/tiny/cross/wine64-executable:/home/tiny/.local/bin/wine64 --mount=\$DATA_DIR/tiny/cross/wine64.desktop:/usr/share/applications/wine64.desktop ";
-      extraMount += "--mount=\$DATA_DIR/tiny/cross/winetricks64-executable:/home/tiny/.local/bin/winetricks64 --mount=\$DATA_DIR/tiny/cross/winetricks64.desktop:/usr/share/applications/winetricks64.desktop ";
+      G.wasWineEnabled = true;
+      box86BinPath += "/home/tiny/.local/share/tiny/cross/wine/bin:";
+      box64BinPath += "/home/tiny/.local/share/tiny/cross/wine/bin:";
+      box86LibraryPath += "/home/tiny/.local/share/tiny/cross/wine/lib/wine/i386-unix:";
+      box64LibraryPath += "/home/tiny/.local/share/tiny/cross/wine/lib/wine/x86_64-unix:";
+      extraMount += "--wine=/home/tiny/.local/bin/wine64 ";
+      extraMount += "--mount=\$DATA_DIR/tiny/cross/wine.desktop:/usr/share/applications/wine.desktop ";
+      //extraMount += "--mount=\$DATA_DIR/tiny/cross/winetricks:/home/tiny/.local/bin/winetricks --mount=\$DATA_DIR/tiny/cross/winetricks.desktop:/usr/share/applications/winetricks.desktop ";
+    }
+    if (G.wasBoxEnabled) {
+      extraOpt += "BOX86_PATH=$box86BinPath/home/tiny/.local/share/tiny/cross/bin ";
+      extraOpt += "BOX64_PATH=$box64BinPath/home/tiny/.local/share/tiny/cross/bin ";
+      extraOpt += "BOX86_LD_LIBRARY_PATH=$box86LibraryPath/home/tiny/.local/share/tiny/cross/x86lib ";
+      extraOpt += "BOX64_LD_LIBRARY_PATH=$box64LibraryPath/home/tiny/.local/share/tiny/cross/x64lib ";
     }
     Util.termWrite(
 """

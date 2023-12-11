@@ -2,15 +2,18 @@
 
 ### assets.zip中的文件：
 
-- [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
 - [busybox](https://github.com/meefik/busybox)
 - [mediamtx相关](https://github.com/bluenviron/mediamtx)
 - [tar](https://github.com/Rprop/tar-android-static)
 - [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
-- [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)
-- [容器文件xa*](build-tiny-rootfs.md)
+- [virgl](https://github.com/termux/termux-packages/tree/master/x11-packages/virglrenderer-android)
 
-其中tar、busybox和pulseaudio相关文件都是直接用了二进制文件。
+以上文件没有经过更改。
+一般是使用了仓库直接提供的二进制文件，或者是使用了仓库提供的patch编译而来。
+
+- [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
+- [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)，制作了[容器文件xa*](build-tiny-rootfs.md)
+- getifaddrs_bridge_server，见下面的介绍和getifaddrs_bridge子文件夹
 
 ### patch.tar.gz中的文件：
 
@@ -22,6 +25,10 @@ linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_ser
 
 源码和编译信息在getifaddrs_bridge文件夹查看。
 
+#### extra/install-box, extra/install-wine:
+
+这些是用于跨架构/跨系统支持的box86/box64和wine安装脚本。
+
 #### caj, edraw
 
 这些分别是cajviewer，亿图图示的补丁
@@ -29,4 +36,8 @@ linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_ser
 - 亿图图示补丁的库文件是在小小电脑上下载了Qt对应版本源码后编译得到的；
 - 编译进行了两次，第一次直接编译，可以得到Gui和Widgets两个库。第二次编译带上XcbQpa，虽然会编译失败，但在这之前就可以得到XcbQpa的库。
 
+#### wechat
 
+微信的补丁。license, uos-lsb和uos-release来自星火的微信包或arch的wechat-uos打包（嗯，我忘记到底是哪的了。不过都差不多）。
+
+libssl1.1来自debian官方源。deepin-elf-verifier是我打的空包。

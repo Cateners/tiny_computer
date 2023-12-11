@@ -2,21 +2,46 @@
 
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y nano cabextract libfreetype6 libfreetype6:armhf libfontconfig libfontconfig:armhf libxext6 libxext6:armhf libxinerama-dev libxinerama-dev:armhf libxxf86vm1 libxxf86vm1:armhf libxrender1 libxrender1:armhf libxcomposite1 libxcomposite1:armhf libxrandr2 libxrandr2:armhf libxi6 libxi6:armhf libxcursor1 libxcursor1:armhf libvulkan-dev libvulkan-dev:armhf zenity
+
+# Wine的64位依赖。box64会将amd64调用转换为arm64，所以只需安装arm64库即可
+# 依赖来自 dpkg-deb -I wine-stable-amd64_8.0.2~bookworm-1_amd64.deb
+sudo apt install -y libasound2:arm64 libc6:arm64 libglib2.0-0:arm64 libgphoto2-6:arm64 libgphoto2-port12:arm64 \
+  libgstreamer-plugins-base1.0-0:arm64 libgstreamer1.0-0:arm64 libpcap0.8:arm64 libpulse0:arm64 libsane1:arm64 \
+  libudev1:arm64 libunwind8:arm64 libusb-1.0-0:arm64 libx11-6:arm64 libxext6:arm64 ocl-icd-libopencl1:arm64 \
+  libasound2-plugins:arm64 libncurses6:arm64 libcapi20-3:arm64 libcups2:arm64 libdbus-1-3:arm64 libfontconfig1:arm64 \
+  libfreetype6:arm64 libglu1-mesa:arm64 libgnutls30:arm64 libgsm1:arm64 libgssapi-krb5-2:arm64 libjpeg62-turbo:arm64 \
+  libkrb5-3:arm64 libodbc1:arm64 libosmesa6:arm64 libpng16-16:arm64 libsdl2-2.0-0:arm64 libv4l-0:arm64 \
+  libxcomposite1:arm64 libxcursor1:arm64 libxfixes3:arm64 libxi6:arm64 libxinerama1:arm64 libxrandr2:arm64 \
+  libxrender1:arm64 libxslt1.1:arm64 libxxf86vm1:arm64
+
+# Wine的32位依赖。同理安装armhf而不是i386
+# 依赖来自 dpkg-deb -I wine-stable-i386_8.0.2~bookworm-1_i386.deb
+sudo apt install -y libasound2:armhf libc6:armhf libglib2.0-0:armhf libgphoto2-6:armhf libgphoto2-port12:armhf \
+  libgstreamer-plugins-base1.0-0:armhf libgstreamer1.0-0:armhf libpcap0.8:armhf libpulse0:armhf libsane1:armhf \
+  libudev1:armhf libusb-1.0-0:armhf libx11-6:armhf libxext6:armhf ocl-icd-libopencl1:armhf libasound2-plugins:armhf \
+  libncurses6:armhf libcapi20-3:armhf libcups2:armhf libdbus-1-3:armhf libfontconfig1:armhf libfreetype6:armhf \
+  libglu1-mesa:armhf libgnutls30:armhf libgsm1:armhf libgssapi-krb5-2:armhf libjpeg62-turbo:armhf libkrb5-3:armhf \
+  libodbc1:armhf libosmesa6:armhf libpng16-16:armhf libsdl2-2.0-0:armhf libv4l-0:armhf libxcomposite1:armhf \
+  libxcursor1:armhf libxfixes3:armhf libxi6:armhf libxinerama1:armhf libxrandr2:armhf libxrender1:armhf libxslt1.1:armhf \
+  libxxf86vm1:armhf
+
+# 其他测试时认为可能需要的依赖
+sudo apt install -y libvulkan1 libvulkan1:armhf
 
 rm -rf $HOME/.local/share/tiny/tmp
 mkdir $HOME/.local/share/tiny/tmp
 cd $HOME/.local/share/tiny/tmp
 
 MIRROR_SITE=https://mirror.ghproxy.com
-LATEST_WINE_NAME=$(curl -L https://github.com/Kron4ek/Wine-Builds/releases | grep "amd64\.tar\.xz" | grep "proton" | head -n 1 | awk '{print $NF}')
-LATEST_WINE_TAG=$(echo $LATEST_WINE_NAME | cut -d "-" -f 2)
-
-if [ $LATEST_WINE_TAG == proton ]; then
-  LATEST_WINE_TAG=proton-$(echo $LATEST_WINE_NAME | cut -d "-" -f 3)-$(echo $LATEST_WINE_NAME | cut -d "-" -f 4)
+RELEASE_PAGE=https://github.com/Kron4ek/Wine-Builds/releases
+LATEST_WINE_TAG=proton-$(curl -L $RELEASE_PAGE | grep -oP 'Proton \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #proton
+#LATEST_WINE_TAG=$(curl -L $RELEASE_PAGE | grep -oP 'Wine \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #vanilla
+if [ -z "$LATEST_WINE_TAG" ] || [ "$LATEST_WINE_TAG" == "proton-" ]
+then
+  LATEST_WINE_TAG=proton-8.0-4
 fi
-
-LATEST_WINE_LINK=https://github.com/Kron4ek/Wine-Builds/releases/download/$LATEST_WINE_TAG/$LATEST_WINE_NAME
+LATEST_WINE_NAME=wine-$LATEST_WINE_TAG-amd64.tar.xz
+LATEST_WINE_LINK=$RELEASE_PAGE/download/$LATEST_WINE_TAG/$LATEST_WINE_NAME
 
 wget $MIRROR_SITE/$LATEST_WINE_LINK
 if [ $? -ne 0 ]; then
@@ -28,52 +53,18 @@ if [ $? -ne 0 ]; then
   fi
 fi
 
-wget $MIRROR_SITE/https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-if [ $? -ne 0 ]; then
-  wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-  if [ $? -ne 0 ]; then
-    rm -rf $HOME/.local/share/tiny/tmp
-    echo '下载失败...退出安装...'
-    exit
-  fi
-fi
-
 tar xvf $LATEST_WINE_NAME
 mv wine-$LATEST_WINE_TAG-amd64 ../cross/wine
-mv winetricks ../cross/winetricks-executable
-chmod +x $HOME/.local/share/tiny/cross/winetricks-executable
 cd ..
 rm -rf tmp
 
-echo '#!/bin/bash
-export WINEPREFIX=~/.wine
-box86 '"$HOME/.local/share/tiny/cross/wine/bin/wine "'"$@"' > $HOME/.local/share/tiny/cross/wine-executable
-chmod +x $HOME/.local/share/tiny/cross/wine-executable
-
-echo '#!/bin/bash
-export WINEPREFIX=~/.wine
-box64 '"$HOME/.local/share/tiny/cross/wine/bin/wine64 "'"$@"' > $HOME/.local/share/tiny/cross/wine64-executable
-chmod +x $HOME/.local/share/tiny/cross/wine64-executable
-
-echo '#!/bin/bash
-export BOX64_NOBANNER=1 WINE=wine64 WINEPREFIX=~/.wine WINESERVER=~/.local/share/tiny/cross/wine/bin/wineserver
-wine64 '"$HOME/.local/share/tiny/cross/winetricks-executable "'"$@"' > $HOME/.local/share/tiny/cross/winetricks64-executable
-chmod +x $HOME/.local/share/tiny/cross/winetricks64-executable
-
 echo '[Desktop Entry]
-Name=Wine64 启动器
-Exec=wine64 start /unix %F
+Name=Wine 启动器
+Exec=wine64 start /unix %f
 Icon=wine
-Type=Application' > $HOME/.local/share/tiny/cross/wine64.desktop
-chmod +x $HOME/.local/share/tiny/cross/wine64.desktop
-
-echo '[Desktop Entry]
-Name=Wine64 winetricks 实用工具
-Exec=winetricks64
-Icon=wine
-Type=Application' > $HOME/.local/share/tiny/cross/winetricks64.desktop
-chmod +x $HOME/.local/share/tiny/cross/winetricks64.desktop
+Type=Application' > $HOME/.local/share/tiny/cross/wine.desktop
+chmod +x $HOME/.local/share/tiny/cross/wine.desktop
 
 echo '安装完成，在启用wine后可以点击exe文件选择用wine启动。'
+echo '初次运行时会自动进行一段时间的初始化工作。'
 echo '程序的运行可能依赖一些配置或组件。比如，一些使用directx的游戏可能需要安装dxvk。'
-echo '如果缺失可以尝试使用winetricks安装。请务必保持耐心。'

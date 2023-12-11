@@ -31,6 +31,7 @@ import 'package:permission_handler/permission_handler.dart';
 //import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xterm/xterm.dart';
 //import 'package:xterm/flutter.dart';
 import 'package:tiny_computer/workflow.dart';
@@ -239,14 +240,20 @@ class _SettingPageState extends State<SettingPage> {
             setState(() {});
           },),
           SizedBox.fromSize(size: const Size.square(8)),
-          SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
-            G.prefs.setBool("autoLaunchVnc", value);
+          SwitchListTile(title: const Text("屏幕常亮"), value: Util.getGlobal("wakelock") as bool, onChanged:(value) {
+            G.prefs.setBool("wakelock", value);
+            WakelockPlus.toggle(enable: value);
             setState(() {});
           },),
           SizedBox.fromSize(size: const Size.square(8)),
           const Divider(height: 2, indent: 8, endIndent: 8),
           SizedBox.fromSize(size: const Size.square(16)),
           const Text("以下选项修改后将在下次启动软件时生效。"),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
+            G.prefs.setBool("autoLaunchVnc", value);
+            setState(() {});
+          },),
           SizedBox.fromSize(size: const Size.square(8)),
           SwitchListTile(title: const Text("重新安装引导包"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
             G.prefs.setBool("reinstallBootstrap", value);
@@ -329,7 +336,7 @@ class _SettingPageState extends State<SettingPage> {
               }
               break;
               case false: {
-                G.streamServerPty.write(const Utf8Encoder().convert("${String.fromCharCode(3)}exit\n"));
+                G.streamServerPty.write(const Utf8Encoder().convert("\x03exit\n"));
               }
               break;
             }
@@ -398,7 +405,7 @@ class _SettingPageState extends State<SettingPage> {
             switch (value) {
               case true: {
                 G.virglServerPty = Pty.start("/system/bin/sh");
-                G.virglServerPty.write(const Utf8Encoder().convert("export CONTAINER_DIR=${G.dataPath}/containers/0\n${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}\nexit\n"));
+                G.virglServerPty.write(const Utf8Encoder().convert("export CONTAINER_DIR=${G.dataPath}/containers/${G.currentContainer}\n${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}\nexit\n"));
                 G.virglServerPty.exitCode.then((value) {
                   G.isVirglServerStarted = false;
                   setState(() {});
@@ -406,7 +413,7 @@ class _SettingPageState extends State<SettingPage> {
               }
               break;
               case false: {
-                G.virglServerPty.write(const Utf8Encoder().convert("${String.fromCharCode(3)}exit\n"));
+                G.virglServerPty.write(const Utf8Encoder().convert("\x03exit\n"));
               }
               break;
             }
@@ -438,29 +445,27 @@ class _SettingPageState extends State<SettingPage> {
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("跨架构/跨系统支持"), subtitle: Text("实验性功能"),);
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""你的梦想是在你的小小电脑上，运行着那些你熟悉的x86/x64或windows的程序。你不惧怕任何困难，你勇敢地使用box86/box64或wine，让你的梦想成为现实。但是，你也要知道，这是一条漫长而艰辛的道路，你需要付出很多的代价。你的程序要经过两层的模拟，就像穿越两个世界，它们的速度会变得缓慢而沉重。你需要有足够的耐心，即使你的眼前一片空白，你的终端还在默默地工作。你要时刻关注它的输出，看看它是否还在前进，还是遇到了难以逾越的障碍。或者，你也可以选择另一条路，去寻找那些为linux arm64而生的程序，它们或许能让你的梦想更加顺畅。
-
-你的选择就在下面，你只需勾选你想要的选项，然后重新启动你的小小电脑，你的梦想就会有所不同。
-
-......人话：
-
-使用box86/box64运行x86/x64架构的程序，或使用wine运行windows程序。
+          const Text("""使用box86/box64运行x86/x64架构的程序，或使用wine运行windows程序。
 
 运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待。程序崩溃也是常有的。
 
 你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
 
+如果不耐烦可以去看个广告消磨时间（bushi）
+
 或者寻找该windows软件官方是否提供linux arm64版本。
 
-以下选项启用后下次启动时生效。
-"""),
-          SizedBox.fromSize(size: const Size.square(16)),
+给高级用户的注意事项：
+跨架构/跨系统提供类似binfmt_misc的支持。
+你可以直接执行x86或x64的elf（系统会自动调用box86/box64），也可以直接执行exe文件（系统会自动调用wine64）。
+前提是这些文件拥有可执行权限。"""),
+          SizedBox.fromSize(size: const Size.square(8)),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("安装box86和box64"), onPressed: () {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-box");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装wine与winetricks"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装wine"), onPressed: () async {
               if (!await File("${G.dataPath}/tiny/cross/box64").exists()) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -470,6 +475,18 @@ class _SettingPageState extends State<SettingPage> {
                 return;
               }
               Util.termWrite("bash ~/.local/share/tiny/extra/install-wine");
+              G.pageIndex.value = 0;
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装dxvk"), onPressed: () async {
+              if (!G.wasWineEnabled) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("请启用wine后重试"))
+                );
+                return;
+              }
+              Util.termWrite("bash ~/.local/share/tiny/extra/install-dxvk");
               G.pageIndex.value = 0;
             }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("移除所有安装"), onPressed: () async {
@@ -488,17 +505,33 @@ class _SettingPageState extends State<SettingPage> {
               Util.termWrite("rm -rf ~/.wine");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("配置wine"), onPressed: () async {
-              Util.termWrite("wine64 winecfg");
-              G.pageIndex.value = 0;
-              Workflow.launchBrowser();
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("启动winetricks"), onPressed: () async {
-              Util.termWrite("winetricks64");
-              G.pageIndex.value = 0;
-              Workflow.launchBrowser();
-            }),
           ]),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("""开启wine后的常用指令，点击后前往图形界面耐心等待。
+
+任意程序启动参考时间：
+虎贲T7510 6GB 超过一分钟
+骁龙870 12GB 约10秒
+骁龙8gen3 不支持32位 可能不可用
+
+初始化时间：
+可能比本软件初始化还长
+"""),
+          SizedBox.fromSize(size: const Size.square(8)),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.wineCommands.asMap().entries.map<Widget>(
+            (e) {
+              return OutlinedButton(style: D.commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
+                Util.termWrite("${e.value["command"]!} &");
+                G.pageIndex.value = 0;
+              });
+            }
+          ).toList()),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("以下选项修改后将在下次启动软件时生效。"),
           SizedBox.fromSize(size: const Size.square(8)),
           SwitchListTile(title: const Text("启用box86/box64"), subtitle: const Text("运行跨架构软件"), value: Util.getGlobal("isBoxEnabled") as bool, onChanged:(value) async {
             //检测box64是否存在，存在才开启
@@ -518,7 +551,7 @@ class _SettingPageState extends State<SettingPage> {
           },),
           SwitchListTile(title: const Text("启用wine"), subtitle: const Text("运行windows exe软件"), value: Util.getGlobal("isWineEnabled") as bool, onChanged:(value) async {
             //检测wine是否存在且box64是否开启
-            if (value && !(Util.getGlobal("isBoxEnabled") && await File("${G.dataPath}/tiny/cross/wine64-executable").exists())) {
+            if (value && !(Util.getGlobal("isBoxEnabled") && await File("${G.dataPath}/tiny/cross/wine/bin/wine").exists())) {
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -526,6 +559,16 @@ class _SettingPageState extends State<SettingPage> {
               );
               return;
             }
+            Util.execute(value ? """filename="${G.dataPath}/containers/${G.currentContainer}/home/tiny/.bashrc"
+command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH # Auto-generated, do NOT edit"
+if ! ${G.dataPath}/busybox grep -qF "\$command" "\$filename"; then
+    echo "\$command" >> "\$filename"
+fi""" : """filename="${G.dataPath}/containers/${G.currentContainer}/home/tiny/.bashrc"
+command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH # Auto-generated, do NOT edit"
+if ${G.dataPath}/busybox grep -qF "\$command" "\$filename"; then
+    command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH \\\\# Auto-generated, do NOT edit"
+    ${G.dataPath}/busybox sed -i "\\\\#\$command#d" "\$filename"
+fi""");
             G.prefs.setBool("isWineEnabled", value);
             setState(() {});
           },),
@@ -1120,7 +1163,7 @@ SOFTWARE.
         }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
 除由Unity提供的广告功能外, 本软件不会收集你的隐私信息。
 
-当然，你在容器系统内部安装或使用的软件行为就不受我控制了，所以我不对其负责。
+当然，你在容器系统内部安装或使用的软件行为（包括通过快捷指令）就不受我控制了，我不对其负责。
 
 本软件申请的权限用于以下目的：
 文件相关权限：用于系统访问手机目录；
@@ -1223,7 +1266,7 @@ class LoadingPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
             child: ValueListenableBuilder(valueListenable: G.updateText, builder:(context, value, child) {
-              return Text(value, textScaleFactor: 2);
+              return Text(value, textScaler: const TextScaler.linear(2));
             }),
           ),
           const FakeLoadingStatus(),
