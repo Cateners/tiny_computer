@@ -105,7 +105,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -576,6 +576,38 @@ fi""");
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[6],
+        headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("高分辨率支持"), subtitle: Text("实验性功能"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const Text("""为更大的屏幕带来更高清的体验！
+
+注意：
+选项开启后显示会变得很大，请在图形界面的左栏设置里手动调整缩放到一个你认为合适的值。
+
+一些软件可能会存在显示问题，或者显示速度变慢。"""),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"), readOnly: Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!),
+            onTap: () {
+              if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("观看十二次视频广告永久解锁><"))
+                );
+              }
+            },
+            onChanged: (value) async {
+              await G.prefs.setString("defaultHidpiOpt", value);
+            },
+          ),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("高分辨率支持"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
+            G.prefs.setBool("isHidpiEnabled", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[7],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
@@ -1206,6 +1238,7 @@ SOFTWARE.
 终端最大行数修改: 观看6个广告
 推流参数修改: 观看8个广告
 启用virgl加速: 观看10个广告
+HiDPI环境变量修改: 观看12个广告
 
 我设置了每天最多可以看5个广告。
 只要看满1个广告, 就可以在本次使用期间临时解锁全部功能。

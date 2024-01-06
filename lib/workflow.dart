@@ -90,12 +90,14 @@ class Util {
   //String defaultVirglCommand 默认virgl参数
   //String defaultVirglOpt 默认virgl环境变量
   //bool reinstallBootstrap = false 下次启动是否重装引导包
-  //bool getifaddrsBridge = false 下次启动是否桥接getifaddrsBridge
+  //bool getifaddrsBridge = false 下次启动是否桥接getifaddrs
   //bool uos = false 下次启动是否伪装UOS
   //bool isBoxEnabled = false 下次启动是否开启box86/box64
   //bool isWineEnabled = false 下次启动是否开启wine
   //bool virgl = false 下次启动是否启用virgl
   //bool wakelock = false 屏幕常亮
+  //bool isHidpiEnabled = false 是否开启高分辨率
+  //String defaultHidpiOpt 默认HiDPI环境变量
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"},
@@ -126,9 +128,11 @@ class Util {
       case "isWineEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe MESA_GL_VERSION_OVERRIDE=4.0");
+      case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
       case "containersInfo" : return G.prefs.getStringList(key)!;
       case "adsBonus" : return b ? G.prefs.getStringList(key)! : (value){G.prefs.setStringList(key, value); return value;}([].cast<String>());
     }
@@ -441,6 +445,7 @@ class D {
     "changeTermMaxLines" : 6,
     "changeFFmpegCommand" : 8,
     "enableVirgl" : 10,
+    "changeHidpiOpt" : 12,
     
     "unlockOnce" : 1, //临时解锁需要看的广告数
     "unlockToday" : 2, //当日解锁需要看的广告数
@@ -634,7 +639,7 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
     //这个是容器rootfs，被split命令分成了xa*
     //首次启动，就用这个，别让用户另选了
     //TODO: 这个字符串列表太丑陋了
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai"]) {
     //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao", "xap", "xaq"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
@@ -718,6 +723,9 @@ done
     if (Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!)) {
       await G.prefs.remove("defaultFFmpegCommand");
     }
+    if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
+      await G.prefs.remove("defaultHidpiOpt");
+    }
     if (Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!)) {
       await G.prefs.setInt("termMaxLines", 4095);
     }
@@ -781,6 +789,9 @@ exit
     if (Util.getGlobal("getifaddrsBridge")) {
       Util.execute("${G.dataPath}/bin/getifaddrs_bridge_server ${G.dataPath}/containers/${G.currentContainer}/tmp/.getifaddrs-bridge");
       extraOpt += "LD_PRELOAD=/home/tiny/.local/share/tiny/extra/getifaddrs_bridge_client_lib.so ";
+    }
+    if (Util.getGlobal("isHidpiEnabled")) {
+      extraOpt += "${Util.getGlobal("defaultHidpiOpt")} ";
     }
     if (Util.getGlobal("uos")) {
       extraMount += "--mount=\$DATA_DIR/tiny/wechat/uos-lsb:/etc/lsb-release --mount=\$DATA_DIR/tiny/wechat/uos-release:/usr/lib/os-release ";
