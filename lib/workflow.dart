@@ -639,7 +639,7 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
     //这个是容器rootfs，被split命令分成了xa*
     //首次启动，就用这个，别让用户另选了
     //TODO: 这个字符串列表太丑陋了
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai"]) {
+    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj"]) {
     //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao", "xap", "xaq"]) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
