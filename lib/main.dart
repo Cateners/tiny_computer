@@ -25,6 +25,7 @@ import 'dart:math';
 //import 'package:flutter/services.dart';
 
 import 'package:clipboard/clipboard.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -49,14 +50,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tiny Computer',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        //fontFamily: "FiraCode",
-      ),
-      home: const MyHomePage(title: 'Tiny Computer'),
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+          return MaterialApp(
+            title: 'Tiny Computer',
+            theme: ThemeData(
+              colorScheme: lightDynamic,
+              useMaterial3: true,
+              //fontFamily: "FiraCode",
+            ),
+            darkTheme: ThemeData(
+              colorScheme: darkDynamic,
+              useMaterial3: true,
+              //fontFamily: "FiraCode",
+            ),
+            home: const MyHomePage(title: 'Tiny Computer'),
+          );
+        }
     );
   }
 }
@@ -1516,7 +1526,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
@@ -1564,15 +1573,25 @@ class _MyHomePageState extends State<MyHomePage> {
         }))]):const LoadingPage(),
       bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete,
-          child: BottomNavigationBar(currentIndex: G.pageIndex.value, 
-            onTap: (index) {
+          // child: BottomNavigationBar(currentIndex: G.pageIndex.value,
+          //   onTap: (index) {
+          //     G.pageIndex.value = index;
+          //   },
+          //   items: const [
+          //     BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
+          //     BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
+          //   ],
+          // )
+          child: NavigationBar(
+            selectedIndex: G.pageIndex.value,
+            destinations: const [
+              NavigationDestination(icon: Icon(Icons.monitor), label: "终端"),
+              NavigationDestination(icon: Icon(Icons.video_settings), label: "控制")
+            ],
+            onDestinationSelected: (index) {
               G.pageIndex.value = index;
             },
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
-              BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
-            ],
-          )
+          ),
         );}),
       floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete && (value == 0),
