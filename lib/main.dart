@@ -165,7 +165,7 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(8)),
           const Divider(height: 2, indent: 8, endIndent: 8),
           SizedBox.fromSize(size: const Size.square(16)),
-          const Text("你可以在当前所有同一网络下的设备（如：连接同一路由器的手机，电脑等）里使用小小电脑。\n\n将下面的链接复制到其他设备，在其他设备上把链接localhost字样改为当前设备的IP地址（可以通过快捷指令查看），然后使用浏览器打开链接即可。"),
+          const Text("你可以在当前所有同一网络下的设备（如：连接同一路由器的手机，电脑等）里使用小小电脑。\n\n将下面的链接复制到其他设备，在其他设备上把链接localhost字样改为当前设备的IP地址（可以通过快捷指令查看，格式类似192.168.x.x），然后使用浏览器打开链接即可。"),
           SizedBox.fromSize(size: const Size.square(16)),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
             await Util.setCurrentProp("vncUrl", value);
@@ -1263,19 +1263,8 @@ HiDPI环境变量修改: 观看12个广告
 我注意到Unity提供了一些不那么合适的广告
 一般如果我看到这些广告就在后台直接禁了
 不过也可能有漏网之鱼
-你们可以联系我禁掉
-
----下面是赛博乞讨环节---
-
-(*>ω<*)
-虽然感觉不太可能有人捐赠
-但转念一想这个可能性不是比中彩票大多了吗
-所以还是保留了下来
+可以联系我禁掉
 """)),
-          const FractionallySizedBox(
-            widthFactor: 0.8,
-            child: Image(image: AssetImage("images/alipay.png"))
-          ),
           ElevatedButton(
             onPressed: () {
               launchUrl(Uri.parse("https://github.com/Cateners/tiny_computer"), mode: LaunchMode.externalApplication);
