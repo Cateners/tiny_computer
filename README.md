@@ -60,8 +60,6 @@ lib目录：
 
 `split -b 98M debian.tar.xz`
 
-然后修改workflow的代码，找到复制资源的部分，把生成的xa\*名字写进去(我还不知道怎么写代码识别有多少个xa*文件)
-
 接下来就可以编译了。我使用的命令如下：
 
 `flutter build apk --target-platform android-arm64 --split-per-abi --obfuscate  --split-debug-info=tiny_computer/sdi`

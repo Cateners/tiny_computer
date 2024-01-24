@@ -173,6 +173,8 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
 - libtiff.so.5库修补
   - 切换到/lib/aarch64-linux-gnu文件夹，创建软链把libtiff.so.6链接到libtiff.so.5
   - 或者找libtiff.so.5的包并安装，这样可能更好一些
+- 预装ttf-mscorefonts-installer
+  - 这个包是WPS的依赖，会在sourceforge下载字体，可能会非常慢，所以提前apt装好
 
 ### 打包
 

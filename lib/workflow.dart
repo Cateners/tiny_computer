@@ -287,7 +287,7 @@ class TermPty {
       if (code == 0) {
         SystemChannels.platform.invokeMethod("SystemNavigator.pop");
       }
-      //TODO: Signal 9 hint, 改成对话框?
+      //Signal 9 hint
       if (code == -9) {
         Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
           const TextStyle ts = TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.normal);
@@ -637,11 +637,9 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
     G.updateText.value = "正在复制容器系统";
     //存放容器的文件夹0和存放硬链接的文件夹.l2s
     Util.createDirFromString("${G.dataPath}/containers/0/.l2s");
-    //这个是容器rootfs，被split命令分成了xa*
+    //这个是容器rootfs，被split命令分成了xa*，放在assets里
     //首次启动，就用这个，别让用户另选了
-    //TODO: 这个字符串列表太丑陋了
-    for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj"]) {
-    //for (String name in ["xaa", "xab", "xac", "xad", "xae", "xaf", "xag", "xah", "xai", "xaj", "xak", "xal", "xam", "xan", "xao", "xap", "xaq"]) {
+    for (String name in jsonDecode(await rootBundle.loadString('AssetManifest.json')).keys.where((String e) => e.startsWith("assets/xa")).map((String e) => e.split("/").last).toList()) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     //-J
