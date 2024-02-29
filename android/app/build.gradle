@@ -2,6 +2,10 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    
+    id "org.jetbrains.kotlin.kapt"
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.9.10"
+    id "org.jetbrains.kotlin.plugin.parcelize"
 }
 
 def localProperties = new Properties()
@@ -50,6 +54,13 @@ android {
         targetSdkVersion 28 //https://github.com/termux/termux-app/issues/1072; native; linker; flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/roomSchema/".toString()]
+            }
+        }
+
     }
 
     buildTypes {
@@ -60,6 +71,18 @@ android {
         }
     }
 
+    buildFeatures {
+        dataBinding true
+        buildConfig true
+    }
+
+    externalNativeBuild {
+        cmake {
+            version '3.22.1'
+            path file('CMakeLists.txt')
+        }
+    }
+    
     lintOptions {
         //checkReleaseBuilds false
         abortOnError false
@@ -77,4 +100,27 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation "androidx.activity:activity-ktx:1.8.2"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+    implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
+    implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+
+    
+    def roomVersion = "2.6.1"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+
+    
+    implementation "com.google.android.material:material:1.7.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
+    implementation "org.connectbot:sshlib:2.2.23"
+
+}

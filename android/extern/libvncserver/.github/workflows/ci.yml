@@ -1,0 +1,62 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        cmake_options:
+          - "-DWITH_OPENSSL=ON  -DWITH_GNUTLS=OFF -DWITH_GCRYPT=OFF" # build with OpenSSL
+          - "-DWITH_OPENSSL=OFF -DWITH_GNUTLS=ON  -DWITH_GCRYPT=ON"  # build with GnuTLS and Libgrypt
+          - "-DWITH_OPENSSL=OFF -DWITH_GNUTLS=OFF -DWITH_GCRYPT=OFF" # build without external encryption libraries
+          - "-DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-cross-mingw32-linux.cmake" # crosscompile with MinGW toolchain
+        include:
+          - os: macos-latest
+            macos_cmake_options: "-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl" # set this extra var for OSX
+          - os: windows-latest
+            windows_cmake_options: "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" # set this extra var for Windows
+        exclude:
+          - os: macos-latest
+            cmake_options: "-DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-cross-mingw32-linux.cmake" # don't test MinGW from OSX
+          - os: windows-latest
+            cmake_options: "-DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-cross-mingw32-linux.cmake" # don't test MinGW from Windows
+          - os: windows-latest
+            cmake_options: "-DWITH_OPENSSL=ON  -DWITH_GNUTLS=OFF -DWITH_GCRYPT=OFF" # don't have OpenSSL on Windows (yet)
+          - os: windows-latest
+            cmake_options: "-DWITH_OPENSSL=OFF -DWITH_GNUTLS=ON  -DWITH_GCRYPT=ON"  # don't have GnuTLS and libgcrypt on Windows (yet)
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Ubuntu Build Dependencies
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt update
+          sudo apt install libsdl2-dev liblzo2-dev libssl-dev gnutls-dev libgcrypt-dev mingw-w64-x86-64-dev binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 wine
+      - name: Install MacOS Build Dependencies
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew update
+          brew install sdl2 lzo
+      - name: Install Windows Build Dependencies
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          vcpkg install zlib libjpeg-turbo libpng --triplet=x64-windows # could install more but should use run-vcpkg with caching for this
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ${{ matrix.cmake_options }} ${{ matrix.macos_cmake_options }} ${{ matrix.windows_cmake_options }} ..
+          cmake --build .
+      - name: Prepare Test
+        if: ${{ matrix.os == 'ubuntu-latest' }} # only ubuntu does crosscompile with MinGW toolchain
+        run: |
+          cp /usr/x86_64-w64-mingw32/lib/libwinpthread-1.dll build/test/
+      - name: Test
+        run: |
+          cd build
+          ctest -C Debug --output-on-failure

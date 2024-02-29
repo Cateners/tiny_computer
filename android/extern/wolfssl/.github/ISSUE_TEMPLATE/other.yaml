@@ -1,0 +1,28 @@
+name: General Issue
+description: Request support with an issue
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for reporting an issue. If you would prefer a private method,
+        please email support@wolfssl.com
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version were you using?
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Description
+      description: |
+        Describe the issue in detail.
+        Please include specific configuration options or user_settings.h
+      placeholder: |
+        `./configure --enable-world-domination` fails
+        ...
+    validations:
+      required: true

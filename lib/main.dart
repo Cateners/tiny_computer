@@ -28,6 +28,8 @@ import 'package:clipboard/clipboard.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_pty/flutter_pty.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 //import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -165,10 +167,34 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(8)),
           const Divider(height: 2, indent: 8, endIndent: 8),
           SizedBox.fromSize(size: const Size.square(16)),
-          const Text("你可以在当前所有同一网络下的设备（如：连接同一路由器的手机，电脑等）里使用小小电脑。\n\n将下面的链接复制到其他设备，在其他设备上把链接localhost字样改为当前设备的IP地址（可以通过快捷指令查看，格式类似192.168.x.x），然后使用浏览器打开链接即可。"),
+          const Text("你可以在当前所有同一网络下的设备（如：连接同一WiFi的手机，电脑等）里使用小小电脑。\n\n点击下面的按钮分享链接到其他设备后使用浏览器打开即可。"),
+          SizedBox.fromSize(size: const Size.square(16)),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("复制分享链接"), onPressed: () async {
+              final String? ip = await NetworkInfo().getWifiIP();
+              if (!context.mounted) return;
+              if (ip == null) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("无法获取IP地址"))
+                );
+                return;
+              }
+              FlutterClipboard.copy((Util.getCurrentProp("vncUrl") as String).replaceFirst(RegExp.escape("localhost"), ip)).then((value) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("已复制分享链接"))
+                );
+              });
+            }),
+          ]),
           SizedBox.fromSize(size: const Size.square(16)),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
             await Util.setCurrentProp("vncUrl", value);
+          }),
+          SizedBox.fromSize(size: const Size.square(8)),
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUri"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc链接"), onChanged: (value) async {
+            await Util.setCurrentProp("vncUri", value);
           }),
           SizedBox.fromSize(size: const Size.square(8)),
         ],))),
@@ -283,6 +309,96 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[2],
         headerBuilder: ((context, isExpanded) {
+          return const ListTile(title: Text("显示设置"));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("""AVNC可以带来获得更好的操控体验；
+如触摸板触控，双击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
+          SizedBox.fromSize(size: const Size.square(16)),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC启动时分辨率设置"), onPressed: () async {
+              String w = "1440";
+              String h = "720";
+              showDialog(context: context, builder: (context) {
+                return AlertDialog(title: const Text("分辨率设置"), content: SingleChildScrollView(child: Column(children: [
+                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: w, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "宽"), keyboardType: TextInputType.number,
+                    validator: (value) {
+                      return Util.validateBetween(value, 200, 7680, () {
+                        w = value!;
+                      });
+                    }
+                  ),
+                  SizedBox.fromSize(size: const Size.square(8)),
+                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: h, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "高"), keyboardType: TextInputType.number,
+                    validator: (value) {
+                      return Util.validateBetween(value, 200, 7680, () {
+                        h = value!;
+                      });
+                    }
+                  ),
+                ])), actions: [
+                  TextButton(onPressed:() {
+                    Navigator.of(context).pop();
+                  }, child: const Text("取消")),
+                  TextButton(onPressed:() async {
+                    Util.termWrite("""sed -i -E "s@(geometry)=.*@\\1=${w}x${h}@" /etc/tigervnc/vncserver-config-tmoe
+sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${w}x${h}. 下次启动时生效"))
+                    );
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
+                  }, child: const Text("保存")),
+                ]);
+              });
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
+              await D.avncChannel.invokeMethod("launchPrefsPage", {});
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("关于AVNC"), onPressed: () async {
+              await D.avncChannel.invokeMethod("launchAboutPage", {});
+            }),
+          ]),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("默认使用AVNC"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
+            G.prefs.setBool("useAvnc", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          SizedBox.fromSize(size: const Size.square(16)),
+          const Text("""高分辨率支持可以为大屏幕设备带来更高清的体验！
+
+注意：
+选项开启后显示会变得很大，请在图形界面的左栏设置里手动调整缩放到一个你认为合适的值。
+如果使用AVNC，可以在上面设置一个更大的分辨率。
+
+一些软件可能会存在显示问题，或者显示速度变慢。"""),
+          SizedBox.fromSize(size: const Size.square(16)),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"), readOnly: Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!),
+            onTap: () {
+              if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("观看十二次视频广告永久解锁><"))
+                );
+              }
+            },
+            onChanged: (value) async {
+              await G.prefs.setString("defaultHidpiOpt", value);
+            },
+          ),
+          SizedBox.fromSize(size: const Size.square(8)),
+          SwitchListTile(title: const Text("高分辨率支持"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
+            G.prefs.setBool("isHidpiEnabled", value);
+            setState(() {});
+          },),
+          SizedBox.fromSize(size: const Size.square(16)),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[3],
+        headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("相机推流"), subtitle: Text("实验性功能"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const Text("成功启动推流后可以点击快捷指令\"拉流测试\"并前往图形界面查看效果。\n注意这并不能为系统创建一个虚拟相机；\n另外使用相机是高耗电行为，不用时需及时关闭。"),
@@ -377,7 +493,7 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(8))
         ],))),
       ExpansionPanel(
-        isExpanded: _expandState[3],
+        isExpanded: _expandState[4],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("文件访问"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
@@ -394,7 +510,7 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(16)),
         ],))),
       ExpansionPanel(
-        isExpanded: _expandState[4],
+        isExpanded: _expandState[5],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("virgl加速"), subtitle: Text("实验性功能"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
@@ -451,7 +567,7 @@ class _SettingPageState extends State<SettingPage> {
           SizedBox.fromSize(size: const Size.square(16)),
         ],))),
       ExpansionPanel(
-        isExpanded: _expandState[5],
+        isExpanded: _expandState[6],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("跨架构/跨系统支持"), subtitle: Text("实验性功能"),);
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
@@ -580,38 +696,6 @@ if ${G.dataPath}/busybox grep -qF "\$command" "\$filename"; then
     ${G.dataPath}/busybox sed -i "\\\\#\$command#d" "\$filename"
 fi""");
             G.prefs.setBool("isWineEnabled", value);
-            setState(() {});
-          },),
-          SizedBox.fromSize(size: const Size.square(16)),
-        ],))),
-      ExpansionPanel(
-        isExpanded: _expandState[6],
-        headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("高分辨率支持"), subtitle: Text("实验性功能"));
-        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""为更大的屏幕带来更高清的体验！
-
-注意：
-选项开启后显示会变得很大，请在图形界面的左栏设置里手动调整缩放到一个你认为合适的值。
-
-一些软件可能会存在显示问题，或者显示速度变慢。"""),
-          SizedBox.fromSize(size: const Size.square(16)),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"), readOnly: Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!),
-            onTap: () {
-              if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("观看十二次视频广告永久解锁><"))
-                );
-              }
-            },
-            onChanged: (value) async {
-              await G.prefs.setString("defaultHidpiOpt", value);
-            },
-          ),
-          SizedBox.fromSize(size: const Size.square(8)),
-          SwitchListTile(title: const Text("高分辨率支持"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
-            G.prefs.setBool("isHidpiEnabled", value);
             setState(() {});
           },),
           SizedBox.fromSize(size: const Size.square(16)),
@@ -1351,7 +1435,7 @@ class TerminalPage extends StatelessWidget {
       }, onScaleEnd: (details) async {
         await G.prefs.setDouble("termFontScale", G.termFontScale.value);
       }, child: ValueListenableBuilder(valueListenable: G.termFontScale, builder:(context, value, child) {
-        return TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaleFactor: G.termFontScale.value, keyboardType: TextInputType.multiline);
+        return TerminalView(G.termPtys[G.currentContainer]!.terminal, textScaler: TextScaler.linear(G.termFontScale.value), keyboardType: TextInputType.multiline);
       },) )), 
       ValueListenableBuilder(valueListenable: G.terminalPageChange, builder:(context, value, child) {
       return (Util.getGlobal("isTerminalCommandsEnabled") as bool)?Padding(padding: const EdgeInsets.all(8), child: Row(children: [AnimatedBuilder(
@@ -1581,14 +1665,28 @@ class _MyHomePageState extends State<MyHomePage> {
               G.pageIndex.value = index;
             },
           ),
-        );}),
+        );}
+      ),
       floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete && (value == 0),
-          child: FloatingActionButton(
-            onPressed: () => Workflow.launchBrowser(),
-            tooltip: "进入图形界面",
+          child: SpeedDial(
+            children: [SpeedDialChild(
+              child: const Icon(Icons.laptop_outlined),
+              label: "使用noVNC",
+              onTap: () => Workflow.launchBrowser(),
+            ),SpeedDialChild(
+              child: const Icon(Icons.screenshot_monitor_outlined),
+              label: "使用AVNC",
+              onTap: () => Workflow.launchAvnc(),
+            )],
+            activeChild: const Icon(Icons.close),
             child: const Icon(Icons.play_arrow),
-          ),
+          )
+          // FloatingActionButton(
+          //   onPressed: () => Workflow.launchBrowser(),
+          //   tooltip: "进入图形界面",
+          //   child: const Icon(Icons.play_arrow),
+          // ),
         );
       }), // This trailing comma makes auto-formatting nicer for build methods.
     );

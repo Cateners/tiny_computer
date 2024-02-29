@@ -1,0 +1,68 @@
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      DEVENV_EXE: C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\Common7\IDE\devenv.exe
+      VSDEVCMD_BAT: C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\Common7\Tools\VsDevCmd.bat
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      DEVENV_EXE: C:\"Program Files (x86)"\"Microsoft Visual Studio"\2017\Community\Common7\IDE\devenv.exe
+      VSDEVCMD_BAT: C:\"Program Files (x86)"\"Microsoft Visual Studio"\2017\Community\Common7\Tools\VsDevCmd.bat
+
+install:
+  - if not exist deps mkdir deps
+  - cd deps
+  # zlib
+  - curl -fsSL -o zlib.tar.gz https://github.com/madler/zlib/archive/v1.2.8.tar.gz
+  - 7z x zlib.tar.gz -so | 7z x -si -ttar > nul
+  - move zlib-1.2.8 zlib
+  - cd zlib
+  - cmake .
+  - cmake --build .
+  - cd ..
+  # libJPEG
+  - curl -fsSL -o libjpeg.tar.gz https://github.com/libjpeg-turbo/libjpeg-turbo/archive/2.0.4.tar.gz
+  - tar xzf libjpeg.tar.gz
+  - move libjpeg-turbo-2.0.4 libjpeg
+  - cd libjpeg
+  - cmake .
+  - cmake --build .
+  - cd ..
+  # libPNG
+  - curl -fsSL -o libpng.tar.gz http://prdownloads.sourceforge.net/libpng/libpng-1.6.28.tar.gz?download
+  - 7z x libpng.tar.gz -so | 7z x -si -ttar > nul
+  - move libpng-1.6.28 libpng
+  - cd libpng
+  - cmake . -DZLIB_INCLUDE_DIR=..\zlib -DZLIB_LIBRARY=..\zlib\debug\zlibstaticd.lib
+  - cmake --build .
+  - cd ..
+  # Berkeley DB - required by SASL
+  - curl -fsSL -o db-4.1.25.tar.gz http://download.oracle.com/berkeley-db/db-4.1.25.tar.gz
+  - 7z x db-4.1.25.tar.gz -so | 7z x -si -ttar > nul
+  - move db-4.1.25 db
+  - cd db\build_win32
+  - echo using devenv %DEVENV_EXE%
+  - '%DEVENV_EXE% db_dll.dsp /upgrade'
+  - msbuild /p:Configuration=Release db_dll.vcxproj
+  - cd ..\..
+  # Cyrus SASL
+  - curl -fsSL -o cyrus-sasl-2.1.26.tar.gz https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.26/cyrus-sasl-2.1.26.tar.gz
+  - 7z x cyrus-sasl-2.1.26.tar.gz -so | 7z x -si -ttar > nul
+  - move cyrus-sasl-2.1.26 sasl
+  - cd sasl
+  - patch -p1 -i ..\sasl-fix-snprintf-macro.patch
+  - echo using vsdevcmd %VSDEVCMD_BAT%
+  - '%VSDEVCMD_BAT%'
+  - nmake /f NTMakefile OPENSSL_INCLUDE=c:\OpenSSL-Win32\include OPENSSL_LIBPATH=c:\OpenSSL-Win32\lib DB_INCLUDE=c:\projects\libvncserver\deps\db\build_win32 DB_LIBPATH=c:\projects\libvncserver\deps\db\build_win32\release DB_LIB=libdb41.lib install
+  - cd ..
+  # go back to source root
+  - cd ..
+
+build_script:
+  - mkdir build
+  - cd build 
+  - cmake --version
+  - cmake .. -DZLIB_INCLUDE_DIR=..\deps\zlib -DZLIB_LIBRARY=..\deps\zlib\debug\zlibstaticd.lib -DJPEG_INCLUDE_DIR=..\deps\libjpeg -DJPEG_LIBRARY_DEBUG=..\deps\libjpeg\debug\turbojpeg-static.lib -DPNG_PNG_INCLUDE_DIR=..\deps\libpng -DPNG_LIBRARY=..\deps\libpng\debug\libpng16_staticd.lib -D SASL2_INCLUDE_DIR=c:\cmu\include -D LIBSASL2_LIBRARIES=c:\cmu\lib\libsasl.lib ..
+  - cmake --build .
+  - ctest -C Debug --output-on-failure
+
+

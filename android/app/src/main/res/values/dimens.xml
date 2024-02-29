@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<resources>
+    <dimen name="margin_normal">10dp</dimen>
+    <dimen name="margin_small">5dp</dimen>
+    <dimen name="margin_large">20dp</dimen>
+    <dimen name="padding_normal">10dp</dimen>
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="action_btn_size">48dp</dimen>
+    <dimen name="urlbar_height">48dp</dimen>
+    <dimen name="urlbar_bg_corner_radius">24dp</dimen>
+    <dimen name="server_card_elevation">2dp</dimen>
+    <dimen name="server_card_min_height">68dp</dimen>
+    <dimen name="server_card_stroke_width">0dp</dimen>
+</resources>

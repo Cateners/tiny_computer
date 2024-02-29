@@ -1,0 +1,20 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:title="@string/pref_ui">
+
+    <ListPreference
+        app:defaultValue="system"
+        app:entries="@array/theme_entries"
+        app:entryValues="@array/theme_values"
+        app:key="theme"
+        app:title="@string/pref_theme"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

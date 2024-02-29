@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.gaurav.avnc.viewmodel.VncViewModel.State" />
+
+        <variable
+            name="viewModel"
+            type="com.gaurav.avnc.viewmodel.VncViewModel" />
+    </data>
+
+    <!--
+    There are three components of this screen:
+
+    1. FrameView :- Renders remote content. This is "behind" all other Views.
+
+    2. Drawers   :- These represent the toolbars and are rendered on top of FrameView.
+                    Currently, we only have one drawer.
+
+    3. Status    :- Topmost View. Shows progress indicator, status msg etc. It is initially
+                    visible but becomes invisible once we are successfully connected to server.
+    -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:scrimColor="@{0}">
+
+
+            <!--FrameView-->
+            <com.gaurav.avnc.ui.vnc.FrameView
+                android:id="@+id/frame_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_frame_view"
+                android:focusable="true"
+                android:focusableInTouchMode="true" />
+
+
+            <!--Drawer-->
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar_drawer"
+                app:viewModel="@{viewModel}" />
+
+        </androidx.drawerlayout.widget.DrawerLayout>
+
+        <!--Virtual keys-->
+        <ViewStub
+            android:id="@+id/virtual_keys_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout="@layout/virtual_keys" />
+
+        <!--Status-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/status_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?colorSurface">
+
+            <ProgressBar
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:indeterminate="true"
+                android:padding="@dimen/padding_small"
+                app:isVisible="@{viewModel.state == State.Connecting}"
+                app:layout_constraintBottom_toTopOf="@id/client_state"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_warning"
+                app:isVisible="@{viewModel.state == State.Disconnected}"
+                app:layout_constraintBottom_toTopOf="@id/client_state"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:tint="?attr/colorError" />
+
+            <TextView
+                android:id="@+id/client_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_normal"
+                android:text="@{viewModel.state.toString()}"
+                app:isVisible="@{viewModel.state != State.Created}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="State" />
+
+            <TextView
+                android:id="@+id/disconnect_reason"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_normal"
+                android:gravity="center"
+                android:text='@{ "( " + viewModel.disconnectReason + " )"}'
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                app:isVisible="@{viewModel.state == State.Disconnected &amp;&amp; !viewModel.disconnectReason.empty}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/client_state"
+                tools:text="( Connection refused! Server may be down or running on different port )" />
+
+            <ImageButton
+                android:id="@+id/reconnect_btn"
+                style="@style/ImageButton"
+                android:background="@drawable/bg_circular_button"
+                android:contentDescription="@string/desc_retry_connection_btn"
+                android:src="@drawable/ic_refresh"
+                app:isVisible="@{viewModel.state == State.Disconnected}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/disconnect_reason" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/auto_reconnect_progress"
+                style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                android:layout_width="@dimen/action_btn_size"
+                android:layout_height="@dimen/action_btn_size"
+                app:indicatorColor="?colorSecondary"
+                app:indicatorInset="0dp"
+                app:indicatorSize="@dimen/action_btn_size"
+                app:isVisible="@{viewModel.state == State.Disconnected &amp;&amp; viewModel.pref.server.autoReconnect}"
+                app:layout_constraintStart_toStartOf="@id/reconnect_btn"
+                app:layout_constraintTop_toTopOf="@id/reconnect_btn"
+                app:trackThickness="1dp"
+                tools:progress="50" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+</layout>

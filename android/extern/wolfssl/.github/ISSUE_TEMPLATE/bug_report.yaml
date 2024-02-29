@@ -1,0 +1,58 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for reporting an bug. If you would prefer a private method,
+        please email support@wolfssl.com
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version were you using?
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Description
+      description: |
+        Describe the issue in detail
+        Please include:
+          * Specific `./configure` options or `user_settings.h`
+          * Target and build environment
+      placeholder: |
+        Blinded by the light!
+        Code runs too fast. It's gone plaid!
+        ...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: If possible please give instructions on how to reproduce.
+      placeholder: |
+        1. `./configure --enable-42`
+        2. `make question`
+        3.
+        ...
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell

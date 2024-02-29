@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<resources>
+    <color name="colorBorder">#E8E8E8</color>
+    <color name="colorUrlBarBackground">#E8E8E8</color>
+</resources>

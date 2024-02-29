@@ -1,0 +1,162 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:title="@string/pref_input">
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_gesture"
+        app:title="@string/pref_gesture">
+
+        <com.gaurav.avnc.ui.prefs.ListPreferenceEx
+            app:defaultValue="touchscreen"
+            app:entries="@array/gesture_style_entries"
+            app:entryValues="@array/gesture_style_values"
+            app:key="gesture_style"
+            app:title="@string/pref_gesture_style"
+            app:useSimpleSummaryProvider="true"
+            app:widgetLayout="@layout/help_btn" />
+
+        <ListPreference
+            app:defaultValue="double-click"
+            app:entries="@array/double_tap_action_entries"
+            app:entryValues="@array/double_tap_action_values"
+            app:key="gesture_double_tap"
+            app:title="@string/pref_double_tap"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="right-click"
+            app:entries="@array/long_press_action_entries"
+            app:entryValues="@array/long_press_action_values"
+            app:key="gesture_long_press"
+            app:title="@string/pref_long_press"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="open-keyboard"
+            app:entries="@array/tap2_action_entries"
+            app:entryValues="@array/tap2_action_values"
+            app:key="gesture_tap2"
+            app:title="@string/pref_two_finger_tap"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.gaurav.avnc.ui.prefs.ListPreferenceEx
+            app:defaultValue="pan"
+            app:entries="@array/swipe1_action_entries"
+            app:entryValues="@array/swipe1_action_values"
+            app:key="gesture_swipe1"
+            app:title="@string/pref_swipe1"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="remote-scroll"
+            app:entries="@array/swipe2_action_entries"
+            app:entryValues="@array/swipe2_action_values"
+            app:key="gesture_swipe2"
+            app:title="@string/pref_swipe2"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.gaurav.avnc.ui.prefs.ListPreferenceEx
+            app:defaultValue="remote-drag"
+            app:entries="@array/double_tap_swipe_action_entries"
+            app:entryValues="@array/double_tap_swipe_action_values"
+            app:key="gesture_double_tap_swipe"
+            app:title="@string/pref_double_tap_swipe"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.gaurav.avnc.ui.prefs.ListPreferenceEx
+            app:defaultValue="none"
+            app:entries="@array/long_press_swipe_action_entries"
+            app:entryValues="@array/long_press_swipe_action_values"
+            app:key="gesture_long_press_swipe"
+            app:title="@string/pref_long_press_swipe"
+            app:useSimpleSummaryProvider="true"
+            app:widgetLayout="@layout/help_btn" />
+
+        <SeekBarPreference
+            android:max="15"
+            app:defaultValue="10"
+            app:key="gesture_swipe_sensitivity"
+            app:min="5"
+            app:title="@string/pref_swipe_sensitivity" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            app:key="invert_vertical_scrolling"
+            app:title="@string/pref_invert_vertical_scrolling" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_mouse"
+        app:title="@string/pref_mouse">
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="mouse_passthrough"
+            app:summaryOff="@string/pref_mouse_passthrough_summary_off"
+            app:summaryOn="@string/pref_mouse_passthrough_summary_on"
+            app:title="@string/pref_mouse_passthrough" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="hide_local_cursor"
+            app:title="@string/pref_hide_local_cursor" />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="hide_remote_cursor"
+            app:title="@string/title_hide_remote_cursor" />
+
+        <ListPreference
+            app:defaultValue="right-click"
+            app:entries="@array/mouse_back_action_entries"
+            app:entryValues="@array/mouse_back_action_values"
+            app:key="mouse_back"
+            app:title="@string/pref_mouse_back"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_keyboard_mini"
+        app:title="@string/pref_vk">
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="vk_open_with_keyboard"
+            app:title="@string/pref_vk_open_with_keyboard" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="vk_show_all"
+            app:title="@string/pref_vk_show_all" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_keyboard"
+        app:title="@string/pref_km">
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="km_right_alt_to_super"
+            app:title="@string/pref_km_right_alt_to_super" />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="km_language_switch_to_super"
+            app:title="@string/pref_km_language_switch_to_super" />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="km_back_to_escape"
+            app:summary="@string/pref_km_back_to_escape_summary"
+            app:title="@string/pref_km_back_to_escape" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

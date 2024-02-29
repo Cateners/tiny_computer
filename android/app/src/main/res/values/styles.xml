@@ -15,4 +15,148 @@
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+
+    <!--
+      When app is launched, Android shows a temporary window until the app is ready.
+      The background color for this temporary window is selected from the theme specified
+      for the activity in app manifest. E.g. it will be white for a Light theme.
+
+      If we specify DayNight theme in manifest for startup activity, but user has selected
+      dark theme in AVNC, they may see a white flash before activity starts drawing. To
+      workaround this, we use App.SplashTheme.Dark in the manifest to get a dark window,
+      but switch to main theme in Activity's onCreate().
+
+      Since API 31, Android provides SplashScreen API to change splash theme at runtime,
+      which we use to match the splash theme with user's prefs (see HomeActivity).
+      Note: Some custom ROMs don't respect/support the splash theme introduced in API 31.
+      On such devices, we still rely on the above mentioned workaround.
+    -->
+    <style name="App.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
+    <style name="App.SplashTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar" />
+
+    <style name="App.SplashTheme.Dark" parent="Theme.MaterialComponents.NoActionBar" />
+
+    <!--
+      This base theme is used for configuration-specific styling (e.g. night mode, API 23)
+    -->
+    <style name="App.BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
+    <!--
+      This is the main theme.
+    -->
+    <style name="App.Theme" parent="App.BaseTheme">
+        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+    </style>
+
+    <style name="AlertDialog.Dimmed" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:backgroundDimAmount">.6</item>
+    </style>
+
+    <style name="UrlBar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@drawable/bg_urlbar</item>
+        <item name="android:layout_marginStart">@dimen/margin_normal</item>
+        <item name="android:layout_marginEnd">@dimen/margin_normal</item>
+        <item name="android:layout_marginTop">@dimen/margin_large</item>
+        <item name="android:layout_marginBottom">@dimen/margin_normal</item>
+    </style>
+
+    <style name="TipView" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:drawableTop">@drawable/ic_lightbulb</item>
+    </style>
+
+    <style name="FormField">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/margin_small</item>
+    </style>
+
+    <style name="FormField.EditText">
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:drawablePadding">15dp</item>
+    </style>
+
+    <style name="FormField.LabelWithIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:drawablePadding">15dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/padding_small</item>
+    </style>
+
+    <style name="FormField.CheckBox">
+        <item name="android:paddingStart">11dp</item>
+    </style>
+
+    <style name="ImageButton">
+        <item name="android:layout_width">@dimen/action_btn_size</item>
+        <item name="android:layout_height">@dimen/action_btn_size</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="ImageButton.Toggle">
+        <item name="android:background">@drawable/bg_toggle_button</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textOff" />
+        <item name="android:textOn" />
+    </style>
+
+    <style name="ServerList">
+        <item name="android:paddingBottom">@dimen/server_card_min_height</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="ServerCard">
+        <item name="android:layout_marginTop">@dimen/margin_normal</item>
+        <item name="android:layout_marginStart">@dimen/margin_normal</item>
+        <item name="android:layout_marginEnd">@dimen/margin_normal</item>
+        <item name="android:focusable">true</item>
+        <item name="android:minHeight">@dimen/server_card_min_height</item>
+        <item name="cardElevation">@dimen/server_card_elevation</item>
+        <item name="strokeWidth">@dimen/server_card_stroke_width</item>
+        <item name="contentPadding">@dimen/padding_normal</item>
+        <item name="strokeColor">@color/colorBorder</item>
+    </style>
+
+    <style name="ServerCardHintIcon">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:layout_marginStart">@dimen/margin_normal</item>
+        <item name="android:layout_marginEnd">@dimen/margin_normal</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="tint">?android:textColorSecondary</item>
+        <item name="tintMode">src_in</item>
+    </style>
+
+    <style name="VirtualKey">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">50dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+    </style>
+
+    <style name="VirtualKey.Compact">
+        <item name="android:minWidth">36dp</item>
+    </style>
+
+    <style name="VirtualKey.Image">
+        <item name="android:minWidth">46dp</item>
+    </style>
+
+    <style name="VirtualKey.Toggle">
+        <item name="android:background">@drawable/bg_toggle_button</item>
+    </style>
+
+    <style name="VirtualKey.Toggle.Image">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:textOff" />
+        <item name="android:textOn" />
+        <item name="android:padding">12dp</item>
+    </style>
 </resources>

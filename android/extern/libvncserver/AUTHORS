@@ -1,0 +1,55 @@
+*  LibVNCServer (C) 2001 Johannes E. Schindelin <Johannes.Schindelin@gmx.de>
+is based on
+*  Original OSXvnc (C) 2001 Dan McGuirk <mcguirk@incompleteness.net>,
+which in turn is based on
+*  Original Xvnc (C) 1999 AT&T Laboratories Cambridge.
+
+Lots of improvements of this library are thanks to
+* TightVNC (C) 2000-2003 Const Kaplinsky
+
+The ZRLE compression scheme is from
+* RealVNC (James "Wez" Weatherall, who helped also with regions)
+
+The good folks from
+* KRFB (Dscho thinks it was Tim Jansen)
+helped also a lot (some *big* bugs!).
+
+Karl Runge provided an x11vnc, which is a much, much improved version of Dscho's
+original proof-of-concept. It really deserves to replace the old version,
+as it is a state-of-the-art, fast and usable program by now!
+
+The file transfer protocol from TightVNC was implemented by Rohit Kumar.
+This includes an implementation of RFB protocol version 3.7t.
+
+Important contributions were done by (in order of appearance, if we forgot you,
+just open an issue!): Akira Hatakeyama, Karl J. Runge, Justin "Zippy" Dearing,
+Oliver Mihatsch, Greg Sternberg, Werner Hofer, Giampiero Giancipoli,
+Glenn Mabutt, Paul Kreiner, Erik Kunze, Mike Frysinger, Martin Waitz,
+Mark McLoughlin, Paul Fox, Juan Jose Costello, Andre Leiadella,
+Alberto Lusiani, Malvina Mazin, Dave Stuart, Rohit Kumar, Donald Dugger,
+Steven Carr, Uwe Völker, Charles Coffing, Guillaume Rousse,
+Alessandro Praduroux, Brad Hards, Timo Ketola, Christian Ehrlicher,
+Noriaki Yamazaki, Ben Klopfenstein, Vic Lee, Christian Beier,
+Alexander Dorokhine, Corentin Chary, Wouter Van Meir, George Kiagiadakis,
+Joel Martin, Gernot Tenchio, William Roberts, Cristian Rodríguez,
+George Fleury, Kan-Ru Chen, Steve Guo, Luca Stauble, Peter Watkins,
+Kyle J. McKay, Mateus Cesar Groess, Philip Van Hoof, D. R. Commander,
+Rostislav Lisovy, Oliver Loch, Raphael Kubo da Costa, Amandeep Singh,
+Brian Bidulock, Daniel Cohen Gindi, David Verbeiren, Luca Falavigna,
+Matthias Treydte, Nicolas Ruff, Robbert Klarenbeek, Floris Bos,
+Zac Medico, Wu Zongyong, Wiki Wang, Wen Shuguang, Volker Ruppert,
+Timothy Pearson, Thomas Anderson, Sebastian Kranz, Rex Dieter, Rajesh Sahoo,
+Michał Kępień, Jocelyn Le Sage, Jay Carlson, Jae Hyun Yoo, Eddie James,
+Christian Häggström, Bastiaan Olij, Balazs Ludmany, Andrzej Szombierski,
+Alexander Tsoy, Albert Astals Cid, Iordan Iordanov, Samuel Mannehed,
+Remi Gacogne, Petr Písař, Peter Spiess-Knafl, Kyle Russell, Josef Gajdusek,
+Fabien Proriol, Bert van Hall, Benjamin Dürholt, Quentin Buathier,
+Fabrice Fontaine, Cédric Georges, Stefan Weil, Rolf Eike Beer, Andreas Weigel,
+Gaurav Ujjwal, Tobias Junghans, Efim Bushmanov, Jonas Ådahl, Andri Yngvason,
+Tim Gates, Dinglan Peng, Ryo Ota, Kyle Evans, Kang Lin, Derek Schrock,
+Alex Converse, Thorsten Scherer, Marco Fortina, Antenore Gatta, Maxim Devaev
+and Maksym Sobolyev.
+
+Probably we forgot quite a few people sending a patch here and there, which
+really made a difference. Without those, some obscure bugs still would
+be unfound.

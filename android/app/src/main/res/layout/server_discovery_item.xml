@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.gaurav.avnc.model.ServerProfile" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/ServerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/server_item"
+            app:profile="@{viewModel}" />
+
+        <ImageButton
+            android:id="@+id/save_btn"
+            style="@style/ImageButton"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/desc_save_discovered_server_btn"
+            android:src="@drawable/ic_plus" />
+    </com.google.android.material.card.MaterialCardView>
+</layout>

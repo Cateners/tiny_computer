@@ -97,6 +97,7 @@ class Util {
   //bool virgl = false 下次启动是否启用virgl
   //bool wakelock = false 屏幕常亮
   //bool isHidpiEnabled = false 是否开启高分辨率
+  //bool useAvnc = false 是否默认使用AVNC
   //String defaultHidpiOpt 默认HiDPI环境变量
   //? int bootstrapVersion: 启动包版本
   //String[] containersInfo: 所有容器信息(json)
@@ -119,7 +120,7 @@ class Util {
       case "isTerminalCommandsEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "termMaxLines" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(4095);
       case "termFontScale" : return b ? G.prefs.getDouble(key)! : (value){G.prefs.setDouble(key, value); return value;}(1.0);
-      case "vip" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(0);
+      case "vip" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(1);
       case "isStickyKey" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "reinstallBootstrap" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "getifaddrsBridge" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
@@ -129,6 +130,7 @@ class Util {
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe MESA_GL_VERSION_OVERRIDE=4.0");
@@ -138,8 +140,28 @@ class Util {
     }
   }
 
+//     await G.prefs.setStringList("containersInfo", ["""{
+// "name":"Debian Bookworm",
+// "boot":"${D.boot}",
+// "vnc":"startnovnc &",
+// "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
+// "commands":${jsonEncode(D.commands)}
+// }"""]);
+// case "lastDate" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("1970-01-01");
+
   static dynamic getCurrentProp(String key) {
-    return jsonDecode(Util.getGlobal("containersInfo")[G.currentContainer])[key];
+    dynamic m = jsonDecode(Util.getGlobal("containersInfo")[G.currentContainer]);
+    if (m.containsKey(key)) {
+      return m[key];
+    }
+    switch (key) {
+      case "name" : return (value){addCurrentProp(key, value); return value;}("Debian Bookworm");
+      case "boot" : return (value){addCurrentProp(key, value); return value;}(D.boot);
+      case "vnc" : return (value){addCurrentProp(key, value); return value;}("startnovnc &");
+      case "vncUrl" : return (value){addCurrentProp(key, value); return value;}("http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678");
+      case "vncUri" : return (value){addCurrentProp(key, value); return value;}("vnc://127.0.0.1:5904?VncPassword=12345678&SecurityType=2");
+      case "commands" : return (value){addCurrentProp(key, value); return value;}(jsonDecode(jsonEncode(D.commands)));
+    }
   }
 
   //用来设置name, boot, vnc, vncUrl等
@@ -149,6 +171,17 @@ class Util {
         [jsonEncode((jsonDecode(
           Util.getGlobal("containersInfo")[G.currentContainer]
         ))..update(key, (v) => value))]
+      )
+    );
+  }
+
+  //用来添加不存在的key等
+  static Future<void> addCurrentProp(String key, dynamic value) async {
+    await G.prefs.setStringList("containersInfo",
+      Util.getGlobal("containersInfo")..setAll(G.currentContainer,
+        [jsonEncode((jsonDecode(
+          Util.getGlobal("containersInfo")[G.currentContainer]
+        ))..addAll({key : value}))]
       )
     );
   }
@@ -365,16 +398,20 @@ class D {
     {"name":"卸载Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
-    {"name":"安装WPS", "command":"""wget --referer="https://www.wps.cn/product/wpslinux" \$(curl -L https://linux.wps.cn/ | grep -oP 'href="\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/wps.deb && sudo apt update && sudo apt install -y /tmp/wps.deb; rm /tmp/wps.deb"""},
+    {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo apt update && sudo apt install -y /tmp/wps.deb
+url=$(curl -L https://linux.wps.cn/ | grep -oP 'href="\K[^"]*arm64\.deb' | head -n 1)
+wget "${url}?k=$(eval echo -n '7f8faaaa468174dc1c9cd62e5f218a5b/$(echo -n ${url} | cut -d/ -f4-)0x7f53d55201314' | md5sum -t | cut -d' ' -f1)&t=0x7f53d55201314" --header="User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:109.0) Gecko/20100101 Firefox/115.0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" --header="Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --header="Accept-Encoding: gzip, deflate, br" --header="Connection: keep-alive" --header="Referer: https://www.wps.cn/" --header="Upgrade-Insecure-Requests: 1" --header="Sec-Fetch-Dest: document" --header="Sec-Fetch-Mode: navigate" --header="Sec-Fetch-Site: cross-site" --header="Sec-Fetch-User: ?1" -O /tmp/wps.deb
+EOF
+rm /tmp/wps.deb"""},
     {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
     {"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
     {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
-    {"name":"安装亿图图示", "command":"wget https://www.edrawsoft.cn/2download/aarch64/edrawmax_11.5.6-3_arm64.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
+    {"name":"安装亿图图示", "command":"wget https://www.edrawsoft.cn/2download/aarch64/edrawmax_12.6.1-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
     {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
     {"name":"安装QQ", "command":"""wget \$(curl -L https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/linuxQQDownload.js | grep -oP 'deb":"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
     {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
-    {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.9_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && sed -i 's#/opt/apps/com.tencent.weixin/files/weixin/weixin#/opt/apps/com.tencent.weixin/files/weixin/weixin --no-sandbox#g' /opt/apps/com.tencent.weixin/files/weixin/weixin.sh && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
-    {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.weixin libssl1.1 deepin-elf-verify"},
+    {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.10_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && sed -i 's#/opt/apps/com.tencent.weixin/files/weixin/weixin#/opt/apps/com.tencent.weixin/files/weixin/weixin --no-sandbox#g' /opt/apps/com.tencent.weixin/files/weixin/weixin.sh && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
+    {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.weixin deepin-elf-verify"},
     {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
@@ -469,6 +506,8 @@ class D {
     minimumSize: const Size(0, 0),
     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4)
   );
+
+  static const MethodChannel avncChannel = MethodChannel("avnc");
 
 }
 
@@ -859,7 +898,7 @@ clear""");
         SystemChrome.restoreSystemUIOverlays();
       });
       return Focus(
-        onKey: (node, event) {
+        onKeyEvent: (node, event) {
           // Allow webview to handle cursor keys. Without this, the
           // arrow keys seem to get "eaten" by Flutter and therefore
           // never reach the webview.
@@ -883,6 +922,10 @@ clear""");
     }));
   }
 
+  static Future<void> launchAvnc() async {
+    await D.avncChannel.invokeMethod("launchUsingUri", {"vncUri": Util.getCurrentProp("vncUri") as String});
+  }
+
   static Future<void> workflow() async {
     grantPermissions();
     await initData();
@@ -891,7 +934,7 @@ clear""");
     setupAudio();
     launchCurrentContainer();
     if (Util.getGlobal("autoLaunchVnc") as bool) {
-      waitForConnection().then((value) => launchBrowser());
+      waitForConnection().then((value) => (Util.getGlobal("useAvnc") as bool)?launchAvnc():launchBrowser());
     }
   }
 }

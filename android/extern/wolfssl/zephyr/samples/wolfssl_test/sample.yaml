@@ -1,0 +1,10 @@
+sample:
+  description: wolfCrypt test sample app
+  name: wolfCrypt test
+common:
+  min_flash: 65
+  min_ram: 36
+  tags: crypto wolfssl userspace random
+tests:
+  crypto.wolfssl_test:
+    platform_allow: qemu_x86 nrf5340dk_nrf5340_cpuapp_ns nrf5340dk_nrf5340_cpuapp

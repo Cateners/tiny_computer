@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32802.440
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{803FD0C6-D64E-4E16-9DC3-1DAEC859A3D2}") = "VisualGDB_wolfssl_test", "VisualGDB_wolfssl_test.vgdbproj", "{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35EEC1E7-13AB-4C74-BFCE-22142A10E1C1}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		sdkconfig = sdkconfig
+		sdkconfig.defaults = sdkconfig.defaults
+		build\config\sdkconfig.h = build\config\sdkconfig.h
+		..\..\..\..\..\wolfcrypt\test\test.c = ..\..\..\..\..\wolfcrypt\test\test.c
+		..\..\..\..\..\wolfcrypt\test\test.h = ..\..\..\..\..\wolfcrypt\test\test.h
+		..\..\..\..\..\..\..\SysGCC\esp32\esp-idf\v4.4.1\components\wolfssl\include\user_settings.h = ..\..\..\..\..\..\..\SysGCC\esp32\esp-idf\v4.4.1\components\wolfssl\include\user_settings.h
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|VisualGDB = Debug|VisualGDB
+		Release|VisualGDB = Release|VisualGDB
+		Tests (Debug)|VisualGDB = Tests (Debug)|VisualGDB
+		Tests (Release)|VisualGDB = Tests (Release)|VisualGDB
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Debug|VisualGDB.ActiveCfg = Debug|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Debug|VisualGDB.Build.0 = Debug|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Release|VisualGDB.ActiveCfg = Release|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Release|VisualGDB.Build.0 = Release|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Tests (Debug)|VisualGDB.ActiveCfg = Tests (Debug)|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Tests (Debug)|VisualGDB.Build.0 = Tests (Debug)|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Tests (Release)|VisualGDB.ActiveCfg = Tests (Release)|VisualGDB
+		{EADCC9AB-72B3-4B51-A838-593E5D80DDF7}.Tests (Release)|VisualGDB.Build.0 = Tests (Release)|VisualGDB
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0AC9105-F2CF-44E7-8032-3CD9E77EC9F6}
+	EndGlobalSection
+EndGlobal

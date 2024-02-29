@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2024  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.gaurav.avnc.viewmodel.VncViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <LinearLayout
+            android:id="@+id/primary_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:animateLayoutChanges="true"
+            tools:ignore="UselessParent"> <!--Its not useless-->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round_rect"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/keyboard_btn"
+                    style="@style/ImageButton"
+                    android:contentDescription="@string/desc_keyboard_btn"
+                    android:src="@drawable/ic_keyboard" />
+
+                <ImageButton
+                    android:id="@+id/virtual_keys_btn"
+                    style="@style/ImageButton"
+                    android:contentDescription="@string/desc_virtual_keys_btn"
+                    android:src="@drawable/ic_keyboard_mini" />
+
+                <ToggleButton
+                    android:id="@+id/gesture_style_toggle"
+                    style="@style/ImageButton.Toggle"
+                    android:contentDescription="@string/pref_gesture_style"
+                    android:drawableStart="@drawable/ic_gesture"
+                    android:drawableEnd="@drawable/ic_toggle_more"
+                    android:onCheckedChanged="@{(v,checked) -> checked ? zoomOptions.setChecked(false) : void}"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    app:isVisible="@{viewModel.pref.viewer.toolbarShowGestureStyleToggle}"
+                    tools:ignore="UnusedAttribute" />
+
+                <ToggleButton
+                    android:id="@+id/zoom_options"
+                    style="@style/ImageButton.Toggle"
+                    android:contentDescription="@string/desc_zoom_options_btn"
+                    android:drawableStart="@drawable/ic_zoom_options"
+                    android:drawableEnd="@drawable/ic_toggle_more"
+                    android:onCheckedChanged="@{(v,checked) -> checked ? gestureStyleToggle.setChecked(false) : void}"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    tools:ignore="UnusedAttribute" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="@dimen/margin_small"
+                android:background="@drawable/bg_round_rect"
+                app:isVisible="@{zoomOptions.checked}">
+
+                <ImageButton
+                    android:id="@+id/zoom_reset_btn"
+                    style="@style/ImageButton"
+                    android:contentDescription="@string/desc_reset_zoom_btn"
+                    android:src="@drawable/ic_zoom_reset" />
+
+                <ToggleButton
+                    android:id="@+id/zoom_lock_btn"
+                    style="@style/ImageButton.Toggle"
+                    android:contentDescription="@string/desc_lock_zoom_btn"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:padding="12dp" />
+
+                <ImageButton
+                    android:id="@+id/zoom_save_btn"
+                    style="@style/ImageButton"
+                    android:alpha="@{viewModel.profile.ID != 0 ? 1f : .25f}"
+                    android:contentDescription="@string/desc_save_zoom_btn"
+                    android:enabled="@{viewModel.profile.ID != 0}"
+                    android:src="@drawable/ic_save" />
+
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/gesture_style_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="@dimen/margin_small"
+                android:background="@drawable/bg_round_rect"
+                android:paddingStart="@dimen/padding_small"
+                android:paddingEnd="@dimen/padding_normal"
+                app:isVisible="@{gestureStyleToggle.checked}">
+
+                <RadioButton
+                    android:id="@+id/gesture_style_auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_gesture_style_auto" />
+
+                <RadioButton
+                    android:id="@+id/gesture_style_touchscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_gesture_style_touchscreen" />
+
+                <RadioButton
+                    android:id="@+id/gesture_style_touchpad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_gesture_style_touchpad" />
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </FrameLayout>
+</layout>

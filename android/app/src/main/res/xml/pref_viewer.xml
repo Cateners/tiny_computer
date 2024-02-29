@@ -1,0 +1,89 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:title="@string/pref_viewer">
+
+    <ListPreference
+        android:defaultValue="landscape"
+        android:entries="@array/orientation_entries"
+        android:entryValues="@array/orientation_values"
+        android:key="viewer_orientation"
+        android:title="@string/pref_orientation"
+        app:useSimpleSummaryProvider="true" />
+
+    <SwitchPreference
+        app:defaultValue="false"
+        app:key="pip_enabled"
+        app:title="@string/pref_enable_pip" />
+
+    <SwitchPreference
+        app:defaultValue="true"
+        app:key="fullscreen_display"
+        app:title="@string/pref_fullscreen" />
+
+    <SwitchPreference
+        app:defaultValue="false"
+        app:key="viewer_draw_behind_cutout"
+        app:title="@string/pref_display_cutout" />
+
+    <SwitchPreference
+        app:defaultValue="true"
+        app:key="keep_screen_on"
+        app:title="@string/pref_keep_screen_on" />
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_zoom_in"
+        app:title="@string/pref_zoom">
+
+        <SeekBarPreference
+            android:max="100"
+            app:defaultValue="50"
+            app:key="zoom_min"
+            app:min="10"
+            app:showSeekBarValue="true"
+            app:title="@string/pref_zoom_min" />
+
+        <SeekBarPreference
+            android:max="1000"
+            app:defaultValue="500"
+            app:key="zoom_max"
+            app:min="100"
+            app:showSeekBarValue="true"
+            app:title="@string/pref_zoom_max" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="per_orientation_zoom"
+            app:title="@string/pref_per_orientation_zoom" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/ic_toolbar"
+        app:title="@string/pref_toolbar">
+
+        <ListPreference
+            app:defaultValue="start"
+            app:entries="@array/toolbar_alignment_entries"
+            app:entryValues="@array/toolbar_alignment_values"
+            app:key="toolbar_alignment"
+            app:title="@string/pref_toolbar_alignment"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="toolbar_open_with_swipe"
+            app:title="@string/pref_toolbar_open_with_swipe" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="toolbar_show_gesture_style_toggle"
+            app:title="@string/pref_show_gesture_style_toggle" />
+    </PreferenceCategory>
+</PreferenceScreen>

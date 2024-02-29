@@ -1,0 +1,195 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<resources>
+
+    <string-array name="theme_entries">
+        <item>@string/pref_theme_option_system</item>
+        <item>@string/pref_theme_option_dark</item>
+        <item>@string/pref_theme_option_light</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+
+    <string-array name="orientation_entries">
+        <item>@string/pref_orientation_option_auto</item>
+        <item>@string/pref_orientation_option_portrait</item>
+        <item>@string/pref_orientation_option_landscape</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>auto</item>
+        <item>portrait</item>
+        <item>landscape</item>
+    </string-array>
+
+    <string-array name="toolbar_alignment_entries">
+        <item>@string/pref_toolbar_alignment_option_start</item>
+        <item>@string/pref_toolbar_alignment_option_end</item>
+    </string-array>
+    <string-array name="toolbar_alignment_values">
+        <item>start</item>
+        <item>end</item>
+    </string-array>
+
+    <string-array name="gesture_style_entries">
+        <item>@string/pref_gesture_style_touchscreen</item>
+        <item>@string/pref_gesture_style_touchpad</item>
+    </string-array>
+    <string-array name="gesture_style_values">
+        <item>touchscreen</item>
+        <item>touchpad</item>
+    </string-array>
+
+    <string-array name="tap2_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_right_click</item>
+        <item>@string/pref_gesture_action_open_keyboard</item>
+    </string-array>
+    <string-array name="tap2_action_values">
+        <item>none</item>
+        <item>right-click</item>
+        <item>open-keyboard</item>
+    </string-array>
+
+    <string-array name="double_tap_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_double_click</item>
+        <item>@string/pref_gesture_action_middle_click</item>
+        <item>@string/pref_gesture_action_right_click</item>
+    </string-array>
+    <string-array name="double_tap_action_values">
+        <item>none</item>
+        <item>double-click</item>
+        <item>middle-click</item>
+        <item>right-click</item>
+    </string-array>
+
+    <string-array name="long_press_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_double_click</item>
+        <item>@string/pref_gesture_action_middle_click</item>
+        <item>@string/pref_gesture_action_right_click</item>
+    </string-array>
+    <string-array name="long_press_action_values">
+        <item>none</item>
+        <item>double-click</item>
+        <item>middle-click</item>
+        <item>right-click</item>
+    </string-array>
+
+    <string-array name="swipe1_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_pan</item>
+        <item>@string/pref_gesture_action_remote_scroll</item>
+        <item>@string/pref_gesture_action_remote_drag</item>
+    </string-array>
+    <string-array name="swipe1_action_values">
+        <item>none</item>
+        <item>pan</item>
+        <item>remote-scroll</item>
+        <item>remote-drag</item>
+    </string-array>
+
+    <string-array name="swipe2_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_pan</item>
+        <item>@string/pref_gesture_action_remote_scroll</item>
+    </string-array>
+    <string-array name="swipe2_action_values">
+        <item>none</item>
+        <item>pan</item>
+        <item>remote-scroll</item>
+    </string-array>
+
+    <string-array name="double_tap_swipe_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_remote_drag</item>
+        <item>@string/pref_gesture_action_remote_drag_middle</item>
+        <item>@string/pref_gesture_action_pan</item>
+        <item>@string/pref_gesture_action_remote_scroll</item>
+    </string-array>
+    <string-array name="double_tap_swipe_action_values">
+        <item>none</item>
+        <item>remote-drag</item>
+        <item>remote-drag-middle</item>
+        <item>pan</item>
+        <item>remote-scroll</item>
+    </string-array>
+
+    <string-array name="long_press_swipe_action_entries">
+        <item>@string/pref_gesture_action_none</item>
+        <item>@string/pref_gesture_action_remote_drag</item>
+        <item>@string/pref_gesture_action_remote_drag_middle</item>
+        <item>@string/pref_gesture_action_pan</item>
+        <item>@string/pref_gesture_action_remote_scroll</item>
+    </string-array>
+    <string-array name="long_press_swipe_action_values">
+        <item>none</item>
+        <item>remote-drag</item>
+        <item>remote-drag-middle</item>
+        <item>pan</item>
+        <item>remote-scroll</item>
+    </string-array>
+
+    <string-array name="mouse_back_action_entries">
+        <item>@string/pref_mouse_back_action_default</item>
+        <item>@string/pref_gesture_action_middle_click</item>
+        <item>@string/pref_gesture_action_right_click</item>
+    </string-array>
+    <string-array name="mouse_back_action_values">
+        <item>default</item>
+        <item>middle-click</item>
+        <item>right-click</item>
+    </string-array>
+
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~ Arrays for profile editor ~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <!--Values for gesture style-->
+    <string-array name="profile_editor_gesture_style_labels">
+        <item>@string/pref_gesture_style_auto</item>
+        <item>@string/pref_gesture_style_touchscreen</item>
+        <item>@string/pref_gesture_style_touchpad</item>
+    </string-array>
+    <string-array name="profile_editor_gesture_style_descriptions">
+        <item>@string/pref_gesture_style_auto_summary</item>
+        <item>@string/pref_gesture_style_touchscreen_summary</item>
+        <item>@string/pref_gesture_style_touchpad_summary</item>
+    </string-array>
+    <string-array name="profile_editor_gesture_style_values">
+        <item>auto</item>
+        <item>touchscreen</item>
+        <item>touchpad</item>
+    </string-array>
+
+    <!--Values for security types-->
+    <string-array name="profile_editor_security_labels">
+        <item>@string/title_automatic</item>
+        <item>@string/title_none</item>
+        <item>VncAuth</item>
+        <item>AnonTLS</item>
+        <item>VeNCrypt</item>
+    </string-array>
+    <string-array name="profile_editor_security_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>18</item>
+        <item>19</item>
+    </string-array>
+
+
+    <!--Dummy string array used for testing-->
+    <string-array name="dummy_array">
+        <item>Item 1</item>
+        <item>Item 2</item>
+        <item>Item 3</item>
+    </string-array>
+</resources>

@@ -1,0 +1,23 @@
+<!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:title="@string/pref_servers">
+
+
+    <SwitchPreference
+        app:defaultValue="true"
+        app:key="clipboard_sync"
+        app:title="@string/pref_clipboard_sync" />
+
+    <SwitchPreference
+        app:defaultValue="false"
+        app:key="auto_reconnect"
+        app:title="@string/pref_auto_reconnect" />
+
+</PreferenceScreen>

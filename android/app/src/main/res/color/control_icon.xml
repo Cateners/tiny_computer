@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2021  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<!--
+    This color can be used for the icon of controls (e.g. EditText).
+    It is only valid for API >= 23
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="?android:disabledAlpha" android:color="?colorControlNormal" android:state_enabled="false" />
+    <item android:color="?colorControlNormal" android:state_focused="false" android:state_pressed="false" />
+    <item android:color="?colorControlActivated" />
+</selector>

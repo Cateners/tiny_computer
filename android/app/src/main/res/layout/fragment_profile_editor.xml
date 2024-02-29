@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="profile"
+            type="com.gaurav.avnc.model.ServerProfile" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <!--Name-->
+            <EditText
+                style="@style/FormField.EditText"
+                android:layout_width="match_parent"
+                android:drawableStart="@drawable/ic_bookmark"
+                android:hint="@string/hint_server_name"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:text="@={profile.name}" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!--Host-->
+                <EditText
+                    android:id="@+id/host"
+                    style="@style/FormField.EditText"
+                    android:layout_weight=".8"
+                    android:drawableStart="@{profile.useRepeater ? @drawable/ic_swap :  @drawable/ic_computer}"
+                    android:hint="@{profile.useRepeater ? @string/hint_repeater_host : @string/hint_host}"
+                    android:importantForAutofill="no"
+                    android:inputType="textUri"
+                    android:text="@={profile.host}" />
+
+                <!--Port-->
+                <EditText
+                    android:id="@+id/port"
+                    style="@style/FormField.EditText"
+                    android:layout_marginStart="0dp"
+                    android:layout_weight=".2"
+                    android:hint="@string/hint_port"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:text='@={"" +  profile.port}' />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/username"
+                style="@style/FormField.EditText"
+                android:layout_width="match_parent"
+                android:autofillHints="username"
+                android:drawableStart="@drawable/ic_person"
+                android:hint="@string/hint_username"
+                android:inputType="text"
+                android:text="@={profile.username}" />
+
+            <EditText
+                android:id="@+id/password"
+                style="@style/FormField.EditText"
+                android:layout_width="match_parent"
+                android:autofillHints="password"
+                android:drawableStart="@drawable/ic_password"
+                android:hint="@string/hint_password"
+                android:inputType="textPassword"
+                android:text="@={profile.password}" />
+        </LinearLayout>
+    </ScrollView>
+</layout>

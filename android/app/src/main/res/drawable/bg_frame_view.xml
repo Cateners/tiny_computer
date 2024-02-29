@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020  Gaurav Ujjwal.
+  ~
+  ~ SPDX-License-Identifier:  GPL-3.0-or-later
+  ~
+  ~ See COPYING.txt for more details.
+  -->
+
+<!-- Custom background for FrameView. Used to avoid white overlay when not in touch-mode-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/transparent" android:state_focused="true" />
+    <item android:drawable="@android:color/transparent" android:state_window_focused="true" />
+    <item android:drawable="@android:color/transparent" />
+</selector>
