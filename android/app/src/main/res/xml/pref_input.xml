@@ -15,7 +15,7 @@
         app:title="@string/pref_gesture">
 
         <com.gaurav.avnc.ui.prefs.ListPreferenceEx
-            app:defaultValue="touchscreen"
+            app:defaultValue="touchpad"
             app:entries="@array/gesture_style_entries"
             app:entryValues="@array/gesture_style_values"
             app:key="gesture_style"

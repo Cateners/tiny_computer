@@ -313,9 +313,15 @@ class _SettingPageState extends State<SettingPage> {
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           SizedBox.fromSize(size: const Size.square(16)),
           const Text("""AVNC可以带来获得更好的操控体验；
-如触摸板触控，双击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
+如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
           SizedBox.fromSize(size: const Size.square(16)),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
+              await D.avncChannel.invokeMethod("launchPrefsPage", {});
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("关于AVNC"), onPressed: () async {
+              await D.avncChannel.invokeMethod("launchAboutPage", {});
+            }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC启动时分辨率设置"), onPressed: () async {
               String w = "1440";
               String h = "720";
@@ -352,12 +358,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
                   }, child: const Text("保存")),
                 ]);
               });
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
-              await D.avncChannel.invokeMethod("launchPrefsPage", {});
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("关于AVNC"), onPressed: () async {
-              await D.avncChannel.invokeMethod("launchAboutPage", {});
             }),
           ]),
           SizedBox.fromSize(size: const Size.square(8)),

@@ -40,7 +40,7 @@ class AppPreferences(context: Context) {
     }
 
     inner class Gesture {
-        val style; get() = prefs.getString("gesture_style", "touchscreen")!!
+        val style; get() = prefs.getString("gesture_style", "touchpad")!!
         val tap1 = "left-click" //Preference UI was removed
         val tap2; get() = prefs.getString("gesture_tap2", "open-keyboard")!!
         val doubleTap; get() = prefs.getString("gesture_double_tap", "double-click")!!
