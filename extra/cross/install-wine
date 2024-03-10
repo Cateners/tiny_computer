@@ -34,8 +34,8 @@ cd $HOME/.local/share/tiny/tmp
 
 MIRROR_SITE=https://mirror.ghproxy.com
 RELEASE_PAGE=https://github.com/Kron4ek/Wine-Builds/releases
-LATEST_WINE_TAG=proton-$(curl -L $RELEASE_PAGE | grep -oP 'Proton \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #proton
-#LATEST_WINE_TAG=$(curl -L $RELEASE_PAGE | grep -oP 'Wine \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #vanilla
+#LATEST_WINE_TAG=proton-$(curl -L $RELEASE_PAGE | grep -oP 'Proton \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #proton
+LATEST_WINE_TAG=$(curl -L $RELEASE_PAGE | grep -oP 'Wine \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #vanilla
 if [ -z "$LATEST_WINE_TAG" ] || [ "$LATEST_WINE_TAG" == "proton-" ]
 then
   LATEST_WINE_TAG=proton-8.0-4

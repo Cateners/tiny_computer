@@ -180,7 +180,7 @@ class _SettingPageState extends State<SettingPage> {
                 );
                 return;
               }
-              FlutterClipboard.copy((Util.getCurrentProp("vncUrl") as String).replaceFirst(RegExp.escape("localhost"), ip)).then((value) {
+              FlutterClipboard.copy((Util.getCurrentProp("vncUrl") as String).replaceAll(RegExp.escape("localhost"), ip)).then((value) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("已复制分享链接"))
