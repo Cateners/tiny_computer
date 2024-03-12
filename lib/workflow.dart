@@ -130,7 +130,7 @@ class Util {
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
-      case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
@@ -390,7 +390,6 @@ class D {
   static const commands = [{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y"},
     {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
     {"name":"清屏", "command":"clear"},
-    {"name":"查看IP", "command":"hostname -I # 如果显示无权限(Permission denied)，请在全局设置里开启getifaddrs桥接"},
     {"name":"中断任务", "command":"\x03"},
     {"name":"安装图形处理软件Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
     {"name":"卸载Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
@@ -412,10 +411,10 @@ rm /tmp/wps.deb"""},
     {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
     {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.10_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && sed -i 's#/opt/apps/com.tencent.weixin/files/weixin/weixin#/opt/apps/com.tencent.weixin/files/weixin/weixin --no-sandbox#g' /opt/apps/com.tencent.weixin/files/weixin/weixin.sh && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
     {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.weixin deepin-elf-verify"},
-    {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
+    {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
-    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
+    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 #重启生效"},
     {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
     {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
     {"name":"关机", "command":"stopvnc\nexit\nexit"},
@@ -892,11 +891,6 @@ clear""");
   static Future<void> launchBrowser() async {
     G.controller.loadRequest(Uri.parse(Util.getCurrentProp("vncUrl")));
     Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,overlays: []);
-      SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
-        await Future.delayed(const Duration(seconds: 1));
-        SystemChrome.restoreSystemUIOverlays();
-      });
       return Focus(
         onKeyEvent: (node, event) {
           // Allow webview to handle cursor keys. Without this, the

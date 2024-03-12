@@ -31,7 +31,7 @@ import 'package:flutter_pty/flutter_pty.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-//import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -149,26 +149,26 @@ class _SettingPageState extends State<SettingPage> {
               ]);
             });
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
             await Util.setCurrentProp("name", value);
             //setState(() {});
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           ValueListenableBuilder(valueListenable: G.bootTextChange, builder:(context, v, child) {
             return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
               await Util.setCurrentProp("boot", value);
             });
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
             await Util.setCurrentProp("vnc", value);
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           const Divider(height: 2, indent: 8, endIndent: 8),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("你可以在当前所有同一网络下的设备（如：连接同一WiFi的手机，电脑等）里使用小小电脑。\n\n点击下面的按钮分享链接到其他设备后使用浏览器打开即可。"),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("复制分享链接"), onPressed: () async {
               final String? ip = await NetworkInfo().getWifiIP();
@@ -188,15 +188,15 @@ class _SettingPageState extends State<SettingPage> {
               });
             }),
           ]),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
             await Util.setCurrentProp("vncUrl", value);
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUri"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc链接"), onChanged: (value) async {
             await Util.setCurrentProp("vncUri", value);
           }),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[1],
@@ -218,7 +218,7 @@ class _SettingPageState extends State<SettingPage> {
                 await G.prefs.setInt("termMaxLines", int.parse(value!));
               });
             },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
             keyboardType: TextInputType.number,
             validator: (value) {
@@ -227,7 +227,7 @@ class _SettingPageState extends State<SettingPage> {
               });
             }
           ),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           SwitchListTile(title: const Text("关闭横幅广告"), value: Util.getGlobal("isBannerAdsClosed") as bool, onChanged:(value) {
             if (value && Util.shouldWatchAds(D.adsRequired["closeBannerAds"]!)) {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -241,7 +241,7 @@ class _SettingPageState extends State<SettingPage> {
               G.bannerAdsChange.value = !G.bannerAdsChange.value;
             });
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
             if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalWrite"]!)) {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -256,7 +256,7 @@ class _SettingPageState extends State<SettingPage> {
             G.prefs.setBool("isTerminalWriteEnabled", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
             if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -270,37 +270,37 @@ class _SettingPageState extends State<SettingPage> {
               G.terminalPageChange.value = !G.terminalPageChange.value;
             });
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
             G.prefs.setBool("isStickyKey", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("屏幕常亮"), value: Util.getGlobal("wakelock") as bool, onChanged:(value) {
             G.prefs.setBool("wakelock", value);
             WakelockPlus.toggle(enable: value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           const Divider(height: 2, indent: 8, endIndent: 8),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("以下选项修改后将在下次启动软件时生效。"),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
             G.prefs.setBool("autoLaunchVnc", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("重新安装引导包"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
             G.prefs.setBool("reinstallBootstrap", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("getifaddrs桥接"), subtitle: const Text("修复安卓13设备getifaddrs无权限"), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
             G.prefs.setBool("getifaddrsBridge", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("伪装系统为UOS"), subtitle: const Text("修复UOS微信无法启动"), value: Util.getGlobal("uos") as bool, onChanged:(value) {
             G.prefs.setBool("uos", value);
             setState(() {});
@@ -311,10 +311,10 @@ class _SettingPageState extends State<SettingPage> {
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("显示设置"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("""AVNC可以带来获得更好的操控体验；
 如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
               await D.avncChannel.invokeMethod("launchPrefsPage", {});
@@ -323,10 +323,15 @@ class _SettingPageState extends State<SettingPage> {
               await D.avncChannel.invokeMethod("launchAboutPage", {});
             }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC启动时分辨率设置"), onPressed: () async {
-              String w = "1440";
-              String h = "720";
+              final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
+              final w0 = max(s.width, s.height);
+              final h0 = min(s.width, s.height);
+              String w = (w0 * 0.6).round().toString();
+              String h = (h0 * 0.6).round().toString();
               showDialog(context: context, builder: (context) {
                 return AlertDialog(title: const Text("分辨率设置"), content: SingleChildScrollView(child: Column(children: [
+                  Text("你的设备屏幕分辨率是${w0.round()}x${h0.round()}"),
+                  const SizedBox.square(dimension: 8),
                   TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: w, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "宽"), keyboardType: TextInputType.number,
                     validator: (value) {
                       return Util.validateBetween(value, 200, 7680, () {
@@ -334,7 +339,7 @@ class _SettingPageState extends State<SettingPage> {
                       });
                     }
                   ),
-                  SizedBox.fromSize(size: const Size.square(8)),
+                  const SizedBox.square(dimension: 8),
                   TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: h, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "高"), keyboardType: TextInputType.number,
                     validator: (value) {
                       return Util.validateBetween(value, 200, 7680, () {
@@ -360,22 +365,21 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               });
             }),
           ]),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("默认使用AVNC"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
             G.prefs.setBool("useAvnc", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("""高分辨率支持可以为大屏幕设备带来更高清的体验！
 
 注意：
-选项开启后显示会变得很大，请在图形界面的左栏设置里手动调整缩放到一个你认为合适的值。
-如果使用AVNC，可以在上面设置一个更大的分辨率。
+选项开启后显示会变得很大，请设置一个合适的分辨率。
 
 一些软件可能会存在显示问题，或者显示速度变慢。"""),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"), readOnly: Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!),
             onTap: () {
               if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
@@ -389,12 +393,12 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               await G.prefs.setString("defaultHidpiOpt", value);
             },
           ),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("高分辨率支持"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
             G.prefs.setBool("isHidpiEnabled", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[3],
@@ -469,7 +473,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.isStreamServerStarted = value;
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启动推流"), value: G.isStreaming, onChanged:(value) {
             switch (value) {
               case true: {
@@ -490,7 +494,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.isStreaming = value;
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(8))
+          const SizedBox.square(dimension: 8)
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[4],
@@ -498,7 +502,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           return const ListTile(title: Text("文件访问"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const Text("通过这里获取更多文件权限，以实现对特殊目录的访问。"),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("申请存储权限"), onPressed: () {
               Permission.storage.request();
@@ -507,7 +511,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               Permission.manageExternalStorage.request();
             }),
           ]),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[5],
@@ -520,13 +524,13 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
 
 不过运行情况依然无法保证。
 """),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl服务器参数"),
             onChanged: (value) async {
               await G.prefs.setString("defaultVirglCommand", value);
             },
           ),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("测试"), subtitle: const Text("启动virgl_test_server"), value: G.isVirglServerStarted, onChanged:(value) {
             switch (value) {
               case true: {
@@ -546,13 +550,13 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.isVirglServerStarted = value;
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "图形环境变量"),
             onChanged: (value) async {
               await G.prefs.setString("defaultVirglOpt", value);
             },
           ),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
             if (value && Util.shouldWatchAds(D.adsRequired["enableVirgl"]!)) {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -564,7 +568,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.prefs.setBool("virgl", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[6],
@@ -585,7 +589,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
 跨架构/跨系统提供类似binfmt_misc的支持。
 你可以直接执行x86或x64的elf（系统会自动调用box86/box64），也可以直接执行exe文件（系统会自动调用wine64）。
 前提是这些文件拥有可执行权限。"""),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("安装box86和box64"), onPressed: () {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-box");
@@ -632,9 +636,9 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               G.pageIndex.value = 0;
             }),
           ]),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("""开启wine后的常用指令，点击后前往图形界面耐心等待。
 
 任意程序启动参考时间：
@@ -645,7 +649,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
 初始化时间：
 可能比本软件初始化还长
 """),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.wineCommands.asMap().entries.map<Widget>(
             (e) {
               return OutlinedButton(style: D.commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
@@ -654,11 +658,11 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               });
             }
           ).toList()),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
           const Text("以下选项修改后将在下次启动软件时生效。"),
-          SizedBox.fromSize(size: const Size.square(8)),
+          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用box86/box64"), subtitle: const Text("运行跨架构软件"), value: Util.getGlobal("isBoxEnabled") as bool, onChanged:(value) async {
             //检测box64是否存在，存在才开启
             if (value && !await File("${G.dataPath}/tiny/cross/box64").exists()) {
@@ -698,7 +702,7 @@ fi""");
             G.prefs.setBool("isWineEnabled", value);
             setState(() {});
           },),
-          SizedBox.fromSize(size: const Size.square(16)),
+          const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
         isExpanded: _expandState[7],
@@ -771,7 +775,8 @@ class _InfoPageState extends State<InfoPage> {
 正常情况下，加载完成后软件会自动跳转到图形界面
 
 在图形界面时，点击即鼠标左键
-双指点击为鼠标右键
+长按为鼠标右键
+双指点击弹出键盘
 双指划动为鼠标滚轮
 
 在图形界面返回，可以回到终端界面和控制界面
@@ -810,19 +815,15 @@ bilibili客户端等等不可用
 
 如果你给了存储权限
 那么通过主目录下的文件夹
-就可以访问手机存储
+就可以访问设备存储
+要访问整个设备存储可以访问sd文件夹
+此外主文件夹的很多文件夹与设备文件夹绑定
+比如主文件夹的下载文件夹就是设备的下载文件夹
 
-有一些设备做了更多访问限制
-比如下载文件夹可能不可写入
-这样会导致把文件保存到下载目录时出现问题
+如果没有给存储权限
+文件保存到下载文件夹时可能出现问题
 (火狐浏览器可能因此无法下载文件)
-不过这个很好解决
-换个文件夹保存就行了
-
-如果认为界面大小比例不合适
-可以通过调整图形界面左栏设置-高级里的屏幕缩放比例
-如果感觉界面卡卡的
-可以适当调低图像质量或压缩等级
+你也可以选择换一个文件夹保存
 
 如果你想安装其他软件
 可以使用容器自带的tmoe
@@ -841,7 +842,7 @@ VSCode、输入法
 
 如果你需要更多字体
 在给了存储权限的情况下
-直接将字体复制到手机存储的Fonts文件夹即可
+直接将字体复制到设备存储的Fonts文件夹即可
 一些常用的办公字体
 可以在Windows电脑的C:\\Windows\\Fonts文件夹找到
 由于可能的版权问题
@@ -852,23 +853,14 @@ VSCode、输入法
 而是使用英文键盘通过容器的输入法(Ctrl+空格切换)输入中文
 避免丢字错字
 
-在之前的版本中有网友反馈过这些问题
-还请注意：
-三星Galaxy S21 Ultra, 安卓13, 黑屏
-红米Note 12, 安卓13（miui14）, 黑屏
-红米Note 11T Pro+， miui13.0.4，“无法连接”
-Vivo Pad，安卓13，看不见鼠标移动（可以去左栏设置开启显示原系统光标替代）
-关于这些
-我目前没有什么好的解决办法
-(毕竟我没有这些设备
-也不方便定位原因)
-如果你遇到了类似问题
-不管解没解决
-都可以去https://github.com/Cateners/tiny_computer/issues/留个言
+如果你遇到了问题
+可以去https://github.com/Cateners/tiny_computer/issues/
+留言反馈
 
 如果软件里有程序正在正常运行
 请不要强行关闭本软件
 否则可能会损坏容器
+(如dpkg被中断)
 特别是在安装某些比较大的软件的时候
 
 感谢使用!
@@ -1461,14 +1453,14 @@ class TerminalPage extends StatelessWidget {
             children: const [Text('Ctrl'), Text('Alt'), Text('Shift')],
           ),
         ),
-        SizedBox.fromSize(size: const Size.square(8)), 
+        const SizedBox.square(dimension: 8), 
         Expanded(child: SizedBox(height: 24, child: ListView.separated(scrollDirection: Axis.horizontal, itemBuilder:(context, index) {
           return OutlinedButton(style: D.controlButtonStyle, onPressed: () {
             G.termPtys[G.currentContainer]!.terminal.keyInput(D.termCommands[index]["key"]! as TerminalKey);
           }, child: Text(D.termCommands[index]["name"]! as String));
         }, separatorBuilder:(context, index) {
-          return SizedBox.fromSize(size: const Size.square(4));
-        }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):SizedBox.fromSize(size: const Size.square(0));
+          return const SizedBox.square(dimension: 4);
+        }, itemCount: D.termCommands.length))), SizedBox.fromSize(size: const Size(72, 0))])):const SizedBox.square(dimension: 0);
       })
     ]);
   }
@@ -1498,7 +1490,7 @@ class _FastCommandsState extends State<FastCommands> {
             TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
               name = value;
             }),
-            SizedBox.fromSize(size: const Size.square(8)),
+            const SizedBox.square(dimension: 8),
             TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
               command = value;
             }),
@@ -1531,7 +1523,7 @@ class _FastCommandsState extends State<FastCommands> {
             TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
               name = value;
             }),
-            SizedBox.fromSize(size: const Size.square(8)),
+            const SizedBox.square(dimension: 8),
             TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
               command = value;
             }),
@@ -1597,13 +1589,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
 
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,overlays: []);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
         ValueListenableBuilder(valueListenable: G.bannerAdsChange, builder:(context, value, child) {
-          return (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?SizedBox.fromSize(size: const Size.square(0)):UnityBannerAd(
+          return (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?const SizedBox.square(dimension: 0):UnityBannerAd(
             placementId: AdManager.bannerAdPlacementId,
             onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
             onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
@@ -1615,11 +1609,11 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           );
         }), Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
-          return IndexedStack(index: G.pageIndex.value, children: [const TerminalPage(), Padding(
-              padding: const EdgeInsets.all(8),
+          return IndexedStack(index: G.pageIndex.value, children: const [TerminalPage(), Padding(
+              padding: EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(16),
                     child: FractionallySizedBox(
                       widthFactor: 0.4,
@@ -1628,16 +1622,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ),
                   ),
-                  /*Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                    child: Text(Util.getCurrentProp("name"), textScaleFactor: 2),
-                  ),*/
-                  const FastCommands(),
-                  Padding(padding: const EdgeInsets.all(8), child: Card(child: Padding(padding: const EdgeInsets.all(8), child: 
+                  FastCommands(),
+                  Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
                     Column(children: [
-                      const SettingPage(),
-                      SizedBox.fromSize(size: const Size.square(8)),
-                      const InfoPage(openFirstInfo: false)
+                      SettingPage(),
+                      SizedBox.square(dimension: 8),
+                      InfoPage(openFirstInfo: false)
                     ])
                   )))
                 ]
