@@ -9,7 +9,10 @@
 package com.gaurav.avnc.ui.about
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.tiny_computer.R
 
 /**
@@ -23,11 +26,18 @@ class AboutActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_about)
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.about_main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()

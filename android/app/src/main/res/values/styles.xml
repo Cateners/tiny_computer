@@ -31,29 +31,29 @@
       Note: Some custom ROMs don't respect/support the splash theme introduced in API 31.
       On such devices, we still rely on the above mentioned workaround.
     -->
-    <style name="App.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="App.SplashTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
-    <style name="App.SplashTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar" />
+    <style name="App.SplashTheme.Light" parent="Theme.Material3.Light.NoActionBar" />
 
-    <style name="App.SplashTheme.Dark" parent="Theme.MaterialComponents.NoActionBar" />
+    <style name="App.SplashTheme.Dark" parent="Theme.Material3.Dark.NoActionBar" />
 
     <!--
       This base theme is used for configuration-specific styling (e.g. night mode, API 23)
     -->
-    <style name="App.BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="App.BaseTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <!--
       This is the main theme.
     -->
     <style name="App.Theme" parent="App.BaseTheme">
-        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="appBarLayoutStyle">@style/Widget.Material3.AppBarLayout</item>
     </style>
 
-    <style name="AlertDialog.Dimmed" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="AlertDialog.Dimmed" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:backgroundDimAmount">.6</item>
     </style>
 
-    <style name="UrlBar" parent="Widget.MaterialComponents.Toolbar">
+    <style name="UrlBar" parent="Widget.Material3.Toolbar">
         <item name="android:background">@drawable/bg_urlbar</item>
         <item name="android:layout_marginStart">@dimen/margin_normal</item>
         <item name="android:layout_marginEnd">@dimen/margin_normal</item>
@@ -138,7 +138,7 @@
         <item name="android:minWidth">50dp</item>
         <item name="android:gravity">center</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyMedium</item>
     </style>
 
     <style name="VirtualKey.Compact">
