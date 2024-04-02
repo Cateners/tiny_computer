@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
         android:label="小小电脑"
-        android:name="${applicationName}"
+        android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
         android:theme="@style/App.Theme">
