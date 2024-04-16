@@ -326,8 +326,8 @@ class _SettingPageState extends State<SettingPage> {
               final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
               final w0 = max(s.width, s.height);
               final h0 = min(s.width, s.height);
-              String w = (w0 * 0.6).round().toString();
-              String h = (h0 * 0.6).round().toString();
+              String w = (w0 * 0.75).round().toString();
+              String h = (h0 * 0.75).round().toString();
               showDialog(context: context, builder: (context) {
                 return AlertDialog(title: const Text("分辨率设置"), content: SingleChildScrollView(child: Column(children: [
                   Text("你的设备屏幕分辨率是${w0.round()}x${h0.round()}"),

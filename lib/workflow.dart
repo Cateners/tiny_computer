@@ -387,7 +387,7 @@ class TermPty {
 //default values
 class D {
   //默认快捷指令
-  static const commands = [{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y"},
+  static const commands = [{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
     {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
     {"name":"清屏", "command":"clear"},
     {"name":"中断任务", "command":"\x03"},
@@ -397,7 +397,7 @@ class D {
     {"name":"卸载Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
-    {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo apt update && sudo apt install -y /tmp/wps.deb
+    {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
 url=$(curl -L https://linux.wps.cn/ | grep -oP 'href="\K[^"]*arm64\.deb' | head -n 1)
 wget "${url}?k=$(eval echo -n '7f8faaaa468174dc1c9cd62e5f218a5b/$(echo -n ${url} | cut -d/ -f4-)0x7f53d55201314' | md5sum -t | cut -d' ' -f1)&t=0x7f53d55201314" --header="User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:109.0) Gecko/20100101 Firefox/115.0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" --header="Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --header="Accept-Encoding: gzip, deflate, br" --header="Connection: keep-alive" --header="Referer: https://www.wps.cn/" --header="Upgrade-Insecure-Requests: 1" --header="Sec-Fetch-Dest: document" --header="Sec-Fetch-Mode: navigate" --header="Sec-Fetch-Site: cross-site" --header="Sec-Fetch-User: ?1" -O /tmp/wps.deb
 EOF
@@ -414,7 +414,6 @@ rm /tmp/wps.deb"""},
     {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
-    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 #重启生效"},
     {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
     {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
     {"name":"关机", "command":"stopvnc\nexit\nexit"},
@@ -536,6 +535,7 @@ class G {
   static ValueNotifier<bool> bannerAdsChange = ValueNotifier(true); //更改值，用于刷新banner广告
   static ValueNotifier<bool> bootTextChange = ValueNotifier(true); //更改值，用于刷新启动命令
   static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
+  static String postCommand = ""; //第一次进入容器时额外运行的命令
 
   static bool wasBoxEnabled = false; //本次启动时是否启用了box86/64
   static bool wasWineEnabled = false; //本次启动时是否启用了wine
@@ -742,6 +742,12 @@ done
     //如果没有这个key，说明是初次启动
     if (!G.prefs.containsKey("defaultContainer")) {
       await initForFirstTime();
+      //根据用户的屏幕调整分辨率
+      final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
+      final String w = (max(s.width, s.height) * 0.75).round().toString();
+      final String h = (min(s.width, s.height) * 0.75).round().toString();
+      G.postCommand = """sed -i -E "s@(geometry)=.*@\\1=${w}x${h}@" /etc/tigervnc/vncserver-config-tmoe
+sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
     }
     G.currentContainer = Util.getGlobal("defaultContainer") as int;
 
@@ -875,6 +881,7 @@ export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
 export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
 ${Util.getCurrentProp("boot")}
+${G.postCommand}
 ${(Util.getGlobal("autoLaunchVnc") as bool)?Util.getCurrentProp("vnc"):""}
 clear""");
   }
