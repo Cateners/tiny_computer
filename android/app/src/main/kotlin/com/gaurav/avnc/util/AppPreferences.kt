@@ -28,7 +28,7 @@ class AppPreferences(context: Context) {
     inner class Viewer {
         val orientation; get() = prefs.getString("viewer_orientation", "landscape")
         val fullscreen; get() = prefs.getBoolean("fullscreen_display", true)
-        val pipEnabled; get() = prefs.getBoolean("pip_enabled", false)
+        val pipEnabled; get() = prefs.getBoolean("pip_enabled", true)
         val drawBehindCutout; get() = prefs.getBoolean("viewer_draw_behind_cutout", false)
         val keepScreenOn; get() = prefs.getBoolean("keep_screen_on", true)
         val toolbarAlignment; get() = prefs.getString("toolbar_alignment", "start")

@@ -19,7 +19,7 @@
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreference
-        app:defaultValue="false"
+        app:defaultValue="true"
         app:key="pip_enabled"
         app:title="@string/pref_enable_pip" />
 
