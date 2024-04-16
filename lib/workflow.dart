@@ -386,6 +386,61 @@ class TermPty {
 
 //default values
 class D {
+
+  //帮助信息
+  static const faq = [
+    {"q":"错误码9", "a":"""如果你的系统版本大于等于android 12
+可能会在使用过程中异常退出(返回错误码9)
+届时本软件会提供方案指引你修复
+并不难
+但是软件没有权限
+不能帮你修复"""},
+    {"q":"安卓13注意事项", "a":"""如果你的系统版本大于等于android 13
+那么很可能一些网页应用如jupyter notebook
+bilibili客户端等等不可用
+可以去全局设置开启getifaddrs桥接"""},
+    {"q":"如何访问设备文件？", "a":"""如果你给了存储权限
+那么通过主目录下的文件夹
+就可以访问设备存储
+要访问整个设备存储可以访问sd文件夹
+此外主文件夹的很多文件夹与设备文件夹绑定
+比如主文件夹的下载文件夹就是设备的下载文件夹"""},
+    {"q":"自带的火狐浏览器无法下载文件", "a":"""检查是否授予小小电脑存储权限
+
+火狐下载的文件会保存在设备的下载文件夹
+如果不想授予存储权限也可在火狐的设置里更改下载文件夹"""},
+    {"q":"安装更多软件？", "a":"""本软件的初衷是作为PC应用引擎的平替
+所以我不会提供安装除WPS等软件外的帮助
+另外你需要一些Linux系统使用经验
+
+如果你想安装其他软件
+可以使用容器自带的tmoe
+但并不保证安装了能用哦
+(事实上, 目前容器里的
+VSCode、输入法
+都是用tmoe安装的
+就连系统本身也是用tmoe安装的)
+
+也可以在网上搜索
+"ubuntu安装xxx教程"
+"linux安装xxx教程"等等
+
+要注意容器环境和完整Linux有不同
+你可能需要做一些修补工作
+比如基于Electron的软件通常需要添加--no-sandbox参数才能使用"""},
+    {"q":"WPS没有常用字体？", "a":"""如果你需要更多字体
+在给了存储权限的情况下
+直接将字体复制到设备存储的Fonts文件夹即可
+一些常用的办公字体
+可以在Windows电脑的C:\\Windows\\Fonts文件夹找到
+由于可能的版权问题
+软件不能帮你做"""},
+    {"q":"中文输入法？", "a":"""关于中文输入的问题
+强烈建议不要使用安卓中文输入法直接输入中文
+而是使用英文键盘通过容器的输入法(Ctrl+空格切换)输入中文
+避免丢字错字"""},
+  ];
+
   //默认快捷指令
   static const commands = [{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
     {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
@@ -535,6 +590,56 @@ class G {
   static ValueNotifier<bool> bannerAdsChange = ValueNotifier(true); //更改值，用于刷新banner广告
   static ValueNotifier<bool> bootTextChange = ValueNotifier(true); //更改值，用于刷新启动命令
   static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
+  static ValueNotifier<String> helpText = ValueNotifier("""
+第一次加载大概需要5到10分钟...
+正常情况下，加载完成后软件会自动跳转到图形界面
+
+在图形界面时，点击即鼠标左键
+长按为鼠标右键
+双指点击弹出键盘
+双指划动为鼠标滚轮
+
+在图形界面返回，可以回到终端界面和控制界面
+你可以在控制界面安装更多软件或者阅读帮助信息
+
+请不要在安装时退出软件
+
+如果过了很长时间都没有加载完成
+可以去设置里看看小小电脑占用空间是不是一直没变
+如果是说明卡在什么地方了
+建议清除本软件数据重来一次
+
+(有一位网友提到过
+自己无论怎么清软件数据都装不上
+但在重启手机之后就装上了)
+
+一些注意事项：
+此软件以GPL协议免费开源
+如果是买的就是被骗了, 请举报
+源代码在这里: https://github.com/Cateners/tiny_computer
+软件也会第一时间在这里更新
+请尽可能在这里下载软件, 确保是正版
+
+如果你遇到了问题
+可以去https://github.com/Cateners/tiny_computer/issues/
+留言反馈
+
+如果软件里有程序正在正常运行
+请不要强行关闭本软件
+否则可能会损坏容器
+(如dpkg被中断)
+特别是在安装WPS的时候
+可能以为卡20%了
+其实耐心等待就好
+
+感谢使用!
+
+(顺带一提, 全部解压完大概需要4~5GB空间
+解压途中占用空间可能更多
+请确保有足够的空间
+(这样真的Tiny吗><))
+
+常见问题："""); //帮助页的说明文字
   static String postCommand = ""; //第一次进入容器时额外运行的命令
 
   static bool wasBoxEnabled = false; //本次启动时是否启用了box86/64
