@@ -39,8 +39,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:unity_ads_plugin/unity_ads_plugin.dart';
-
 import 'package:clipboard/clipboard.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -77,14 +75,10 @@ class Util {
   //int defaultAudioPort = 4718: 默认pulseaudio端口(为了避免和其它软件冲突改成4718了，原默认4713)
   //bool autoLaunchVnc = true: 是否自动启动VNC并跳转
   //String lastDate: 上次启动软件的日期，yyyy-MM-dd
-  //int adsWatchedToday: 今日视频广告观看数量
-  //int adsWatchedTotal: 视频广告观看数量
-  //bool isBannerAdsClosed = false
   //bool isTerminalWriteEnabled = false
   //bool isTerminalCommandsEnabled = false 
   //int termMaxLines = 4095 终端最大行数
   //double termFontScale = 1 终端字体大小
-  //int vip = 0 用户等级，vip免广告，你要改吗？(ToT)
   //bool isStickyKey = true 终端ctrl, shift, alt键是否粘滞
   //String defaultFFmpegCommand 默认推流命令
   //String defaultVirglCommand 默认virgl参数
@@ -103,8 +97,6 @@ class Util {
   //String[] containersInfo: 所有容器信息(json)
   //{name, boot:"\$DATA_DIR/bin/proot ...", vnc:"startnovnc", vncUrl:"...", commands:[{name:"更新和升级", command:"apt update -y && apt upgrade -y"},
   // bind:[{name:"U盘", src:"/storage/xxxx", dst:"/media/meow"}]...]}
-  //String[] adsBonus: 观看广告获取的奖励(json)
-  //{name: "xxx", amount: xxx}
   //TODO: 这么写还是不对劲，有空改成类试试？
   static dynamic getGlobal(String key) {
     bool b = G.prefs.containsKey(key);
@@ -113,14 +105,10 @@ class Util {
       case "defaultAudioPort" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(4718);
       case "autoLaunchVnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "lastDate" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("1970-01-01");
-      case "adsWatchedToday" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(0);
-      case "adsWatchedTotal" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(0);
-      case "isBannerAdsClosed" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isTerminalWriteEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isTerminalCommandsEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "termMaxLines" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(4095);
       case "termFontScale" : return b ? G.prefs.getDouble(key)! : (value){G.prefs.setDouble(key, value); return value;}(1.0);
-      case "vip" : return b ? G.prefs.getInt(key)! : (value){G.prefs.setInt(key, value); return value;}(1);
       case "isStickyKey" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "reinstallBootstrap" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "getifaddrsBridge" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
@@ -136,7 +124,6 @@ class Util {
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
       case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
       case "containersInfo" : return G.prefs.getStringList(key)!;
-      case "adsBonus" : return b ? G.prefs.getStringList(key)! : (value){G.prefs.setStringList(key, value); return value;}([].cast<String>());
     }
   }
 
@@ -184,43 +171,6 @@ class Util {
         ))..addAll({key : value}))]
       )
     );
-  }
-
-  //返回单个G.bonusTable定义的item
-  static Map<String, dynamic> getRandomBonus() {
-    final random = Random();
-    final totalWeight = D.bonusTable.fold(0.0, (sum, item) => sum + item['weight']);
-    final randomIndex = random.nextDouble() * totalWeight;
-    var cumulativeWeight = 0.0;
-    for (final item in D.bonusTable) {
-      cumulativeWeight += item['weight'];
-      if (randomIndex <= cumulativeWeight) {
-        return item;
-      }
-    }
-    return D.bonusTable[0];
-  }
-
-  //由getRandomBonus返回的数据
-  static Future<void> applyBonus(Map<String, dynamic> bonus) async {
-    bool flag = false;
-    List<String> ret = Util.getGlobal("adsBonus").map((e) {
-      Map<String, dynamic> item = jsonDecode(e);
-      return (item["name"] == bonus["name"])?
-        jsonEncode(item..update("amount", (v) {
-          flag = true;
-          return v + bonus["amount"];
-        })):e;
-    }).toList().cast<String>();
-    if (!flag) {
-      ret.add("""{"name": "${bonus["name"]}", "amount": ${bonus["amount"]}}""");
-    }
-    await G.prefs.setStringList("adsBonus", ret);
-  }
-
-  //根据已看广告量判断是否应该继续看广告
-  static bool shouldWatchAds(int expectNum) {
-    return ((Util.getGlobal("adsWatchedTotal") as int) < expectNum) && ((Util.getGlobal("vip") as int) < 1) && ((Util.getGlobal("adsWatchedToday") as int) < D.adsRequired["unlockToday"]!) && (G.adsWatchedThisTime < D.adsRequired["unlockOnce"]!);
   }
 
   //限定字符串在min和max之间, 给文本框的validator
@@ -524,34 +474,6 @@ rm /tmp/wps.deb"""},
     {"name": "F12", "key": TerminalKey.f12},
   ];
 
-  //看广告可以获得的奖励。
-  //weight抽奖权重，singleUse使用一次花费的数量，amount抽中可以获得的数量
-  static const List<Map<String, dynamic>> bonusTable = [
-    {"name": "开发者的祝福", "subtitle": "支持开发者的证明", "description": "(*'v'*)\n开发者由衷地感谢你!", "weight": 10000, "amount": 1, "singleUse": 0},
-    {"name": "记忆晶片", "subtitle": "看上去像平行四边形", "description": "组成记忆空间的基本元素。\n是从哪里掉下来的呢?", "weight": 50, "amount": 1, "singleUse": 0},
-    {"name": "Wishes Flower Part", "subtitle": "为1个人献上祝福", "description": "希望之花的花瓣。在想好为谁祝福后, 点击使用", "weight": 500, "amount": 1, "singleUse": 1},
-    {"name": "Wishes Flower Part", "subtitle": "为1个人献上祝福", "description": "希望之花的花瓣。在想好为谁祝福后, 点击使用", "weight": 100, "amount": 3, "singleUse": 1},
-    {"name": "Wishes Flower", "subtitle": "为3个人献上祝福", "description": "希望之花。在想好为谁祝福后, 点击使用", "weight": 50, "amount": 1, "singleUse": 1},
-    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 10, "amount": 0.01, "singleUse": 1},
-    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 1, "amount": 0.1, "singleUse": 1},
-    {"name": "Bonus Reward", "subtitle": "会有极好的事情发生", "description": "来自记忆空间的传说。\n使用后一天内必有极好的事情...\n就是你想象的那种事情...\n就会发生。\n不过, 大概只是个传说吧。", "weight": 1, "amount": 1, "singleUse": 1},
-  ];
-
-  //某项功能开启需要的广告数。
-  static const Map<String, int> adsRequired = {
-    "closeBannerAds" : 5,
-    "enableTerminalWrite" : 2,
-    "enableTerminalCommands" : 3,
-    "changeTermMaxLines" : 6,
-    "changeFFmpegCommand" : 8,
-    "enableVirgl" : 10,
-    "changeHidpiOpt" : 12,
-    
-    "unlockOnce" : 1, //临时解锁需要看的广告数
-    "unlockToday" : 2, //当日解锁需要看的广告数
-
-  };
-
   static const String boot = "\$DATA_DIR/bin/proot -H --change-id=1000:1000 --pwd=/home/tiny --rootfs=\$CONTAINER_DIR --mount=/system --mount=/apex --mount=/sys --kill-on-exit --mount=/storage:/storage --sysvipc -L --link2symlink --mount=/proc:/proc --mount=/dev:/dev --mount=\$CONTAINER_DIR/tmp:/dev/shm --mount=/dev/urandom:/dev/random --mount=/proc/self/fd:/dev/fd --mount=/proc/self/fd/0:/dev/stdin --mount=/proc/self/fd/1:/dev/stdout --mount=/proc/self/fd/2:/dev/stderr --mount=/dev/null:/dev/tty0 --mount=/dev/null:/proc/sys/kernel/cap_last_cap --mount=/storage/self/primary:/media/sd --mount=\$DATA_DIR/share:/home/tiny/公共 --mount=\$DATA_DIR/tiny:/home/tiny/.local/share/tiny --mount=/storage/self/primary/Fonts:/usr/share/fonts/wpsm --mount=/storage/self/primary/AppFiles/Fonts:/usr/share/fonts/yozom --mount=/system/fonts:/usr/share/fonts/androidm --mount=/storage/self/primary/Pictures:/home/tiny/图片 --mount=/storage/self/primary/Music:/home/tiny/音乐 --mount=/storage/self/primary/Movies:/home/tiny/视频 --mount=/storage/self/primary/Download:/home/tiny/下载 --mount=/storage/self/primary/DCIM:/home/tiny/照片 --mount=/storage/self/primary/Documents:/home/tiny/文档 --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.stat:/proc/stat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/.tmoe-container.version:/proc/version --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/bus:/proc/bus --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/buddyinfo:/proc/buddyinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/cgroups:/proc/cgroups --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/consoles:/proc/consoles --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/crypto:/proc/crypto --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/devices:/proc/devices --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/diskstats:/proc/diskstats --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/execdomains:/proc/execdomains --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/fb:/proc/fb --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/filesystems:/proc/filesystems --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/interrupts:/proc/interrupts --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/iomem:/proc/iomem --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/ioports:/proc/ioports --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/kallsyms:/proc/kallsyms --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/keys:/proc/keys --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/key-users:/proc/key-users --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/kpageflags:/proc/kpageflags --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/loadavg:/proc/loadavg --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/locks:/proc/locks --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/misc:/proc/misc --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/modules:/proc/modules --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/pagetypeinfo:/proc/pagetypeinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/partitions:/proc/partitions --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/sched_debug:/proc/sched_debug --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/softirqs:/proc/softirqs --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/timer_list:/proc/timer_list --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/uptime:/proc/uptime --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmallocinfo:/proc/vmallocinfo --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/vmstat:/proc/vmstat --mount=\$CONTAINER_DIR/usr/local/etc/tmoe-linux/proot_proc/zoneinfo:/proc/zoneinfo \$EXTRA_MOUNT /usr/bin/env -i HOSTNAME=TINY HOME=/home/tiny USER=tiny TERM=xterm-256color SDL_IM_MODULE=fcitx XMODIFIERS=@im=fcitx QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx TMOE_CHROOT=false TMOE_PROOT=true TMPDIR=/tmp MOZ_FAKE_NO_SANDBOX=1 DISPLAY=:4 PULSE_SERVER=tcp:127.0.0.1:4718 LANG=zh_CN.UTF-8 SHELL=/bin/bash PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games \$EXTRA_OPT /bin/bash -l";
 
   static final ButtonStyle commandButtonStyle = OutlinedButton.styleFrom(
@@ -581,11 +503,9 @@ class G {
   static late BuildContext homePageStateContext;
   static late int currentContainer; //目前运行第几个容器
   static late Map<int, TermPty> termPtys; //为容器<int>存放TermPty数据
-  static late AdManager ads; //广告实例
   static late VirtualKeyboard keyboard; //存储ctrl, shift, alt状态
   static bool maybeCtrlJ = false; //为了区分按下的ctrl+J和enter而准备的变量
   static ValueNotifier<double> termFontScale = ValueNotifier(1); //终端字体大小，存储为G.prefs的termFontScale
-  static int adsWatchedThisTime = 0; //本次启动应用看的广告数
   static bool isStreamServerStarted = false;
   static bool isStreaming = false;
   //static int? streamingPid;
@@ -596,7 +516,6 @@ class G {
   //static int? virglPid;
   static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
-  static ValueNotifier<bool> bannerAdsChange = ValueNotifier(true); //更改值，用于刷新banner广告
   static ValueNotifier<bool> bootTextChange = ValueNotifier(true); //更改值，用于刷新启动命令
   static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
   static ValueNotifier<String> helpText = ValueNotifier("""
@@ -656,78 +575,6 @@ class G {
 
 
   static late SharedPreferences prefs;
-}
-
-class AdManager {
-  
-  static Map<String, bool> placements = {
-    interstitialVideoAdPlacementId: false,
-    rewardedVideoAdPlacementId: false,
-  };
-
-  static void loadAds() {
-    for (var placementId in placements.keys) {
-      loadAd(placementId);
-    }
-  }
-
-  static void loadAd(String placementId) {
-    UnityAds.load(
-      placementId: placementId,
-      onComplete: (placementId) {
-        debugPrint('Load Complete $placementId');
-        placements[placementId] = true;
-      },
-      onFailed: (placementId, error, message) => debugPrint('Load Failed $placementId: $error $message'),
-    );
-  }
-
-  static void showAd(String placementId, Function completeExtra, Function full) {
-
-    if ((Util.getGlobal("adsWatchedToday") as int) >= 5) {
-      full();
-      return;
-    }
-
-    placements[placementId] = false;
-    UnityAds.showVideoAd(
-      placementId: placementId,
-      onComplete: (placementId) async {
-        debugPrint('Video Ad $placementId completed');
-        loadAd(placementId);
-        G.adsWatchedThisTime++;
-        await G.prefs.setInt("adsWatchedTotal", (Util.getGlobal("adsWatchedTotal") as int)+1);
-        await G.prefs.setInt("adsWatchedToday", (Util.getGlobal("adsWatchedToday") as int)+1);
-        completeExtra();
-      },
-      onFailed: (placementId, error, message) {
-        debugPrint('Video Ad $placementId failed: $error $message');
-        loadAd(placementId);
-      },
-      onStart: (placementId) => debugPrint('Video Ad $placementId started'),
-      onClick: (placementId) => debugPrint('Video Ad $placementId click'),
-      onSkipped: (placementId) {
-        debugPrint('Video Ad $placementId skipped');
-        loadAd(placementId);
-      },
-    );
-  }
-
-  static String get gameId {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return '5403132';
-    }
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return '5403133';
-    }
-    return '';
-  }
-
-  static String bannerAdPlacementId = 'Banner_Android';
-
-  static String interstitialVideoAdPlacementId = 'Interstitial_Android';
-
-  static String rewardedVideoAdPlacementId = 'Rewarded_Android';
 }
 
 class Workflow {
@@ -850,7 +697,7 @@ done
     final String currentDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
     if (currentDate != (Util.getGlobal("lastDate") as String)) {
       await G.prefs.setString("lastDate", currentDate);
-      await G.prefs.setInt("adsWatchedToday", 0);
+      //await G.prefs.setInt("adsWatchedToday", 0);
     }
 
     //如果没有这个key，说明是初次启动
@@ -876,29 +723,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
 
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
 
-    //恢复临时开启的功能
-    if (Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!)) {
-      await G.prefs.remove("defaultFFmpegCommand");
-    }
-    if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
-      await G.prefs.remove("defaultHidpiOpt");
-    }
-    if (Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!)) {
-      await G.prefs.setInt("termMaxLines", 4095);
-    }
-    if (Util.shouldWatchAds(D.adsRequired["closeBannerAds"]!)) {
-      await G.prefs.setBool("isBannerAdsClosed", false);
-    }
-    if (Util.shouldWatchAds(D.adsRequired["enableTerminalWrite"]!)) {
-      await G.prefs.setBool("isTerminalWriteEnabled", false);
-    }
-    if (Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
-      await G.prefs.setBool("isTerminalCommandsEnabled", false);
-    }
-    if (Util.shouldWatchAds(D.adsRequired["enableVirgl"]!)) {
-      await G.prefs.setBool("virgl", false);
-    }
-
     //设置屏幕常亮
     WakelockPlus.toggle(enable: Util.getGlobal("wakelock"));
   }
@@ -907,18 +731,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
     if (!G.termPtys.containsKey(G.currentContainer)) {
       G.termPtys[G.currentContainer] = TermPty();
     }
-  }
-
-  static Future<void> initAds() async {
-    UnityAds.init(
-      gameId: AdManager.gameId,
-      testMode: false,
-      onComplete: () {
-        debugPrint('Initialization Complete');
-        AdManager.loadAds();
-      },
-      onFailed: (error, message) => debugPrint('Initialization Failed: $error $message'),
-    );
   }
 
   static Future<void> setupAudio() async {
@@ -1044,7 +856,6 @@ clear""");
   static Future<void> workflow() async {
     grantPermissions();
     await initData();
-    await initAds();
     await initTerminalForCurrent();
     setupAudio();
     launchCurrentContainer();

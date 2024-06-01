@@ -39,8 +39,6 @@ import 'package:xterm/xterm.dart';
 //import 'package:xterm/flutter.dart';
 import 'package:tiny_computer/workflow.dart';
 
-import 'package:unity_ads_plugin/unity_ads_plugin.dart';
-
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 
 void main() {
@@ -117,7 +115,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -201,18 +199,10 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[1],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("全局设置"), subtitle: Text("在这里关广告、开启终端编辑"));
+          return const ListTile(title: Text("全局设置"), subtitle: Text("在这里开启终端编辑"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"), readOnly: Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!),
+          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"),
             keyboardType: TextInputType.number,
-            onTap: () {
-              if (Util.shouldWatchAds(D.adsRequired["changeTermMaxLines"]!)) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("观看六次视频广告永久解锁><"))
-                );
-              }
-            },
             validator: (value) {
               return Util.validateBetween(value, 1024, 2147483647, () async {
                 await G.prefs.setInt("termMaxLines", int.parse(value!));
@@ -228,43 +218,12 @@ class _SettingPageState extends State<SettingPage> {
             }
           ),
           const SizedBox.square(dimension: 16),
-          SwitchListTile(title: const Text("关闭横幅广告"), value: Util.getGlobal("isBannerAdsClosed") as bool, onChanged:(value) {
-            if (value && Util.shouldWatchAds(D.adsRequired["closeBannerAds"]!)) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("观看五次视频广告永久解锁><"))
-              );
-              return;
-            }
-            G.prefs.setBool("isBannerAdsClosed", value);
-            setState(() {
-              G.bannerAdsChange.value = !G.bannerAdsChange.value;
-            });
-          },),
-          const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
-            if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalWrite"]!)) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: const Text("观看两次视频广告永久解锁><"), action: SnackBarAction(label: "啊?", onPressed: () {
-                  G.prefs.setBool("isTerminalWriteEnabled", value);
-                  setState(() {});
-                },))
-              );
-              return;
-            }
             G.prefs.setBool("isTerminalWriteEnabled", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
-            if (value && Util.shouldWatchAds(D.adsRequired["enableTerminalCommands"]!)) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("观看三次视频广告永久解锁><"))
-              );
-              return;
-            }
             G.prefs.setBool("isTerminalCommandsEnabled", value);
             setState(() {
               G.terminalPageChange.value = !G.terminalPageChange.value;
@@ -380,15 +339,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
 
 一些软件可能会存在显示问题，或者显示速度变慢。"""),
           const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"), readOnly: Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!),
-            onTap: () {
-              if (Util.shouldWatchAds(D.adsRequired["changeHidpiOpt"]!)) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("观看十二次视频广告永久解锁><"))
-                );
-              }
-            },
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"),
             onChanged: (value) async {
               await G.prefs.setString("defaultHidpiOpt", value);
             },
@@ -440,15 +391,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             }),
           ]),
           const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), readOnly: Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!),
-            onTap: () {
-              if (Util.shouldWatchAds(D.adsRequired["changeFFmpegCommand"]!)) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("观看八次视频广告永久解锁><"))
-                );
-              }
-            },
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), 
             onChanged: (value) async {
               await G.prefs.setString("defaultFFmpegCommand", value);
             },
@@ -558,13 +501,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           ),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
-            if (value && Util.shouldWatchAds(D.adsRequired["enableVirgl"]!)) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("观看十次视频广告永久解锁><"))
-              );
-              return;
-            }
             G.prefs.setBool("virgl", value);
             setState(() {});
           },),
@@ -579,9 +515,9 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
 
 运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待。程序崩溃也是常有的。
 
-你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
+建议将要运行的Windows程序连同程序文件夹移至桌面运行。
 
-如果不耐烦可以去看个广告消磨时间（bushi）
+你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
 
 或者寻找该windows软件官方是否提供linux arm64版本。
 
@@ -703,35 +639,6 @@ fi""");
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
-        ],))),
-      ExpansionPanel(
-        isExpanded: _expandState[7],
-        headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("广告记录"), subtitle: Text("在这里看广告"));
-        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          OutlinedButton(child: const Text("看一个广告"), onPressed: () {
-              if (AdManager.placements[AdManager.rewardedVideoAdPlacementId]!) {
-              AdManager.showAd(AdManager.rewardedVideoAdPlacementId, () {
-                final bonus = Util.getRandomBonus();
-                Util.applyBonus(bonus);
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("你获得了 ${bonus["name"]}*${bonus["amount"]}"))
-                );
-                setState(() {});
-              }, () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("已经看5个广告了, 今天也非常感谢><"))
-                );
-              });
-              }
-            }),
-            const SizedBox.square(dimension: 8),
-            Text(Util.getGlobal("adsBonus").map((element) {
-              final e = jsonDecode(element);
-              return e["amount"]==0?"":"${e["name"]}*${e["amount"]}\n";
-            }).join())
         ],))),
     ],);
   }
@@ -1159,47 +1066,19 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-------------
-unity_ads_plugin
-
-MIT License
-
-Copyright (c) 2021 Pavel Zaichyk
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 """))),
       ExpansionPanel(
         isExpanded: _expandState[2],
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("隐私政策"));
         }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
-除由Unity提供的广告功能外, 本软件不会收集你的隐私信息。
+本软件不会收集你的隐私信息。
 
 当然，你在容器系统内部安装或使用的软件行为（包括通过快捷指令）就不受我控制了，我不对其负责。
 
 本软件申请的权限用于以下目的：
 文件相关权限：用于系统访问手机目录；
 相机和麦克风：用于推流，默认不会开启。
-
-关于广告获取隐私信息的说明, 在第一次看广告时Unity会向你做出告知。
-届时你可以选择要向Unity提供哪些信息。
 """))),
       ExpansionPanel(
         isExpanded: _expandState[3],
@@ -1221,36 +1100,7 @@ SOFTWARE.
         }), body: Column(
         children: [
           const Padding(padding: EdgeInsets.all(8), child: Text("""
-这个软件预计会有一些广告
-分为横幅广告和视频广告
-横幅广告在终端和控制页面的顶端出现
-(但不知道是不是因为代码没写对
-反正我从没见横幅广告成功加载过)
-视频广告在需要解锁某些功能时自行观看
-
-这些功能需要累计完整观看对应数目广告后永久解锁：
-启用终端: 观看2个广告
-启用小键盘: 观看3个广告
-关闭横幅广告: 观看5个广告
-终端最大行数修改: 观看6个广告
-推流参数修改: 观看8个广告
-启用virgl加速: 观看10个广告
-HiDPI环境变量修改: 观看12个广告
-
-我设置了每天最多可以看5个广告。
-只要看满1个广告, 就可以在本次使用期间临时解锁全部功能。
-只要看满2个广告, 就可以在当日使用期间临时解锁全部功能。
-
-总之为了良好的体验
-在图形界面是不会出现广告的
-这点还请放心
-
----注意事项---
-
-我注意到Unity提供了一些不那么合适的广告
-一般如果我看到这些广告就在后台直接禁了
-不过也可能有漏网之鱼
-可以联系我禁掉
+如果认为好用的话，可以推荐给其他人用噢！
 """)),
           ElevatedButton(
             onPressed: () {
@@ -1506,20 +1356,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
-      body: isLoadingComplete?Column(mainAxisSize: MainAxisSize.min, children: [
-        ValueListenableBuilder(valueListenable: G.bannerAdsChange, builder:(context, value, child) {
-          return (Util.getGlobal("isBannerAdsClosed") as bool)||bannerAdsFailedToLoad?const SizedBox.square(dimension: 0):UnityBannerAd(
-            placementId: AdManager.bannerAdPlacementId,
-            onLoad: (placementId) => debugPrint('Banner loaded: $placementId'),
-            onClick: (placementId) => debugPrint('Banner clicked: $placementId'),
-            onFailed: (placementId, error, message) {
-              debugPrint('Banner Ad $placementId failed: $error $message');
-              setState(() {
-                bannerAdsFailedToLoad = true;
-              });
-            },
-          );
-        }), Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
+      body: isLoadingComplete?
+        Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
           return IndexedStack(index: G.pageIndex.value, children: const [TerminalPage(), Padding(
               padding: EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
@@ -1544,7 +1382,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ]
               )))
           )]);
-        }))]):const LoadingPage(),
+        })):const LoadingPage(),
       bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete,
           // child: BottomNavigationBar(currentIndex: G.pageIndex.value,
