@@ -401,7 +401,7 @@ VSCode、输入法
   ];
 
   //默认快捷指令
-  static const commands = [{"name":"检查更新并升级", "command":"sudo apt update && sudo apt upgrade -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
+  static const commands = [{"name":"检查更新并升级", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt upgrade -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
     {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
     {"name":"清屏", "command":"clear"},
     {"name":"中断任务", "command":"\x03"},
@@ -412,7 +412,7 @@ VSCode、输入法
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
     {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
-url=$(curl -L https://linux.wps.cn/ | grep -oP 'href="\K[^"]*arm64\.deb' | head -n 1)
+url=https://wps-linux-personal.wpscdn.cn/wps/download/ep/Linux2019/11720/wps-office_11.1.0.11720_arm64.deb
 wget "${url}?k=$(eval echo -n '7f8faaaa468174dc1c9cd62e5f218a5b/$(echo -n ${url} | cut -d/ -f4-)0x7f53d55201314' | md5sum -t | cut -d' ' -f1)&t=0x7f53d55201314" --header="User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:109.0) Gecko/20100101 Firefox/115.0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" --header="Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --header="Accept-Encoding: gzip, deflate, br" --header="Connection: keep-alive" --header="Referer: https://www.wps.cn/" --header="Upgrade-Insecure-Requests: 1" --header="Sec-Fetch-Dest: document" --header="Sec-Fetch-Mode: navigate" --header="Sec-Fetch-Site: cross-site" --header="Sec-Fetch-User: ?1" -O /tmp/wps.deb
 EOF
 rm /tmp/wps.deb"""},
@@ -423,8 +423,8 @@ rm /tmp/wps.deb"""},
     {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
     {"name":"安装QQ", "command":"""wget \$(curl -L https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/linuxQQDownload.js | grep -oP '(?<=armDownloadUrl":\\{"deb":")[^"]+') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
     {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
-    {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.10_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && sed -i 's#/opt/apps/com.tencent.weixin/files/weixin/weixin#/opt/apps/com.tencent.weixin/files/weixin/weixin --no-sandbox#g' /opt/apps/com.tencent.weixin/files/weixin/weixin.sh && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
-    {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.weixin deepin-elf-verify"},
+    {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.wechat/com.tencent.wechat_1.0.0.241_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && ln -sf /opt/apps/com.tencent.wechat/entries/applications/com.tencent.wechat.desktop /usr/share/applications/com.tencent.wechat.desktop && ln -sf /opt/apps/com.tencent.wechat/entries/icons/hicolor /usr/share/icons/wechat && sed -i 's#/usr/bin/wechat#/opt/apps/com.tencent.wechat/files/wechat --no-sandbox#g' /usr/share/applications/com.tencent.wechat.desktop && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
+    {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.wechat deepin-elf-verify && rm /usr/share/applications/com.tencent.wechat.desktop && rm /usr/share/icons/wechat"},
     {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
@@ -527,7 +527,7 @@ class G {
 双指点击弹出键盘
 双指划动为鼠标滚轮
 
-在图形界面返回，可以回到终端界面和控制界面
+!!!在图形界面返回，可以回到终端界面和控制界面!!!
 你可以在控制界面安装更多软件或者阅读帮助信息
 
 请不要在安装时退出软件

@@ -1357,7 +1357,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
       ),
       body: isLoadingComplete?
-        Expanded(child: ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
+        ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
           return IndexedStack(index: G.pageIndex.value, children: const [TerminalPage(), Padding(
               padding: EdgeInsets.all(8),
               child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
@@ -1382,7 +1382,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ]
               )))
           )]);
-        })):const LoadingPage(),
+        }):const LoadingPage(),
       bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete,
           // child: BottomNavigationBar(currentIndex: G.pageIndex.value,
