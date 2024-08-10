@@ -116,12 +116,14 @@ class Util {
       case "isBoxEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isWineEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "turnip" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
+      case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform MESA_VK_WSI_DEBUG=sw");
       case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
       case "containersInfo" : return G.prefs.getStringList(key)!;
     }
@@ -398,6 +400,7 @@ VSCode、输入法
 
 请几个小时后再试一次"""},
     {"q":"找不到sys/cdefs.h", "a":"""点击上面无法编译C语言程序的快捷指令"""},
+    {"q":"安装box86/box64/wine很慢", "a":"""请尝试使用魔法"""},
   ];
 
   //默认快捷指令
@@ -510,8 +513,6 @@ class G {
   //static int? streamingPid;
   static String streamingOutput = "";
   static late Pty streamServerPty;
-  static bool isVirglServerStarted = false;
-  static late Pty virglServerPty;
   //static int? virglPid;
   static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
@@ -771,6 +772,9 @@ export DATA_DIR=${G.dataPath}
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
 ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""");
       extraOpt += "${Util.getGlobal("defaultVirglOpt")} ";
+    }
+    if (Util.getGlobal("turnip")) {
+      extraOpt += "${Util.getGlobal("defaultTurnipOpt")} ";
     }
     if (Util.getGlobal("isBoxEnabled")) {
       G.wasBoxEnabled = true;

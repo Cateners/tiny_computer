@@ -4,25 +4,35 @@ rm -rf $HOME/.local/share/tiny/tmp
 mkdir $HOME/.local/share/tiny/tmp
 cd $HOME/.local/share/tiny/tmp
 
-MIRROR_SITE=https://mirror.ghproxy.com
 RELEASE_PAGE=https://github.com/doitsujin/dxvk/releases
 LATEST_DXVK_TAG=$(curl -L $RELEASE_PAGE | grep -oP 'Version \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1)
 if [ -z "$LATEST_DXVK_TAG" ]
 then
-  LATEST_DXVK_TAG="2.3"
+  LATEST_DXVK_TAG="2.4"
 fi
 LATEST_DXVK_NAME="dxvk-$LATEST_DXVK_TAG.tar.gz"
 LATEST_DXVK_LINK="https://github.com/doitsujin/dxvk/releases/download/v$LATEST_DXVK_TAG/$LATEST_DXVK_NAME"
 
-wget $MIRROR_SITE/$LATEST_DXVK_LINK
-if [ $? -ne 0 ]; then
-  wget $LATEST_DXVK_LINK
-  if [ $? -ne 0 ]; then
-    rm -rf $HOME/.local/share/tiny/tmp
-    echo '下载失败...退出安装...'
-    exit
-  fi
-fi
+mirror_sites=(
+    "https://github.moeyy.xyz/"
+    "https://mirror.ghproxy.com/"
+    ""
+)
+
+for mirror in "${mirror_sites[@]}"; do
+    local url="${mirror}$LATEST_DXVK_LINK"
+    echo "尝试从 $url 下载dxvk..."
+    wget "${url}"
+    if [ $? -eq 0 ]; then
+        echo "成功下载dxvk"
+        break
+    fi
+    if [ -z "$mirror" ]; then
+        rm -rf $HOME/.local/share/tiny/tmp
+        echo '下载失败...退出安装...'
+        exit
+    fi
+done
 
 wineboot
 tar xvf $LATEST_DXVK_NAME

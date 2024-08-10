@@ -32,7 +32,6 @@ rm -rf $HOME/.local/share/tiny/tmp
 mkdir $HOME/.local/share/tiny/tmp
 cd $HOME/.local/share/tiny/tmp
 
-MIRROR_SITE=https://mirror.ghproxy.com
 RELEASE_PAGE=https://github.com/Kron4ek/Wine-Builds/releases
 #LATEST_WINE_TAG=proton-$(curl -L $RELEASE_PAGE | grep -oP 'Proton \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #proton
 LATEST_WINE_TAG=$(curl -L $RELEASE_PAGE | grep -oP 'Wine \K[^"]*</h2>' | cut -d "<" -f 1 | head -n 1) #vanilla
@@ -43,15 +42,26 @@ fi
 LATEST_WINE_NAME=wine-$LATEST_WINE_TAG-amd64.tar.xz
 LATEST_WINE_LINK=$RELEASE_PAGE/download/$LATEST_WINE_TAG/$LATEST_WINE_NAME
 
-wget $MIRROR_SITE/$LATEST_WINE_LINK
-if [ $? -ne 0 ]; then
-  wget $LATEST_WINE_LINK
-  if [ $? -ne 0 ]; then
-    rm -rf $HOME/.local/share/tiny/tmp
-    echo '下载失败...退出安装...'
-    exit
-  fi
-fi
+mirror_sites=(
+    "https://github.moeyy.xyz/"
+    "https://mirror.ghproxy.com/"
+    ""
+)
+
+for mirror in "${mirror_sites[@]}"; do
+    local url="${mirror}$LATEST_WINE_LINK"
+    echo "尝试从 $url 下载wine..."
+    wget "${url}"
+    if [ $? -eq 0 ]; then
+        echo "成功下载wine"
+        break
+    fi
+    if [ -z "$mirror" ]; then
+        rm -rf $HOME/.local/share/tiny/tmp
+        echo '下载失败...退出安装...'
+        exit
+    fi
+done
 
 tar xvf $LATEST_WINE_NAME
 mv wine-$LATEST_WINE_TAG-amd64 ../cross/wine

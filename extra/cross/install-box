@@ -12,26 +12,46 @@ rm -rf $HOME/.local/share/tiny/tmp
 mkdir $HOME/.local/share/tiny/tmp
 cd $HOME/.local/share/tiny/tmp
 
-git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box86
-if [ $? -ne 0 ]; then
-  git clone https://github.com/ptitSeb/box86
-  if [ $? -ne 0 ]; then
-    rm -rf $HOME/.local/share/tiny/tmp
-    echo '仓库克隆失败...退出安装...'
-    exit
-  fi
-fi
+box86_url="https://github.com/ptitSeb/box86"
+box64_url="https://github.com/ptitSeb/box64"
 
-git clone https://mirror.ghproxy.com/https://github.com/ptitSeb/box64
-if [ $? -ne 0 ]; then
-  git clone https://github.com/ptitSeb/box64
-  if [ $? -ne 0 ]; then
-    rm -rf $HOME/.local/share/tiny/tmp
-    echo '仓库克隆失败...退出安装...'
-    exit
-  fi
-fi
+mirror_sites=(
+    "https://github.moeyy.xyz/"
+    "https://mirror.ghproxy.com/"
+    ""
+)
 
+for mirror in "${mirror_sites[@]}"; do
+    local url="${mirror}${box86_url}"
+    echo "尝试从 $url 下载box86..."
+    git clone "${url}"
+    if [ $? -eq 0 ]; then
+        echo "成功下载box86"
+        break
+    fi
+    if [ -z "$mirror" ]; then
+        rm -rf $HOME/.local/share/tiny/tmp
+        echo '仓库克隆失败...退出安装...'
+        exit
+    fi
+done
+
+for mirror in "${mirror_sites[@]}"; do
+    local url="${mirror}${box64_url}"
+    echo "尝试从 $url 下载box64..."
+    git clone "${url}"
+    if [ $? -eq 0 ]; then
+        echo "成功下载box64"
+        break
+    fi
+    if [ -z "$mirror" ]; then
+        rm -rf $HOME/.local/share/tiny/tmp
+        echo '仓库克隆失败...退出安装...'
+        exit
+    fi
+done
+
+echo "正在编译box86..."
 cd box86
 mkdir build
 cd build
@@ -41,6 +61,7 @@ cd ../..
 mv box86/build/box86 ../cross
 mv box86/x86lib ../cross
 
+echo "正在编译box64..."
 cd box64
 mkdir build
 cd build

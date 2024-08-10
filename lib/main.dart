@@ -459,14 +459,11 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
       ExpansionPanel(
         isExpanded: _expandState[5],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("virgl加速"), subtitle: Text("实验性功能"));
+          return const ListTile(title: Text("图形加速"), subtitle: Text("实验性功能"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""virgl加速可部分利用设备GPU提升系统图形处理表现，但由于设备差异也可能导致容器系统及软件运行不稳定甚至异常退出。
+          const Text("""图形加速可部分利用设备GPU提升系统图形处理表现，但由于设备差异也可能导致容器系统及软件运行不稳定甚至异常退出。
 
-请先开启测试按钮启动virgl服务器，如果按钮没有自动关闭说明至少启动没问题；
-
-不过运行情况依然无法保证。
-"""),
+Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl服务器参数"),
             onChanged: (value) async {
@@ -474,34 +471,31 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("测试"), subtitle: const Text("启动virgl_test_server"), value: G.isVirglServerStarted, onChanged:(value) {
-            switch (value) {
-              case true: {
-                G.virglServerPty = Pty.start("/system/bin/sh");
-                G.virglServerPty.write(const Utf8Encoder().convert("export CONTAINER_DIR=${G.dataPath}/containers/${G.currentContainer}\n${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}\nexit\n"));
-                G.virglServerPty.exitCode.then((value) {
-                  G.isVirglServerStarted = false;
-                  setState(() {});
-                });
-              }
-              break;
-              case false: {
-                G.virglServerPty.write(const Utf8Encoder().convert("\x03exit\n"));
-              }
-              break;
-            }
-            G.isVirglServerStarted = value;
-            setState(() {});
-          },),
-          const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "图形环境变量"),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl环境变量"),
             onChanged: (value) async {
               await G.prefs.setString("defaultVirglOpt", value);
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
+          SwitchListTile(title: const Text("启用Virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
             G.prefs.setBool("virgl", value);
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 16),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          const SizedBox.square(dimension: 16),
+          const Text("""搭载Adreno GPU的设备通常可以使用Turnip驱动加速使用Vulkan的软件。
+
+（也就是搭载不太新也不太旧的骁龙处理器的设备）"""),
+          const SizedBox.square(dimension: 8),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultTurnipOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Turnip环境变量"),
+            onChanged: (value) async {
+              await G.prefs.setString("defaultTurnipOpt", value);
+            },
+          ),
+          const SizedBox.square(dimension: 8),
+          SwitchListTile(title: const Text("启用Turnip驱动"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
+            G.prefs.setBool("turnip", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
