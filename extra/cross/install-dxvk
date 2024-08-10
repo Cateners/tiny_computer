@@ -20,7 +20,7 @@ mirror_sites=(
 )
 
 for mirror in "${mirror_sites[@]}"; do
-    local url="${mirror}$LATEST_DXVK_LINK"
+    url="${mirror}$LATEST_DXVK_LINK"
     echo "尝试从 $url 下载dxvk..."
     wget "${url}"
     if [ $? -eq 0 ]; then
@@ -34,7 +34,7 @@ for mirror in "${mirror_sites[@]}"; do
     fi
 done
 
-wineboot
+wine64 wineboot
 tar xvf $LATEST_DXVK_NAME
 mv dxvk-$LATEST_DXVK_TAG/x32/* ~/.wine/drive_c/windows/syswow64
 mv dxvk-$LATEST_DXVK_TAG/x64/* ~/.wine/drive_c/windows/system32

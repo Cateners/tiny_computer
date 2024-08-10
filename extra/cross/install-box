@@ -22,7 +22,7 @@ mirror_sites=(
 )
 
 for mirror in "${mirror_sites[@]}"; do
-    local url="${mirror}${box86_url}"
+    url="${mirror}${box86_url}"
     echo "尝试从 $url 下载box86..."
     git clone "${url}"
     if [ $? -eq 0 ]; then
@@ -37,7 +37,7 @@ for mirror in "${mirror_sites[@]}"; do
 done
 
 for mirror in "${mirror_sites[@]}"; do
-    local url="${mirror}${box64_url}"
+    url="${mirror}${box64_url}"
     echo "尝试从 $url 下载box64..."
     git clone "${url}"
     if [ $? -eq 0 ]; then

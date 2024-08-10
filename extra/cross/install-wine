@@ -49,7 +49,7 @@ mirror_sites=(
 )
 
 for mirror in "${mirror_sites[@]}"; do
-    local url="${mirror}$LATEST_WINE_LINK"
+    url="${mirror}$LATEST_WINE_LINK"
     echo "尝试从 $url 下载wine..."
     wget "${url}"
     if [ $? -eq 0 ]; then

@@ -662,9 +662,8 @@ class _InfoPageState extends State<InfoPage> {
       elevation: 1,
       expandedHeaderPadding: const EdgeInsets.all(0),
       expansionCallback: (panelIndex, isExpanded) {
-        setState(() {
-          _expandState[panelIndex] = isExpanded;
-        });
+        _expandState[panelIndex] = isExpanded;
+        WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
       },
     children: [
       ExpansionPanel(
