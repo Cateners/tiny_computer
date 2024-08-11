@@ -39,10 +39,8 @@ class Signal9Activity : AppCompatActivity() {
         val scrollView = ScrollView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                0
-            ).apply {
-                weight = 1f
-            }
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
         }
 
         val fullScreen = LinearLayout(this).apply {
@@ -51,6 +49,7 @@ class Signal9Activity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor("#4A148C"))
         }
 
         val text1 = TextView(this).apply {
