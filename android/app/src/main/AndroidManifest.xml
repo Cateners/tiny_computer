@@ -33,6 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.example.tiny_computer.Signal9Activity" />
         <activity-alias
             android:name="com.gaurav.avnc.UriReceiverActivity"
             android:targetActivity="com.gaurav.avnc.ui.vnc.IntentReceiverActivity">

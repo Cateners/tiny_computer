@@ -132,21 +132,26 @@ class _SettingPageState extends State<SettingPage> {
         headerBuilder: ((context, isExpanded) {
           return const ListTile(title: Text("高级设置"), subtitle: Text("修改后重启生效"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          OutlinedButton(style: D.commandButtonStyle, child: const Text("重置启动命令"), onPressed: () {
-            showDialog(context: context, builder: (context) {
-              return AlertDialog(title: const Text("注意"), content: const Text("是否重置启动命令？"), actions: [
-                TextButton(onPressed:() {
-                  Navigator.of(context).pop();
-                }, child: const Text("取消")),
-                TextButton(onPressed:() async {
-                  await Util.setCurrentProp("boot", D.boot);
-                  G.bootTextChange.value = !G.bootTextChange.value;
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
-                }, child: const Text("是")),
-              ]);
-            });
-          }),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("重置启动命令"), onPressed: () {
+              showDialog(context: context, builder: (context) {
+                return AlertDialog(title: const Text("注意"), content: const Text("是否重置启动命令？"), actions: [
+                  TextButton(onPressed:() {
+                    Navigator.of(context).pop();
+                  }, child: const Text("取消")),
+                  TextButton(onPressed:() async {
+                    await Util.setCurrentProp("boot", D.boot);
+                    G.bootTextChange.value = !G.bootTextChange.value;
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
+                  }, child: const Text("是")),
+                ]);
+              });
+            }),
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("Signal9错误页面"), onPressed: () async {
+              await D.avncChannel.invokeMethod("launchSignal9Page", {});
+            }),
+          ]),
           const SizedBox.square(dimension: 8),
           TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
             await Util.setCurrentProp("name", value);
@@ -484,7 +489,7 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""搭载Adreno GPU的设备通常可以使用Turnip驱动加速使用Vulkan的软件。
+          const Text("""搭载Adreno GPU的设备通常可以使用Turnip驱动加速使用Vulkan的软件。配合Zink驱动可实现加速使用OpenGL的软件。
 
 （也就是搭载不太新也不太旧的骁龙处理器的设备）"""),
           const SizedBox.square(dimension: 8),
@@ -494,7 +499,7 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用Turnip驱动"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
+          SwitchListTile(title: const Text("启用Turnip+Zink驱动"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
             G.prefs.setBool("turnip", value);
             setState(() {});
           },),

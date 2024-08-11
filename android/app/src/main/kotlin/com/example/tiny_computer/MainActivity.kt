@@ -45,6 +45,10 @@ class MainActivity: FlutterActivity() {
                     startActivity(Intent(this, com.gaurav.avnc.ui.about.AboutActivity::class.java))
                     result.success(0)
                 }
+                "launchSignal9Page" -> {
+                    startActivity(Intent(this, Signal9Activity::class.java))
+                    result.success(0)
+                }
                 else -> {
                     // 不支持的方法名
                     result.notImplemented()

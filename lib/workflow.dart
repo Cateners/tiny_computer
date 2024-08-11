@@ -28,7 +28,6 @@ import 'package:retry/retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:xterm/xterm.dart';
@@ -38,8 +37,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:clipboard/clipboard.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -123,7 +120,7 @@ class Util {
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
-      case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform MESA_VK_WSI_DEBUG=sw");
+      case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("MESA_LOADER_DRIVER_OVERRIDE=zink VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform MESA_VK_WSI_DEBUG=sw");
       case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
       case "containersInfo" : return G.prefs.getStringList(key)!;
     }
@@ -274,45 +271,7 @@ class TermPty {
       }
       //Signal 9 hint
       if (code == -9) {
-        Navigator.push(G.homePageStateContext, MaterialPageRoute(builder: (context) {
-          const TextStyle ts = TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.normal);
-          const String helperLink = "https://www.vmos.cn/zhushou.htm";
-          const String helperLink2 = "https://b23.tv/WwqOqW6";
-          return Scaffold(backgroundColor: Colors.deepPurple,
-            body: Center(
-            child: Scrollbar(child:
-              SingleChildScrollView(
-                child: Column(children: [
-                  const Text(":(\n发生了什么？", textScaler: TextScaler.linear(2), style: ts, textAlign: TextAlign.center,),
-                  const Text("终端异常退出, 返回错误码9\n此错误通常是高版本安卓系统(12+)限制进程造成的, \n可以使用以下工具修复:", style: ts, textAlign: TextAlign.center),
-                  const SelectableText(helperLink, style: ts, textAlign: TextAlign.center),
-                  const Text("(复制链接到浏览器查看)", style: ts, textAlign: TextAlign.center),
-                  OutlinedButton(onPressed: () {
-                    FlutterClipboard.copy(helperLink).then(( value ) {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: const Text("已复制"), action: SnackBarAction(label: "跳转", onPressed: () {
-                          launchUrl(Uri.parse(helperLink), mode: LaunchMode.externalApplication);
-                        },))
-                      );
-                    });
-                  }, child: const Text("复制", style: ts, textAlign: TextAlign.center)), 
-                  const Text("如果不能解决请参考此教程: ", style: ts, textAlign: TextAlign.center),
-                  OutlinedButton(onPressed: () {
-                    FlutterClipboard.copy(helperLink2).then(( value ) {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: const Text("已复制"), action: SnackBarAction(label: "跳转", onPressed: () {
-                          launchUrl(Uri.parse(helperLink2), mode: LaunchMode.externalApplication);
-                        },))
-                      );
-                    });
-                  }, child: const Text("查看", style: ts, textAlign: TextAlign.center))
-                ]),
-              )
-            )
-          ));
-        }));
+        D.avncChannel.invokeMethod("launchSignal9Page", {});
       }
     });
     terminal.onOutput = (data) {
@@ -341,20 +300,22 @@ class D {
 
   //帮助信息
   static const faq = [
-    {"q":"错误码9", "a":"""如果你的系统版本大于等于android 12
+    {"q":"安卓12及以上注意事项:错误码9", "a":"""如果你的系统版本大于等于android 12
 可能会在使用过程中异常退出(返回错误码9)
 届时本软件会提供方案指引你修复
 并不难
 但是软件没有权限
-不能帮你修复"""},
-    {"q":"用一会就断掉", "a":"""这应该是出现了错误9的情况
-下次出现此情况时
-按设备的返回键(或用返回手势)
-应该能看到软件提供的修复引导"""},
+不能帮你修复
+
+你也可以在高级设置里手动前往错误页面"""},
     {"q":"安卓13注意事项", "a":"""如果你的系统版本大于等于android 13
 那么很可能一些网页应用如jupyter notebook
 bilibili客户端等等不可用
 可以去全局设置开启getifaddrs桥接"""},
+    {"q":"用一会就断掉", "a":"""这应该是出现了错误9的情况
+下次出现此情况时
+按设备的返回键(或用返回手势)
+应该能看到软件提供的修复引导"""},
     {"q":"如何访问设备文件？", "a":"""如果你给了存储权限
 那么通过主目录下的文件夹
 就可以访问设备存储
