@@ -1,3 +1,0 @@
-[submodule "webclients/novnc"]
-	path = webclients/novnc
-	url = https://github.com/novnc/noVNC.git

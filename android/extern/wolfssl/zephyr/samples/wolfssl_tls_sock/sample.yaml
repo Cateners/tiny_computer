@@ -1,9 +1,0 @@
-common:
-  harness: crypto
-  tags: crypto
-sample:
-  description: wolfSSL TLS test application
-  name: wolfSSL TLS Test
-tests:
-  test:
-    platform_whitelist: qemu_x86
