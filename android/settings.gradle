@@ -25,3 +25,6 @@ plugins {
 
 rootProject.name = "TinyComputer"
 include ":app"
+
+// Termux X11
+include ':shell-loader:stub'

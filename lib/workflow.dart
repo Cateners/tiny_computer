@@ -71,7 +71,7 @@ class Util {
   //所有key
   //int defaultContainer = 0: 默认启动第0个容器
   //int defaultAudioPort = 4718: 默认pulseaudio端口(为了避免和其它软件冲突改成4718了，原默认4713)
-  //bool autoLaunchVnc = true: 是否自动启动VNC并跳转
+  //bool autoLaunchVnc = true: 是否自动启动图形界面并跳转 以前只支持VNC就这么起名了
   //String lastDate: 上次启动软件的日期，yyyy-MM-dd
   //bool isTerminalWriteEnabled = false
   //bool isTerminalCommandsEnabled = false 
@@ -118,6 +118,7 @@ class Util {
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
+      case "useX11" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
@@ -272,7 +273,7 @@ class TermPty {
       }
       //Signal 9 hint
       if (code == -9) {
-        D.avncChannel.invokeMethod("launchSignal9Page", {});
+        D.androidChannel.invokeMethod("launchSignal9Page", {});
       }
     });
     terminal.onOutput = (data) {
@@ -462,7 +463,7 @@ rm /tmp/wps.deb"""},
     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4)
   );
 
-  static const MethodChannel avncChannel = MethodChannel("avnc");
+  static const MethodChannel androidChannel = MethodChannel("android");
 
 }
 
@@ -541,6 +542,9 @@ class G {
 
   static bool wasBoxEnabled = false; //本次启动时是否启用了box86/64
   static bool wasWineEnabled = false; //本次启动时是否启用了wine
+  
+  static bool wasAvncEnabled = false;
+  static bool wasX11Enabled = false;
 
 
   static late SharedPreferences prefs;
@@ -689,6 +693,14 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
       G.prefs.setBool("reinstallBootstrap", false);
     }
 
+    //开启了什么图形界面？
+    if (Util.getGlobal("useX11")) {
+      G.wasX11Enabled = true;
+      Workflow.launchXServer();
+    } else if (Util.getGlobal("useAvnc")) {
+      G.wasAvncEnabled = true;
+    }
+
     G.termFontScale.value = Util.getGlobal("termFontScale") as double;
 
     G.controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
@@ -781,7 +793,7 @@ export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
 ${Util.getCurrentProp("boot")}
 ${G.postCommand}
-${(Util.getGlobal("autoLaunchVnc") as bool)?Util.getCurrentProp("vnc"):""}
+${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"/etc/X11/xinit/Xsession &":Util.getCurrentProp("vnc")):""}
 clear""");
   }
 
@@ -823,7 +835,15 @@ clear""");
   }
 
   static Future<void> launchAvnc() async {
-    await D.avncChannel.invokeMethod("launchUsingUri", {"vncUri": Util.getCurrentProp("vncUri") as String});
+    await D.androidChannel.invokeMethod("launchUsingUri", {"vncUri": Util.getCurrentProp("vncUri") as String});
+  }
+
+  static Future<void> launchXServer() async {
+    await D.androidChannel.invokeMethod("launchXServer", {"tmpdir":"${G.dataPath}/containers/${G.currentContainer}/tmp", "xkb":"${G.dataPath}/containers/${G.currentContainer}/usr/share/X11/xkb"});
+  }
+
+  static Future<void> launchX11() async {
+    await D.androidChannel.invokeMethod("launchX11Page", {});
   }
 
   static Future<void> workflow() async {
@@ -833,7 +853,11 @@ clear""");
     setupAudio();
     launchCurrentContainer();
     if (Util.getGlobal("autoLaunchVnc") as bool) {
-      waitForConnection().then((value) => (Util.getGlobal("useAvnc") as bool)?launchAvnc():launchBrowser());
+      if (G.wasX11Enabled) {
+        launchX11();
+        return;
+      }
+      waitForConnection().then((value) => G.wasAvncEnabled?launchAvnc():launchBrowser());
     }
   }
 }

@@ -149,7 +149,7 @@ class _SettingPageState extends State<SettingPage> {
               });
             }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("Signal9错误页面"), onPressed: () async {
-              await D.avncChannel.invokeMethod("launchSignal9Page", {});
+              await D.androidChannel.invokeMethod("launchSignal9Page", {});
             }),
           ]),
           const SizedBox.square(dimension: 8),
@@ -276,15 +276,15 @@ class _SettingPageState extends State<SettingPage> {
           return const ListTile(title: Text("显示设置"));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const SizedBox.square(dimension: 16),
-          const Text("""AVNC可以带来获得更好的操控体验；
+          const Text("""AVNC可以带来相比noVNC更好的操控体验；
 如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
-              await D.avncChannel.invokeMethod("launchPrefsPage", {});
+              await D.androidChannel.invokeMethod("launchPrefsPage", {});
             }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("关于AVNC"), onPressed: () async {
-              await D.avncChannel.invokeMethod("launchAboutPage", {});
+              await D.androidChannel.invokeMethod("launchAboutPage", {});
             }),
             OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC启动时分辨率设置"), onPressed: () async {
               final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
@@ -332,6 +332,22 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("默认使用AVNC"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
             G.prefs.setBool("useAvnc", value);
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 16),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          const SizedBox.square(dimension: 16),
+          const Text("""Termux X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。这是一个实验性功能。
+随着版本的迭代，Termux X11如今也支持了双向剪切板等功能。"""),
+          const SizedBox.square(dimension: 16),
+          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("Termux X11设置"), onPressed: () async {
+              await D.androidChannel.invokeMethod("launchX11PrefsPage", {});
+            }),
+          ]),
+          const SizedBox.square(dimension: 8),
+          SwitchListTile(title: const Text("默认使用Termux X11"), subtitle: const Text("不使用VNC。重启生效"), value: Util.getGlobal("useX11") as bool, onChanged:(value) {
+            G.prefs.setBool("useX11", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
@@ -1406,24 +1422,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete && (value == 0),
-          child: SpeedDial(
-            children: [SpeedDialChild(
-              child: const Icon(Icons.laptop_outlined),
-              label: "使用noVNC",
-              onTap: () => Workflow.launchBrowser(),
-            ),SpeedDialChild(
-              child: const Icon(Icons.screenshot_monitor_outlined),
-              label: "使用AVNC",
-              onTap: () => Workflow.launchAvnc(),
-            )],
-            activeChild: const Icon(Icons.close),
+          child: FloatingActionButton(
+            tooltip: "进入图形界面",
+            onPressed: () {
+              if (G.wasX11Enabled) {
+                Workflow.launchX11();
+              } else if (G.wasAvncEnabled) {
+                Workflow.launchAvnc();
+              } else {
+                Workflow.launchBrowser();
+              }
+            },
             child: const Icon(Icons.play_arrow),
           )
-          // FloatingActionButton(
-          //   onPressed: () => Workflow.launchBrowser(),
-          //   tooltip: "进入图形界面",
-          //   child: const Icon(Icons.play_arrow),
-          // ),
         );
       }), // This trailing comma makes auto-formatting nicer for build methods.
     );

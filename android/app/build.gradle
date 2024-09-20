@@ -55,6 +55,8 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 
+        buildConfigField "String", "COMMIT", "\"" + ("git rev-parse HEAD\n".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: "NO_COMMIT")) + "\""
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += ["room.schemaLocation": "$projectDir/roomSchema/".toString()]
@@ -68,10 +70,27 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+            // remove flutter's default ShrinkResources settings at flutter\packages\flutter_tools\gradle\src\main\flutter.groovy
+            postprocessing {
+                removeUnusedCode true
+                removeUnusedResources true
+                obfuscate false
+                optimizeCode true
+            }
+        }
+        debug {
+            signingConfig signingConfigs.debug
+            postprocessing {
+                removeUnusedCode true
+                removeUnusedResources true
+                obfuscate false
+                optimizeCode true
+            }
         }
     }
 
     buildFeatures {
+        aidl true
         dataBinding true
         buildConfig true
     }
@@ -106,6 +125,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.6.2"
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation "androidx.preference:preference:1.2.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
     implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
@@ -122,5 +142,65 @@ dependencies {
     implementation "com.google.android.material:material:1.11.0"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
     implementation "org.connectbot:sshlib:2.2.23"
+    implementation 'com.github.tiann:FreeReflection:3.1.0'
 
+    compileOnly project(':shell-loader:stub')
+}
+
+afterEvaluate {
+    tasks.register("generatePrefs") {
+        //noinspection UnnecessaryQualifiedReference
+        def xml = groovy.xml.DOMBuilder.parse((new StringReader(file('src/main/res/xml/preferences.xml').text)))
+        def preferenceNodes = xml.documentElement.getElementsByTagName("*")
+        def preferences = []
+
+        for (int i = 0; i < preferenceNodes.length; i++) {
+            def node = preferenceNodes.item(i)
+            if (node.nodeName == 'EditTextPreference' && node.getAttribute("app:key") != "extra_keys_config")
+                preferences << [ type: 'String',  key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
+            else if (node.nodeName == 'SeekBarPreference')
+                preferences << [ type: 'Int', key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
+            else if (node.nodeName == 'ListPreference') {
+                def entries = node.getAttribute("app:entries")
+                def values = node.getAttribute("app:entryValues")
+                preferences << [type: 'List', key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue"),
+                                entries: entries.substring(7, entries.length()), values: values.substring(7, values.length())]
+            }
+            else if (node.nodeName == 'SwitchPreferenceCompat')
+                preferences << [ type: 'Boolean',  key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
+        }
+
+        def out = file('build/generated/java/com/termux/x11/Prefs.java')
+        out.getParentFile().exists() || out.getParentFile().mkdirs()
+        out.delete()
+        out.createNewFile()
+
+        out << 'package com.termux.x11;\n'
+        out << 'import java.util.HashMap;\n'
+        out << 'import android.content.Context;\n'
+        out << 'import com.termux.x11.utils.TermuxX11ExtraKeys;\n'
+        out << 'import com.example.tiny_computer.R;\n'
+        out << '\n'
+        out << 'public class Prefs extends LoriePreferences.PrefsProto {\n'
+        preferences.each {
+            if (it.type == 'Int' || it.type == 'Boolean')
+                out << "  public final ${it.type}Preference ${it.key} = new ${it.type}Preference(\"${it.key}\", ${it.default});\n"
+            else if (it.type == 'String')
+                out << "  public final StringPreference ${it.key} = new StringPreference(\"${it.key}\", \"${it.default}\");\n"
+            else if (it.type == 'List')
+                out << "  public final ${it.type}Preference ${it.key} = new ${it.type}Preference(\"${it.key}\", \"${it.default}\", R.array.${it.entries}, R.array.${it.values});\n"
+        }
+        out << '  public final StringPreference extra_keys_config = new StringPreference("extra_keys_config", TermuxX11ExtraKeys.DEFAULT_IVALUE_EXTRA_KEYS);\n'
+        out << '  public final HashMap<String, Preference> keys = new HashMap<String, Preference>() {{\n'
+        preferences.each { out << '    put("' + it.key + '", ' + it.key + ');\n' }
+        out << '    put("extra_keys_config", extra_keys_config);\n'
+        out << '  }};\n'
+        out << '\n'
+        out << '  public Prefs(Context ctx) {\n'
+        out << '    super(ctx);\n'
+        out << '  }\n'
+        out << '}\n'
+    }
+    android.sourceSets.main.java.srcDirs += 'build/generated/java'
+    preBuild.dependsOn generatePrefs
 }
