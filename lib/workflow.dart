@@ -401,6 +401,7 @@ rm /tmp/wps.deb"""},
     {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
+    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 #重启生效"},
     {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
     {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
     {"name":"关机", "command":"stopvnc\nexit\nexit"},
@@ -409,6 +410,8 @@ rm /tmp/wps.deb"""},
 
   //默认wine快捷指令
   static const wineCommands = [{"name":"wine配置", "command":"wine64 winecfg"},
+    {"name":"修复方块字", "command":"wine64 regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine64 reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
+    {"name":"开始菜单文件夹", "command":"wine64 explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
     {"name":"我的电脑", "command":"wine64 explorer"},
     {"name":"记事本", "command":"wine64 notepad"},
     {"name":"扫雷", "command":"wine64 winemine"},
@@ -777,6 +780,7 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
       box64LibraryPath += "/home/tiny/.local/share/tiny/cross/wine/lib/wine/x86_64-unix:";
       extraMount += "--wine=/home/tiny/.local/bin/wine64 ";
       extraMount += "--mount=\$DATA_DIR/tiny/cross/wine.desktop:/usr/share/applications/wine.desktop ";
+      extraMount += "--mount=\$DATA_DIR/tiny/extra/XiaolaiMonoSC-Regular.ttf:/usr/share/fonts/truetype/XiaolaiMonoSC-Regular.ttf ";
       //extraMount += "--mount=\$DATA_DIR/tiny/cross/winetricks:/home/tiny/.local/bin/winetricks --mount=\$DATA_DIR/tiny/cross/winetricks.desktop:/usr/share/applications/winetricks.desktop ";
     }
     if (G.wasBoxEnabled) {

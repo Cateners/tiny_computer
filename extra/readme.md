@@ -33,6 +33,10 @@ linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_ser
 
 修复wine显示方块字的注册表文件和[小赖字体](https://github.com/lxgw/kose-font)。
 
+#### extra/libvulkan_freedreno.so, extra/freedreno_icd.aarch64.json:
+
+Turnip驱动。根据[这里](https://github.com/xDoge26/proot-setup/issues/26#issuecomment-1712404849)和[这里](https://github.com/MastaG/mesa-turnip-ppa)编译
+
 #### caj, edraw
 
 这些分别是cajviewer，亿图图示的补丁

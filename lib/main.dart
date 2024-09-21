@@ -175,6 +175,13 @@ class _SettingPageState extends State<SettingPage> {
             OutlinedButton(style: D.commandButtonStyle, child: const Text("复制分享链接"), onPressed: () async {
               final String? ip = await NetworkInfo().getWifiIP();
               if (!context.mounted) return;
+              if (G.wasX11Enabled) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("使用X11时此功能无效"))
+                );
+                return;
+              }
               if (ip == null) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -336,9 +343,10 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""Termux X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。这是一个实验性功能。
+          const Text("""Termux X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。
 支持使用DRI3（需在图形加速中开启），可以带来相当大的性能提升。
-随着版本的迭代，Termux X11如今也支持了双向剪切板等功能。"""),
+随着版本的迭代，Termux X11如今也支持了双向剪切板等功能。
+这是一个实验性功能！如果黑屏，请尝试彻底关闭本应用再重新启动。"""),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: const Text("Termux X11偏好设置"), onPressed: () async {
@@ -547,7 +555,7 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const Text("""使用box86/box64运行x86/x64架构的程序，或使用wine运行windows程序。
 
-运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待。程序崩溃也是常有的。
+运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待！程序崩溃甚至打不开也是常有的。
 
 建议将要运行的Windows程序连同程序文件夹移至桌面运行。
 
@@ -1112,6 +1120,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 本软件申请的权限用于以下目的：
 文件相关权限：用于系统访问手机目录；
 相机和麦克风：用于推流，默认不会开启。
+通知和无障碍：Termux X11需要。
 """))),
       ExpansionPanel(
         isExpanded: _expandState[3],
