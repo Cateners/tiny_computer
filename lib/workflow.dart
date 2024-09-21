@@ -115,6 +115,7 @@ class Util {
       case "isWineEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "turnip" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "dri3" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
@@ -122,7 +123,7 @@ class Util {
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
-      case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("MESA_LOADER_DRIVER_OVERRIDE=zink VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform MESA_VK_WSI_DEBUG=sw");
+      case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("MESA_LOADER_DRIVER_OVERRIDE=zink VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform");
       case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
       case "containersInfo" : return G.prefs.getStringList(key)!;
     }
@@ -385,7 +386,7 @@ VSCode、输入法
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
     {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
-wget https://mirrors.sdu.edu.cn/spark-store-repository/aarch64-store/office/wps-office/wps-office_11.1.0.11720_arm64.deb -O /tmp/wps.deb
+wget https://mirrors.sdu.edu.cn/spark-store-repository/aarch64-store/office/wps-office/wps-office_11.1.0.11720-fix1_arm64.deb -O /tmp/wps.deb
 EOF
 rm /tmp/wps.deb"""},
     {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
@@ -646,6 +647,7 @@ done
 """);
     //一些数据初始化
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
+    //Termux:X11的启动命令并不在这里面，而是写死了。这下成💩山代码了:P
     await G.prefs.setStringList("containersInfo", ["""{
 "name":"Debian Bookworm",
 "boot":"${D.boot}",
@@ -757,6 +759,9 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     }
     if (Util.getGlobal("turnip")) {
       extraOpt += "${Util.getGlobal("defaultTurnipOpt")} ";
+      if (!(Util.getGlobal("dri3"))) {
+        extraOpt += "MESA_VK_WSI_DEBUG=sw ";
+      }
     }
     if (Util.getGlobal("isBoxEnabled")) {
       G.wasBoxEnabled = true;
@@ -793,7 +798,7 @@ export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
 ${Util.getCurrentProp("boot")}
 ${G.postCommand}
-${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"/etc/X11/xinit/Xsession &":Util.getCurrentProp("vnc")):""}
+${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"bash /etc/X11/xinit/Xsession &>~/.vnc/x.log &":Util.getCurrentProp("vnc")):""}
 clear""");
   }
 

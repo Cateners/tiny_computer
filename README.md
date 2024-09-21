@@ -4,7 +4,7 @@
 
 给所有安卓arm64设备的“PC应用引擎”平替
 
-Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyin input method preinstalled. No termux required.
+Click-to-run Debian Bookworm XFCE on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
 
 ## 特点
 
@@ -33,7 +33,7 @@ Click-to-run debian bookworm xfce on android for Chinese users, with fcitx pinyi
 
 使用proot运行debian环境
 
-内置[noVNC](https://github.com/novnc/noVNC)显示图形界面
+内置[noVNC](https://github.com/novnc/noVNC)/[AVNC](https://github.com/gujjwal00/avnc)/[Termux:X11](https://github.com/termux/termux-x11)显示图形界面
 
 ## 项目结构
 
@@ -54,15 +54,21 @@ lib目录：
 
 ## 编译
 
-你需要配置好flutter和安卓sdk，然后克隆此项目。
+你需要配置好flutter和安卓sdk，还需安装python3、bison、patch、gcc，然后克隆此项目。
 
 在编译之前，需要在release中下载系统rootfs(或者[自行制作](extra/build-tiny-rootfs.md))，之后使用split命令分割，拷贝到assets。一般我将其分为98MB。
 
 `split -b 98M debian.tar.xz`
 
+还需要对flutter的一些默认配置作修改，因为其与项目中build.gradle的一些设置冲突。
+- 删除`flutter\packages\flutter_tools\gradle\src\main\flutter.groovy`路径下与`ShrinkResources`相关的`if`代码块。
+
 接下来就可以编译了。我使用的命令如下：
 
 `flutter build apk --target-platform android-arm64 --split-per-abi --obfuscate  --split-debug-info=tiny_computer/sdi`
+
+有一些C代码可能报错。比如KeyBind.c等文件，报错一些符号未定义。但其实包含那些符号的函数并没有被使用，所以可以把它们删掉再编译。
+应该有编译选项可以避免这种情况，但我对cmake不熟，就先这样了:P
 
 ## 目前已知bug
 

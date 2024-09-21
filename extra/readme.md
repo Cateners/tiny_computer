@@ -29,6 +29,10 @@ linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_ser
 
 这些是用于跨架构/跨系统支持的box86/box64和wine安装脚本。
 
+#### extra/chn_fonts.reg, extra/XiaolaiMonoSC-Regular.ttf:
+
+修复wine显示方块字的注册表文件和[小赖字体](https://github.com/lxgw/kose-font)。
+
 #### caj, edraw
 
 这些分别是cajviewer，亿图图示的补丁

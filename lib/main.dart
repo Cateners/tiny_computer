@@ -28,7 +28,6 @@ import 'package:clipboard/clipboard.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_pty/flutter_pty.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
@@ -338,16 +337,20 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
           const Text("""Termux X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。这是一个实验性功能。
+支持使用DRI3（需在图形加速中开启），可以带来相当大的性能提升。
 随着版本的迭代，Termux X11如今也支持了双向剪切板等功能。"""),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("Termux X11设置"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("Termux X11偏好设置"), onPressed: () async {
               await D.androidChannel.invokeMethod("launchX11PrefsPage", {});
             }),
           ]),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("默认使用Termux X11"), subtitle: const Text("不使用VNC。重启生效"), value: Util.getGlobal("useX11") as bool, onChanged:(value) {
             G.prefs.setBool("useX11", value);
+            if (!value && Util.getGlobal("dri3")) {
+              G.prefs.setBool("dri3", false);
+            }
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
@@ -517,6 +520,22 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("启用Turnip+Zink驱动"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
             G.prefs.setBool("turnip", value);
+            if (!value && Util.getGlobal("dri3")) {
+              G.prefs.setBool("dri3", false);
+            }
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 8),
+          SwitchListTile(title: const Text("启用DRI3"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("dri3") as bool, onChanged:(value) async {
+            if (value && !(Util.getGlobal("turnip") && Util.getGlobal("useX11"))) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("DRI3必须配合Termux X11和Turnip使用"))
+              );
+              return;
+            }
+            G.prefs.setBool("dri3", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),

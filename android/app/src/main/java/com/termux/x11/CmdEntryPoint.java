@@ -37,7 +37,7 @@ import com.example.tiny_computer.BuildConfig;
 @Keep @SuppressLint({"StaticFieldLeak", "UnsafeDynamicallyLoadedCode"})
 public class CmdEntryPoint extends ICmdEntryInterface.Stub {
     public static final String ACTION_START = "com.termux.x11.CmdEntryPoint.ACTION_START";
-    public static final int PORT = 7892;
+    public static final int PORT = 7897;
     public static final byte[] MAGIC = "0xDEADBEEF".getBytes();
     private static final Handler handler;
     public static Context ctx;
