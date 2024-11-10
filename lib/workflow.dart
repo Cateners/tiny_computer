@@ -84,11 +84,10 @@ class Util {
   //bool reinstallBootstrap = false 下次启动是否重装引导包
   //bool getifaddrsBridge = false 下次启动是否桥接getifaddrs
   //bool uos = false 下次启动是否伪装UOS
-  //bool isBoxEnabled = false 下次启动是否开启box86/box64
-  //bool isWineEnabled = false 下次启动是否开启wine
   //bool virgl = false 下次启动是否启用virgl
   //bool wakelock = false 屏幕常亮
   //bool isHidpiEnabled = false 是否开启高分辨率
+  //bool isJpEnabled = false 是否切换系统到日语
   //bool useAvnc = false 是否默认使用AVNC
   //String defaultHidpiOpt 默认HiDPI环境变量
   //? int bootstrapVersion: 启动包版本
@@ -111,13 +110,12 @@ class Util {
       case "reinstallBootstrap" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "getifaddrsBridge" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "uos" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
-      case "isBoxEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
-      case "isWineEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "virgl" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "turnip" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "dri3" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "wakelock" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "isJpEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "useX11" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
@@ -324,7 +322,10 @@ bilibili客户端等等不可用
 就可以访问设备存储
 要访问整个设备存储可以访问sd文件夹
 此外主文件夹的很多文件夹与设备文件夹绑定
-比如主文件夹的下载文件夹就是设备的下载文件夹"""},
+比如主文件夹的下载文件夹就是设备的下载文件夹
+
+另外！任何支持SAF的安卓软件
+都可以在不打开小小电脑的情况下直接访问小小电脑的文件"""},
     {"q":"如何访问SD卡文件？", "a":"""首先用其他文件管理器查看SD卡路径
 （通常为/storage/xxxx...）
 然后把该地址输入到小小电脑的文件管理器回车即可
@@ -335,7 +336,7 @@ bilibili客户端等等不可用
     {"q":"自带的火狐浏览器无法下载文件", "a":"""检查是否授予小小电脑存储权限
 
 火狐下载的文件会保存在设备的下载文件夹
-如果不想授予存储权限也可在火狐的设置里更改下载文件夹"""},
+如果不想授予存储权限也可在火狐的设置里更改下载文件保存位置"""},
     {"q":"安装更多软件？", "a":"""本软件的初衷是作为PC应用引擎的平替
 所以我不会提供安装除WPS等软件外的帮助
 另外你需要一些Linux系统使用经验
@@ -366,12 +367,19 @@ VSCode、输入法
 强烈建议不要使用安卓中文输入法直接输入中文
 而是使用英文键盘通过容器的输入法(Ctrl+空格切换)输入中文
 避免丢字错字"""},
+    {"q":"外接鼠标移不到边缘", "a":"""最可能的情况是
+你的设备使用手势控制而不是三大金刚键
+边缘是系统留给你手势操作用的
+大概没什么办法
+不过也许可以双指捏合使屏幕范围稍微变小一点？"""},
     {"q":"镜像正在同步", "a":"""偶尔会出现这种情况
 一段时间后就会同步完成
 
 请几个小时后再试一次"""},
     {"q":"找不到sys/cdefs.h", "a":"""点击上面无法编译C语言程序的快捷指令"""},
-    {"q":"安装box86/box64/wine很慢", "a":"""请尝试使用魔法"""},
+    {"q":"安装一些软件很慢", "a":"""请尝试使用魔法"""},
+    {"q":"联发科处理器可以用吗？", "a":"""联发科处理器只是没有成熟的开源图形驱动供加速而已
+不考虑速度的话都能用的"""},
   ];
 
   //默认快捷指令
@@ -396,31 +404,32 @@ rm /tmp/wps.deb"""},
     {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
     {"name":"安装QQ", "command":"""wget \$(curl -L https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/linuxQQDownload.js | grep -oP '(?<=armDownloadUrl":\\{"deb":")[^"]+') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
     {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
-    {"name":"安装UOS微信", "command":"wget https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.wechat/com.tencent.wechat_1.0.0.241_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb /home/tiny/.local/share/tiny/wechat/deepin-elf-verify_all.deb /home/tiny/.local/share/tiny/wechat/libssl1.1_1.1.1n-0+deb10u6_arm64.deb && ln -sf /opt/apps/com.tencent.wechat/entries/applications/com.tencent.wechat.desktop /usr/share/applications/com.tencent.wechat.desktop && ln -sf /opt/apps/com.tencent.wechat/entries/icons/hicolor /usr/share/icons/wechat && sed -i 's#/usr/bin/wechat#/opt/apps/com.tencent.wechat/files/wechat --no-sandbox#g' /usr/share/applications/com.tencent.wechat.desktop && echo '该微信为UOS特供版，只有账号实名且在UOS系统上运行时可用。在使用前请前往全局设置开启UOS伪装。\n如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
-    {"name":"卸载UOS微信", "command":"sudo apt autoremove --purge -y com.tencent.wechat deepin-elf-verify && rm /usr/share/applications/com.tencent.wechat.desktop && rm /usr/share/icons/wechat"},
+    {"name":"安装微信", "command":"wget https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb && echo '安装完成。如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
+    {"name":"卸载微信", "command":"sudo apt autoremove --purge -y wechat"},
     {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
     {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
-    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 #重启生效"},
+    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 # 重启后完全生效"},
     {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
     {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
+    {"name":"清理包管理器缓存", "command":"sudo apt clean"},
     {"name":"关机", "command":"stopvnc\nexit\nexit"},
     {"name":"???", "command":"timeout 8 cmatrix"}
   ];
 
   //默认wine快捷指令
-  static const wineCommands = [{"name":"wine配置", "command":"wine64 winecfg"},
-    {"name":"修复方块字", "command":"wine64 regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine64 reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
-    {"name":"开始菜单文件夹", "command":"wine64 explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
-    {"name":"我的电脑", "command":"wine64 explorer"},
-    {"name":"记事本", "command":"wine64 notepad"},
-    {"name":"扫雷", "command":"wine64 winemine"},
-    {"name":"注册表", "command":"wine64 regedit"},
-    {"name":"控制面板", "command":"wine64 control"},
-    {"name":"文件管理器", "command":"wine64 winefile"},
-    {"name":"任务管理器", "command":"wine64 taskmgr"},
-    {"name":"ie浏览器", "command":"wine64 iexplore"},
-    {"name":"强制关闭wine", "command":"wineserver -k"}
+  static const wineCommands = [{"name":"Wine配置", "command":"winecfg"},
+    {"name":"修复方块字", "command":"regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
+    {"name":"开始菜单文件夹", "command":"wine explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
+    {"name":"我的电脑", "command":"wine explorer"},
+    {"name":"记事本", "command":"notepad"},
+    {"name":"扫雷", "command":"winemine"},
+    {"name":"注册表", "command":"regedit"},
+    {"name":"控制面板", "command":"wine control"},
+    {"name":"文件管理器", "command":"winefile"},
+    {"name":"任务管理器", "command":"wine taskmgr"},
+    {"name":"IE浏览器", "command":"wine iexplore"},
+    {"name":"强制关闭Wine", "command":"wineserver -k"}
   ];
 
   //默认小键盘
@@ -543,9 +552,6 @@ class G {
 
 常见问题："""); //帮助页的说明文字
   static String postCommand = ""; //第一次进入容器时额外运行的命令
-
-  static bool wasBoxEnabled = false; //本次启动时是否启用了box86/64
-  static bool wasWineEnabled = false; //本次启动时是否启用了wine
   
   static bool wasAvncEnabled = false;
   static bool wasX11Enabled = false;
@@ -736,10 +742,6 @@ exit
   }
 
   static Future<void> launchCurrentContainer() async {
-    String box86BinPath = "";
-    String box64BinPath = "";
-    String box86LibraryPath = "";
-    String box64LibraryPath = "";
     String extraMount = ""; //mount options and other proot options
     String extraOpt = "";
     if (Util.getGlobal("getifaddrsBridge")) {
@@ -766,29 +768,10 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
         extraOpt += "MESA_VK_WSI_DEBUG=sw ";
       }
     }
-    if (Util.getGlobal("isBoxEnabled")) {
-      G.wasBoxEnabled = true;
-      extraMount += "--x86=/home/tiny/.local/bin/box86 --x64=/home/tiny/.local/bin/box64 ";
-      extraMount += "--mount=\$DATA_DIR/tiny/cross/box86:/home/tiny/.local/bin/box86 --mount=\$DATA_DIR/tiny/cross/box64:/home/tiny/.local/bin/box64 ";
-      extraOpt += "BOX86_NOBANNER=1 BOX64_NOBANNER=1 ";
+    if (Util.getGlobal("isJpEnabled")) {
+      extraOpt += "LANG=ja_JP.UTF-8 ";
     }
-    if (Util.getGlobal("isWineEnabled")) {
-      G.wasWineEnabled = true;
-      box86BinPath += "/home/tiny/.local/share/tiny/cross/wine/bin:";
-      box64BinPath += "/home/tiny/.local/share/tiny/cross/wine/bin:";
-      box86LibraryPath += "/home/tiny/.local/share/tiny/cross/wine/lib/wine/i386-unix:";
-      box64LibraryPath += "/home/tiny/.local/share/tiny/cross/wine/lib/wine/x86_64-unix:";
-      extraMount += "--wine=/home/tiny/.local/bin/wine64 ";
-      extraMount += "--mount=\$DATA_DIR/tiny/cross/wine.desktop:/usr/share/applications/wine.desktop ";
-      extraMount += "--mount=\$DATA_DIR/tiny/extra/XiaolaiMonoSC-Regular.ttf:/usr/share/fonts/truetype/XiaolaiMonoSC-Regular.ttf ";
-      //extraMount += "--mount=\$DATA_DIR/tiny/cross/winetricks:/home/tiny/.local/bin/winetricks --mount=\$DATA_DIR/tiny/cross/winetricks.desktop:/usr/share/applications/winetricks.desktop ";
-    }
-    if (G.wasBoxEnabled) {
-      extraOpt += "BOX86_PATH=$box86BinPath/home/tiny/.local/share/tiny/cross/bin ";
-      extraOpt += "BOX64_PATH=$box64BinPath/home/tiny/.local/share/tiny/cross/bin ";
-      extraOpt += "BOX86_LD_LIBRARY_PATH=$box86LibraryPath/home/tiny/.local/share/tiny/cross/x86lib ";
-      extraOpt += "BOX64_LD_LIBRARY_PATH=$box64LibraryPath/home/tiny/.local/share/tiny/cross/x64lib ";
-    }
+    extraMount += "--mount=\$DATA_DIR/tiny/extra/XiaolaiMonoSC-Regular.ttf:/usr/share/fonts/truetype/XiaolaiMonoSC-Regular.ttf ";
     Util.termWrite(
 """
 export DATA_DIR=${G.dataPath}
@@ -802,7 +785,7 @@ export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
 export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
 ${Util.getCurrentProp("boot")}
 ${G.postCommand}
-${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"bash /etc/X11/xinit/Xsession &>~/.vnc/x.log &":Util.getCurrentProp("vnc")):""}
+${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"""mkdir -p "\$HOME/.vnc" && bash /etc/X11/xinit/Xsession &> "\$HOME/.vnc/x.log" &""":Util.getCurrentProp("vnc")):""}
 clear""");
   }
 

@@ -61,7 +61,7 @@ lib目录：
 `split -b 98M debian.tar.xz`
 
 还需要对flutter的一些默认配置作修改，因为其与项目中build.gradle的一些设置冲突。
-- 删除`flutter\packages\flutter_tools\gradle\src\main\flutter.groovy`路径下与`ShrinkResources`相关的`if`代码块。
+- 删除`flutter\packages\flutter_tools\gradle\src\main\groovy\flutter.groovy`路径下与`ShrinkResources`相关的`if`代码块。
 
 接下来就可以编译了。我使用的命令如下：
 

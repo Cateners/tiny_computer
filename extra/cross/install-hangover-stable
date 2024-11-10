@@ -1,0 +1,51 @@
+#!/bin/bash
+
+echo "正在更新软件包..."
+sudo apt update
+sudo apt upgrade -y
+
+hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-9.20.1/hangover_9.20.1_debian12_bookworm_arm64.tar"
+latest_version="9.20.1"
+
+mirror_sites=(
+    "https://github.moeyy.xyz/"
+    "https://mirror.ghproxy.com/"
+    ""
+)
+
+mkdir -p /tmp/hangover
+cd /tmp/hangover
+
+for mirror in "${mirror_sites[@]}"; do
+    url="${mirror}${hangover_url}"
+    echo "尝试从 $url 下载Hangover..."
+    wget "${url}" -O hangover.tar
+    if [ $? -eq 0 ]; then
+        echo "成功下载Hangover"
+        break
+    fi
+    if [ -z "$mirror" ]; then
+        cd /tmp
+        rm -rf /tmp/hangover
+        echo "下载失败...退出安装..."
+        exit
+    fi
+done
+
+echo "正在安装Hangover..."
+tar xvf hangover.tar
+sudo apt install -y ./hangover-wine_${latest_version}~bookworm_arm64.deb ./hangover-libarm64ecfex_${latest_version}_arm64.deb
+if [ $? -ne 0 ]; then
+    cd /tmp
+    rm -rf /tmp/hangover
+    echo "安装失败...退出安装..."
+    exit 1
+fi
+
+echo "正在初始化Wine..."
+wineboot --init
+
+echo "正在修复字体..."
+regedit "Z:\\home\\tiny\\.local\\share\\tiny\\extra\\chn_fonts.reg" && wine reg delete "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes" /va /f
+
+echo "安装完成"

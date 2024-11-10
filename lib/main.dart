@@ -18,7 +18,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'dart:math';
 //import 'dart:convert';
 
@@ -66,6 +66,34 @@ class MyApp extends StatelessWidget {
             home: const MyHomePage(title: 'Tiny Computer'),
           );
         }
+    );
+  }
+}
+
+
+//限制最大宽高比1:1
+class AspectRatioMax1To1 extends StatelessWidget {
+  final Widget child;
+  //final double aspectRatio;
+
+  const AspectRatioMax1To1({super.key, required this.child/*, required this.aspectRatio*/});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final s = MediaQuery.of(context).size;
+        //double size = (s.width < s.height * aspectRatio) ? s.width : (s.height * aspectRatio);
+        double size = s.width < s.height ? constraints.maxWidth : s.height;
+
+        return Center(
+          child: SizedBox(
+            width: size,
+            height: constraints.maxHeight,
+            child: child,
+          ),
+        );
+      },
     );
   }
 }
@@ -364,7 +392,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""高分辨率支持可以为大屏幕设备带来更高清的体验！
+          const Text("""高分辨率支持可以为拥有高分辨率屏幕的设备带来更高清的体验！
 
 注意：
 选项开启后显示会变得很大，请设置一个合适的分辨率。
@@ -551,65 +579,34 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
       ExpansionPanel(
         isExpanded: _expandState[6],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("跨架构/跨系统支持"), subtitle: Text("实验性功能"),);
+          return const ListTile(title: Text("Windows应用支持"), subtitle: Text("实验性功能"),);
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""使用box86/box64运行x86/x64架构的程序，或使用wine运行windows程序。
+          const Text("""使用Hangover（在原生Wine运行跨架构应用）运行Windows应用！
 
-运行windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待！程序崩溃甚至打不开也是常有的。
+运行Windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待！
+
+需要速度可以尝试配合图形加速使用。当然程序崩溃甚至打不开也是正常的。
 
 建议将要运行的Windows程序连同程序文件夹移至桌面运行。
 
 你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
 
-或者寻找该windows软件官方是否提供linux arm64版本。
-
-给高级用户的注意事项：
-跨架构/跨系统提供类似binfmt_misc的支持。
-你可以直接执行x86或x64的elf（系统会自动调用box86/box64），也可以直接执行exe文件（系统会自动调用wine64）。
-前提是这些文件拥有可执行权限。"""),
+或者寻找该Windows软件官方是否提供Linux arm64版本。"""),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装box86和box64"), onPressed: () {
-              Util.termWrite("bash ~/.local/share/tiny/extra/install-box");
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover稳定版（9.20）"), onPressed: () async {
+              Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover-stable");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装wine"), onPressed: () async {
-              if (!await File("${G.dataPath}/tiny/cross/box64").exists()) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("请先安装box86/box64"))
-                );
-                return;
-              }
-              Util.termWrite("bash ~/.local/share/tiny/extra/install-wine");
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover最新版（可能出错）"), onPressed: () async {
+              Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装dxvk"), onPressed: () async {
-              if (!G.wasWineEnabled) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("请启用wine后重试"))
-                );
-                return;
-              }
-              Util.termWrite("bash ~/.local/share/tiny/extra/install-dxvk");
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("卸载Hangover"), onPressed: () async {
+              Util.termWrite("sudo apt autoremove --purge -y hangover-wine hangover-libarm64ecfex");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("移除所有安装"), onPressed: () async {
-              if (G.wasBoxEnabled) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("请关闭跨架构支持后重试"))
-                );
-                return;
-              }
-              Util.termWrite("rm -rf ~/.local/share/tiny/cross");
-              G.pageIndex.value = 0;
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("清空wine数据"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("清空Wine数据"), onPressed: () async {
               Util.termWrite("rm -rf ~/.wine");
               G.pageIndex.value = 0;
             }),
@@ -617,15 +614,11 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""开启wine后的常用指令，点击后前往图形界面耐心等待。
+          const Text("""Wine的常用指令。点击后前往图形界面耐心等待。
 
 任意程序启动参考时间：
 虎贲T7510 6GB 超过一分钟
 骁龙870 12GB 约10秒
-骁龙8gen3 不支持32位 可能不可用
-
-初始化时间：
-可能比本软件初始化还长
 """),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.wineCommands.asMap().entries.map<Widget>(
@@ -641,46 +634,14 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           const Text("以下选项修改后将在下次启动软件时生效。"),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用box86/box64"), subtitle: const Text("运行跨架构软件"), value: Util.getGlobal("isBoxEnabled") as bool, onChanged:(value) async {
-            //检测box64是否存在，存在才开启
-            if (value && !await File("${G.dataPath}/tiny/cross/box64").exists()) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("请先安装box86/box64"))
-              );
-              return;
+          SwitchListTile(title: const Text("切换系统到日语"), subtitle: const Text("システムを日本語に切り替える"), value: Util.getGlobal("isJpEnabled") as bool, onChanged:(value) async {
+            if (value) {
+                Util.termWrite("sudo localedef -c -i ja_JP -f UTF-8 ja_JP.UTF-8");
+                G.pageIndex.value = 0;
             }
-            G.prefs.setBool("isBoxEnabled", value);
-            if (!value && Util.getGlobal("isWineEnabled")) {
-              G.prefs.setBool("isWineEnabled", false);
-            }
+            G.prefs.setBool("isJpEnabled", value);
             setState(() {});
           },),
-          SwitchListTile(title: const Text("启用wine"), subtitle: const Text("运行windows exe软件"), value: Util.getGlobal("isWineEnabled") as bool, onChanged:(value) async {
-            //检测wine是否存在且box64是否开启
-            if (value && !(Util.getGlobal("isBoxEnabled") && await File("${G.dataPath}/tiny/cross/wine/bin/wine").exists())) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("请先安装wine并启用box86/box64"))
-              );
-              return;
-            }
-            Util.execute(value ? """filename="${G.dataPath}/containers/${G.currentContainer}/home/tiny/.bashrc"
-command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH # Auto-generated, do NOT edit"
-if ! ${G.dataPath}/busybox grep -qF "\$command" "\$filename"; then
-    echo "\$command" >> "\$filename"
-fi""" : """filename="${G.dataPath}/containers/${G.currentContainer}/home/tiny/.bashrc"
-command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH # Auto-generated, do NOT edit"
-if ${G.dataPath}/busybox grep -qF "\$command" "\$filename"; then
-    command="export PATH=\\\$HOME/.local/share/tiny/cross/wine/bin:\\\$PATH \\\\# Auto-generated, do NOT edit"
-    ${G.dataPath}/busybox sed -i "\\\\#\$command#d" "\$filename"
-fi""");
-            G.prefs.setBool("isWineEnabled", value);
-            setState(() {});
-          },),
-          const SizedBox.square(dimension: 16),
         ],))),
     ],);
   }
@@ -1163,33 +1124,35 @@ class LoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: FractionallySizedBox(
-              widthFactor: 0.4,
-              child: Image(
-                image: AssetImage("images/icon.png")
-              )
+      child: AspectRatioMax1To1(child:
+        Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+              child: FractionallySizedBox(
+                widthFactor: 0.4,
+                child: Image(
+                  image: AssetImage("images/icon.png")
+                )
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-            child: ValueListenableBuilder(valueListenable: G.updateText, builder:(context, value, child) {
-              return Text(value, textScaler: const TextScaler.linear(2));
-            }),
-          ),
-          const FakeLoadingStatus(),
-          const Expanded(child: Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
-            Scrollbar(child:
-              SingleChildScrollView(
-                child: InfoPage(openFirstInfo: true)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: ValueListenableBuilder(valueListenable: G.updateText, builder:(context, value, child) {
+                return Text(value, textScaler: const TextScaler.linear(2));
+              }),
+            ),
+            const FakeLoadingStatus(),
+            const Expanded(child: Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
+              Scrollbar(child:
+                SingleChildScrollView(
+                  child: InfoPage(openFirstInfo: true)
+                )
               )
-            )
-          ))
-          ,))
-        ]
+            ))
+            ,))
+          ]
+        )
       )
     );
   }
@@ -1402,7 +1365,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
           return IndexedStack(index: G.pageIndex.value, children: const [TerminalPage(), Padding(
               padding: EdgeInsets.all(8),
-              child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
+              child: AspectRatioMax1To1(child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
                 children: [
                   Padding(
                     padding: EdgeInsets.all(16),
@@ -1422,7 +1385,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ])
                   )))
                 ]
-              )))
+              ))))
           )]);
         }):const LoadingPage(),
       bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {

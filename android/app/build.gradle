@@ -70,7 +70,7 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
-            // remove flutter's default ShrinkResources settings at flutter\packages\flutter_tools\gradle\src\main\flutter.groovy
+            // remove flutter's default ShrinkResources settings at flutter\packages\flutter_tools\gradle\src\main\groovy\flutter.groovy
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true

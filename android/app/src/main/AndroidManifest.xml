@@ -21,7 +21,7 @@
         android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
-        
+        android:launchMode="singleInstance"
         android:theme="@style/App.Theme">
         <activity
             android:name=".MainActivity"
@@ -73,19 +73,18 @@
         <activity android:name="com.gaurav.avnc.ui.about.AboutActivity" />
         <activity
             android:name="com.termux.x11.MainActivity"
-            android:taskAffinity="com.termux.x11.MainActivity"
-            android:launchMode="singleInstance"
             android:supportsPictureInPicture="true"
             android:configChanges="fontScale|orientation|screenSize|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|screenLayout|touchscreen|uiMode|smallestScreenSize|density"
             android:resizeableActivity="true"
             android:windowSoftInputMode="stateHidden"
             android:process=":x11">
+            <!-- android:taskAffinity="com.termux.x11.MainActivity" -->
+            <!-- android:launchMode="singleInstance" -->
         </activity>
         <activity
             android:name="com.termux.x11.XrActivity"
             android:configChanges="density|orientation|screenSize|keyboard|keyboardHidden|uiMode"
             android:exported="true"
-            android:launchMode="singleTask"
             android:resizeableActivity="false"
             android:screenOrientation="landscape"
             android:process=":vr_process">
@@ -94,12 +93,11 @@
                 <category android:name="com.oculus.intent.category.VR" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- android:launchMode="singleTask" -->
         </activity>
         <activity
             android:theme="@style/Theme.AppCompat.DayNight"
-            android:excludeFromRecents="true"
             android:name="com.termux.x11.LoriePreferences"
-            android:taskAffinity="com.termux.x11.LoriePreferences"
             android:supportsPictureInPicture="false"
             android:resizeableActivity="true"
             android:process=":x11">
@@ -107,6 +105,8 @@
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
+            <!-- android:excludeFromRecents="true" -->
+            <!-- android:taskAffinity="com.termux.x11.LoriePreferences" -->
         </activity>
 	    <meta-data android:name="com.samsung.android.multidisplay.keep_process_alive" android:value="false"/>
 	    <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
