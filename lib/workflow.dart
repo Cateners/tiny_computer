@@ -142,7 +142,7 @@ class Util {
       return m[key];
     }
     switch (key) {
-      case "name" : return (value){addCurrentProp(key, value); return value;}("GXDE OS");
+      case "name" : return (value){addCurrentProp(key, value); return value;}("Debian Bookworm");
       case "boot" : return (value){addCurrentProp(key, value); return value;}(D.boot);
       case "vnc" : return (value){addCurrentProp(key, value); return value;}("startnovnc &");
       case "vncUrl" : return (value){addCurrentProp(key, value); return value;}("http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678");
@@ -658,7 +658,7 @@ done
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
     //Termux:X11的启动命令并不在这里面，而是写死了。这下成💩山代码了:P
     await G.prefs.setStringList("containersInfo", ["""{
-"name":"Debian Bookworm",
+"name":"GXDE OS",
 "boot":"${D.boot}",
 "vnc":"startnovnc &",
 "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
