@@ -5,7 +5,7 @@
 
 因为我不会，所以只能用自然语言记录一下制作步骤。
 
-## 制作步骤
+## 制作步骤（xfce和lxqt）
 
 ### 安装Debian容器
 
@@ -164,17 +164,26 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
 
 #### WPS
 
+**（20241112）注意，新版wps不再需要将整合模式改为多组件模式也能正常使用，所以可以跳过软件设置修改的步骤**
+
 - 软件设置修改
   - 从官网下载WPS linux arm64 deb安装包，直接在图形界面点开用gdebi安装(正好测试一下gdebi是否能用)
   - 打开WPS-右上角设置-其他-切换窗口管理模式-整合模式改为多组件模式(否则一些设备在新建文档等操作时卡死，目前原因不明)
   - 使用gdebi(或自行)卸载WPS
-- 字体修补
-  - 在你的Windows电脑里的C:\Windows\Fonts文件夹找到symbol.ttf、webdings.ttf、wingding.ttf、WINGDNG2.TTF、WINGDNG3.TTF、MTEXTRA.TTF字体并放到容器/usr/share/fonts的某个文件夹下(我新建了extra文件夹并把这些字体放到里面)
 - libtiff.so.5库修补
   - 切换到/lib/aarch64-linux-gnu文件夹，创建软链把libtiff.so.6链接到libtiff.so.5
   - 或者找libtiff.so.5的包并安装，这样可能更好一些
 - 预装ttf-mscorefonts-installer
   - 这个包是WPS的依赖，会在sourceforge下载字体，可能会非常慢，所以提前apt装好
+
+
+### 额外步骤
+
+- 修复系统更新时变英文（v1.0.19）：把/etc/locale.gen文件里包含zh_CN.UTF-8的那行代码解除注释
+- 修复了xfce使用Termux:X11时占用过高（v1.0.19）：把底部面板的电量管理插件移除（右键-面板-面板首选项-项目）
+- 不弹出终端窗口（v1.0.18）：把/etc/X11/xinit/Xsession文件倒数第二行open_terminal删掉
+- 关闭垂直同步以使用Turnip+Zink（v1.0.17）：把文件~/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml内vblank_mode值从auto改为off
+- xfce版本安装了图片查看器ristretto和压缩文件管理器xarchiver（v1.0.16）
 
 ### 打包
 
@@ -196,3 +205,67 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
     - 等等
 - 切换到root用户，切换到根目录，`/busybox tar -Jcpvf /debian.tar.xz --exclude=debian.tar.xz --exclude=dev --exclude=proc --exclude=system --exclude=storage --exclude=apex --exclude=sys --exclude=media/sd --exclude=busybox --exclude=".l2s.*" /`
 
+
+## 制作步骤（GXDE OS）
+
+### 咕咕咕
+
+其实流程和前面差不多。基本上就是 装图形界面->修复中文->修复tmoe->修non-free-firmware->（随便看看空间占用，略）->修wps->准备busybox以便打包->添加Xsession文件以便启动
+
+请看VCR：
+```
+    1  exit
+    2  sudo apt install sd/Download/gxde-source_1.0.1_all.deb 
+    3  sudo apt install ./sd/Download/gxde-source_1.0.1_all.deb 
+    4  sudo apt update
+    5  sudo apt install gxde-testing-source
+    6  sudo apt update
+    7  sudo apt install gxde-desktop-android --no-install-recommends
+    8  nano /etc/locale.gen
+    9  cd /usr/local/etc/tmoe-linux/git/share
+   10  nano replace.sh
+   11  ./replace.sh old-version
+   12  chmod +x replace.sh 
+   13  ./replace.sh old-version
+   14  rm replace.sh 
+   15  cd
+   16  tmoe
+   17  nano /etc/apt/sources.list
+   18  sudo apt update
+   19  nano /etc/apt/sources.list
+   20  sudo apt update
+   21  cd /var/log
+   22  ls -l
+   23  du -h --max-depth=1 | sort -h
+   24  cd ..
+   25  du -h --max-depth=1 | sort -h
+   26  cd cache/
+   27  ls -l
+   28  sudo apt update ttf-mscorefonts-installer
+   29  sudo apt install ttf-mscorefonts-installer
+   30  cd /usr/lib/aarch64-linux-gnu/
+   31  ln -s libtiff.so.6 libtiff.so.5
+   32  history
+   33  cd /
+   34  cp home/tiny/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/busybox .
+   35  cd /etc/X11/xinit/
+   36  ls
+   37  cp ~/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/etc/X11/xinit/Xsession .
+   38  ls -l Xsession 
+   39  cd /
+   40  ls -l busybox 
+   41  exit
+   42  sudo apt clean;sudo apt autoclean;sudo apt autoremove --purge || sudo apt autoremove
+   43  history
+   44  history > /sd/history.txt
+```
+
+关于Xsession文件：
+
+因为当前小小电脑代码写死了启动X11图形界面就通过执行/etc/X11/xinit/Xsession，如果通过tmoe安装图形界面这个文件是自带的，但安装GXDE没有通过tmoe，所以随便写了个：
+```
+rm -rf /run/dbus/pid
+sudo dbus-daemon --system
+export $(dbus-launch)
+startgxde_android
+```

@@ -25,17 +25,21 @@ linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_ser
 
 源码和编译信息在getifaddrs_bridge文件夹查看。
 
-#### extra/install-box, extra/install-wine:
+#### extra/install-hangover, extra/install-hangover-stable:
 
-这些是用于跨架构/跨系统支持的box86/box64和wine安装脚本。
+这些是用于Windows应用支持的Hangover安装脚本。
 
-#### extra/chn_fonts.reg, extra/XiaolaiMonoSC-Regular.ttf:
+#### extra/chn_fonts.reg:
 
-修复wine显示方块字的注册表文件和[小赖字体](https://github.com/lxgw/kose-font)。
+修复wine显示方块字的注册表文件。
 
 #### extra/libvulkan_freedreno.so, extra/freedreno_icd.aarch64.json:
 
 Turnip驱动。根据[这里](https://github.com/xDoge26/proot-setup/issues/26#issuecomment-1712404849)和[这里](https://github.com/MastaG/mesa-turnip-ppa)编译
+
+#### extra/cmatrix
+
+快捷指令的彩蛋。原本放在容器里，但显然放这里更为合适
 
 #### caj, edraw
 
@@ -49,3 +53,8 @@ Turnip驱动。根据[这里](https://github.com/xDoge26/proot-setup/issues/26#i
 微信的补丁。license, uos-lsb和uos-release来自星火的微信包或arch的wechat-uos打包（嗯，我忘记到底是哪的了。不过都差不多）。
 
 libssl1.1来自debian官方源。deepin-elf-verifier是我打的空包。
+
+#### font
+
+[小赖字体](https://github.com/lxgw/kose-font)用于修复wine的方块字
+其他字体用于避免wps报字体缺失的错误

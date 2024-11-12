@@ -771,7 +771,8 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     if (Util.getGlobal("isJpEnabled")) {
       extraOpt += "LANG=ja_JP.UTF-8 ";
     }
-    extraMount += "--mount=\$DATA_DIR/tiny/extra/XiaolaiMonoSC-Regular.ttf:/usr/share/fonts/truetype/XiaolaiMonoSC-Regular.ttf ";
+    extraMount += "--mount=\$DATA_DIR/tiny/font:/usr/share/fonts/tiny ";
+    extraMount += "--mount=\$DATA_DIR/tiny/extra/cmatrix:/home/tiny/.local/bin/cmatrix ";
     Util.termWrite(
 """
 export DATA_DIR=${G.dataPath}
