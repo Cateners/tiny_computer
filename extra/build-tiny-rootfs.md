@@ -221,43 +221,44 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
     5  sudo apt install gxde-testing-source
     6  sudo apt update
     7  sudo apt install gxde-desktop-android --no-install-recommends
-    8  nano /etc/locale.gen
-    9  cd /usr/local/etc/tmoe-linux/git/share
-   10  nano replace.sh
-   11  ./replace.sh old-version
-   12  chmod +x replace.sh 
-   13  ./replace.sh old-version
-   14  rm replace.sh 
-   15  cd
-   16  tmoe
-   17  nano /etc/apt/sources.list
-   18  sudo apt update
-   19  nano /etc/apt/sources.list
-   20  sudo apt update
-   21  cd /var/log
-   22  ls -l
-   23  du -h --max-depth=1 | sort -h
-   24  cd ..
-   25  du -h --max-depth=1 | sort -h
-   26  cd cache/
-   27  ls -l
-   28  sudo apt update ttf-mscorefonts-installer
-   29  sudo apt install ttf-mscorefonts-installer
-   30  cd /usr/lib/aarch64-linux-gnu/
-   31  ln -s libtiff.so.6 libtiff.so.5
-   32  history
-   33  cd /
-   34  cp home/tiny/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/busybox .
-   35  cd /etc/X11/xinit/
-   36  ls
-   37  cp ~/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/etc/X11/xinit/Xsession .
-   38  ls -l Xsession 
-   39  cd /
-   40  ls -l busybox 
-   41  exit
-   42  sudo apt clean;sudo apt autoclean;sudo apt autoremove --purge || sudo apt autoremove
-   43  history
-   44  history > /sd/history.txt
+    8  sudo apt install spark-store gxde-terminal
+    9  nano /etc/locale.gen
+   10  cd /usr/local/etc/tmoe-linux/git/share
+   11  nano replace.sh
+   12  ./replace.sh old-version
+   13  chmod +x replace.sh 
+   14  ./replace.sh old-version
+   15  rm replace.sh 
+   16  cd
+   17  tmoe
+   18  nano /etc/apt/sources.list
+   19  sudo apt update
+   20  nano /etc/apt/sources.list
+   21  sudo apt update
+   22  cd /var/log
+   23  ls -l
+   24  du -h --max-depth=1 | sort -h
+   25  cd ..
+   26  du -h --max-depth=1 | sort -h
+   27  cd cache/
+   28  ls -l
+   29  sudo apt update ttf-mscorefonts-installer
+   30  sudo apt install ttf-mscorefonts-installer
+   31  cd /usr/lib/aarch64-linux-gnu/
+   32  ln -s libtiff.so.6 libtiff.so.5
+   33  history
+   34  cd /
+   35  cp home/tiny/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/busybox .
+   36  cd /etc/X11/xinit/
+   37  ls
+   38  cp ~/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/etc/X11/xinit/Xsession .
+   39  ls -l Xsession 
+   40  cd /
+   41  ls -l busybox 
+   42  exit
+   43  sudo apt clean;sudo apt autoclean;sudo apt autoremove --purge || sudo apt autoremove
+   44  history
+   45  history > /sd/history.txt
 ```
 
 关于Xsession文件：
