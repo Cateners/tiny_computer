@@ -600,7 +600,7 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
 或者寻找该Windows软件官方是否提供Linux arm64版本。"""),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover稳定版（9.20）"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover稳定版（9.22）"), onPressed: () async {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover-stable");
               G.pageIndex.value = 0;
             }),
