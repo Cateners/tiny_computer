@@ -393,10 +393,7 @@ VSCode、输入法
     {"name":"卸载Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
-    {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
-wget https://mirrors.sdu.edu.cn/spark-store-repository/aarch64-store/office/wps-office/wps-office_11.1.0.11720-fix2_arm64.deb -O /tmp/wps.deb
-EOF
-rm /tmp/wps.deb"""},
+    {"name":"安装WPS", "command":r"""sudo dpkg --configure -a && sudo apt update && sudo aptss install -y wps-office"""},
     {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
     {"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
     {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
