@@ -33,7 +33,7 @@ Click-to-run Debian Bookworm XFCE/LXQt/... on Android for Chinese users, with th
 
 小小电脑提供多个版本。要将小小电脑作为PC应用引擎使用，请在[Releases](https://github.com/Cateners/tiny_computer/releases)页面下载并安装[XFCE](https://xfce.org/)版本（tiny-computer-xfce.apk）。
 
-如果遇到黑屏问题，请卸载后尝试[LXQt](https://lxqt-project.org/)版本。
+如果遇到黑屏问题，请卸载后尝试[LXQt](https://lxqt-project.org/)版本（Releases页寻找tiny-computer-lxqt.apk）。
 
 这些版本的区别在于桌面环境不同。你可以简单地理解为界面不一样，但功能基本一致。
 
@@ -47,9 +47,7 @@ LXQt的界面示例：
 
 <img src="https://www.gxde.org/1.png" height="400">
 
-由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面示例：
-
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=1451861560&bvid=BV1Ci421R7AR&cid=1472685301&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)
 
 
 ## 原理
