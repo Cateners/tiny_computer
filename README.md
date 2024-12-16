@@ -1,33 +1,56 @@
+<p align="center"><img src="readme/cover0.png" alt="小小电脑使用照片" height="400"></img></p>
+
 # 小小电脑
 
-<img decoding="async" src="readme/cover0.png" width="50%">
+给所有安卓arm64设备的“PC应用引擎”平替。你可以在小小电脑上安装PC级WPS、CAJ Viewer、亿图图示等软件。
 
-给所有安卓arm64设备的“PC应用引擎”平替
-
-Click-to-run Debian Bookworm XFCE on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
+Click-to-run Debian Bookworm XFCE/LXQt/... on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
 
 ## 特点
 
 - 一键安装，即开即用
 - 来自kali-undercover的win10主题(仅xfce版本)，友好的界面
 
-<img decoding="async" src="readme/img1.png" width="50%">
+<img decoding="async" src="readme/img1.png" height="400">
 
 - 提供常用软件的一键安装指令
 
-<img decoding="async" src="readme/img2.png" width="50%">
+<img decoding="async" src="readme/img2.png" height="400">
 
 - 可方便地改变屏幕缩放，不用担心屏幕过大或过小
 
-<img decoding="async" src="readme/img3.gif" width="50%">
+<img decoding="async" src="readme/img3.gif" height="400">
 
 - 便捷访问设备文件，或通过设备SAF访问软件文件
 
-<img decoding="async" src="readme/img4.png" width="50%">
+<img decoding="async" src="readme/img4.png" height="400">
 
 - 提供终端和众多可调节参数供高级用户使用
 
-<img decoding="async" src="readme/img5.png" width="50%">
+<img decoding="async" src="readme/img5.png" height="400">
+
+## 下载
+
+小小电脑提供多个版本。要将小小电脑作为PC应用引擎使用，请在[Releases](https://github.com/Cateners/tiny_computer/releases)页面下载并安装[XFCE](https://xfce.org/)版本（tiny-computer-xfce.apk）。
+
+如果遇到黑屏问题，请卸载后尝试[LXQt](https://lxqt-project.org/)版本。
+
+这些版本的区别在于桌面环境不同。你可以简单地理解为界面不一样，但功能基本一致。
+
+LXQt的界面示例：
+
+<img src="https://lxqt-project.org/images/screenshots/ambiance.png" height="400">
+
+如果你下载小小电脑是为了体验更多桌面环境，享受折腾Linux的乐趣，这里也有一些其他版本供下载！
+
+和[GXDE](https://www.gxde.org/)团队合作的版本[#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE的界面示例：
+
+<img src="https://www.gxde.org/1.png" height="400">
+
+由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面示例：
+
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=1451861560&bvid=BV1Ci421R7AR&cid=1472685301&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+
 
 ## 原理
 

@@ -160,6 +160,8 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
 
 #### cmatrix
 
+**（20241112）注意，这一步可以略过，因为cmatrix已被内置到patch.tar.gz**
+
 这个是给快捷指令的彩蛋。下载cmatrix的包，并将cmatrix文件提取放到/home/tiny/.local/bin里即可，记得添加执行权限
 
 #### WPS
