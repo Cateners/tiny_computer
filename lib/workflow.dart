@@ -117,7 +117,7 @@ class Util {
       case "isHidpiEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "isJpEnabled" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
-      case "useX11" : return true; // b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
+      case "useX11" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
@@ -393,7 +393,7 @@ VSCode、输入法
     {"name":"卸载Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
-    {"name":"安装WPS", "command":r"""sudo dpkg --configure -a && sudo apt update && sudo aptss install -y wps-office"""},
+    {"name":"安装WPS", "command":r"""sudo dpkg --configure -a && sudo aptss update && sudo aptss install -y wps-office"""},
     {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
     {"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
     {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},

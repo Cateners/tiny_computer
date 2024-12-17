@@ -383,17 +383,11 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           ]),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: const Text("默认使用Termux X11"), subtitle: const Text("不使用VNC。重启生效"), value: Util.getGlobal("useX11") as bool, onChanged:(value) {
-            if (!context.mounted) return;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("GXDE版本暂未适配VNC"))
-            );
-            return;
-            // G.prefs.setBool("useX11", value);
-            // if (!value && Util.getGlobal("dri3")) {
-            //   G.prefs.setBool("dri3", false);
-            // }
-            // setState(() {});
+            G.prefs.setBool("useX11", value);
+            if (!value && Util.getGlobal("dri3")) {
+              G.prefs.setBool("dri3", false);
+            }
+            setState(() {});
           },),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
