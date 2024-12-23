@@ -11,23 +11,23 @@ Click-to-run Debian Bookworm XFCE/LXQt/... on Android for Chinese users, with th
 - 一键安装，即开即用
 - 来自kali-undercover的win10主题(仅xfce版本)，友好的界面
 
-<img decoding="async" src="readme/img1.png" height="400">
+![1](readme/img1.png)
 
 - 提供常用软件的一键安装指令
 
-<img decoding="async" src="readme/img2.png" height="400">
+![1](readme/img2.png)
 
 - 可方便地改变屏幕缩放，不用担心屏幕过大或过小
 
-<img decoding="async" src="readme/img3.gif" height="400">
+![1](readme/img3.gif)
 
 - 便捷访问设备文件，或通过设备SAF访问软件文件
 
-<img decoding="async" src="readme/img4.png" height="400">
+![1](readme/img4.png)
 
 - 提供终端和众多可调节参数供高级用户使用
 
-<img decoding="async" src="readme/img5.png" height="400">
+![1](readme/img5.png)
 
 ## 下载
 
@@ -39,13 +39,13 @@ Click-to-run Debian Bookworm XFCE/LXQt/... on Android for Chinese users, with th
 
 LXQt的界面示例：
 
-<img src="https://lxqt-project.org/images/screenshots/ambiance.png" height="400">
+![1](https://lxqt-project.org/images/screenshots/ambiance.png)
 
 如果你下载小小电脑是为了体验更多桌面环境，享受折腾Linux的乐趣，这里也有一些其他版本供下载！
 
 和[GXDE](https://www.gxde.org/)团队合作的版本[#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE的界面示例：
 
-<img src="https://www.gxde.org/1.png" height="400">
+![1](https://www.gxde.org/1.png)
 
 由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)
 
