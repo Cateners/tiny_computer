@@ -5,9 +5,10 @@ sudo apt update
 sudo apt upgrade -y
 
 hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-9.20.1/hangover_9.20.1_debian12_bookworm_arm64.tar"
-latest_version="9.20.1"
+latest_version="10.4"
 
 mirror_sites=(
+    "https://gh.llkk.cc/"
     "https://github.moeyy.xyz/"
     "https://mirror.ghproxy.com/"
     ""
