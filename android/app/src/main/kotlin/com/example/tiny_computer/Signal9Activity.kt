@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat.startActivity
 class Signal9Activity : AppCompatActivity() {
 
     private val helperLink = "https://www.vmos.cn/zhushou.htm"
-    private val helperLink2 = "https://b23.tv/WwqOqW6"
+    private val helperLink2 = "https://www.cnblogs.com/yejiuluo/articles/18271904"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
