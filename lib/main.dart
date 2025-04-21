@@ -38,7 +38,7 @@ import 'package:xterm/xterm.dart';
 //import 'package:xterm/flutter.dart';
 import 'package:tiny_computer/workflow.dart';
 
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_minimal/ffmpeg_kit.dart';
 
 void main() {
   runApp(const MyApp());
