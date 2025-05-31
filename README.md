@@ -1,8 +1,8 @@
-<p align="center"><img src="readme/cover0.png" alt="小小电脑使用照片" height="400"></img></p>
+[![小小电脑使用照片](https://github.com/Cateners/tiny_computer/raw/master/readme/cover0.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/cover0.png)
 
 # 小小电脑
 
-给所有安卓arm64设备的“PC应用引擎”平替。你可以在小小电脑上安装PC级WPS、CAJ Viewer、亿图图示等软件。
+给所有安卓 arm64 设备的“PC 应用引擎”平替。你可以在小小电脑上安装 PC 级 WPS、CAJ Viewer、亿图图示等软件。
 
 Click-to-run Debian Bookworm XFCE on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
 
@@ -11,44 +11,43 @@ Click-to-run Debian Bookworm XFCE on Android for Chinese users, with the Fcitx P
 - 一键安装，即开即用
 - 来自 kali-undercover 的 win10 主题(仅 xfce 版本)，友好的界面
 
-![1](readme/img1.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img1.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img1.png)
 
 - 提供常用软件的一键安装指令
 
-![1](readme/img2.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img2.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img2.png)
 
 - 可方便地改变屏幕缩放，不用担心屏幕过大或过小
 
-![1](readme/img3.gif)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img3.gif)](https://github.com/Cateners/tiny_computer/blob/master/readme/img3.gif)
 
 - 便捷访问设备文件，或通过设备 SAF 访问软件文件
 
-![1](readme/img4.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img4.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img4.png)
 
 - 提供终端和众多可调节参数供高级用户使用
 
-![1](readme/img5.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img5.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img5.png)
 
 ## 下载
 
-小小电脑提供多个版本。要将小小电脑作为PC应用引擎使用，请在[Releases](https://github.com/Cateners/tiny_computer/releases)页面下载并安装[XFCE](https://xfce.org/)版本（tiny-computer-xfce.apk）。
+小小电脑提供多个版本。要将小小电脑作为 PC 应用引擎使用，请在 [Releases](https://github.com/Cateners/tiny_computer/releases) 页面下载并安装 [XFCE](https://xfce.org/) 版本（tiny-computer-xfce.apk）。
 
-如果遇到黑屏问题，请卸载后尝试[LXQt](https://lxqt-project.org/)版本（Releases页寻找tiny-computer-lxqt.apk）。
+如果遇到黑屏问题，请卸载后尝试 [LXQt](https://lxqt-project.org/) 版本（[Releases](https://github.com/Cateners/tiny_computer/releases) 页寻找 tiny-computer-lxqt.apk）。
 
 这些版本的区别在于桌面环境不同。你可以简单地理解为界面不一样，但功能基本一致。
 
-LXQt的界面示例：
+LXQt 的界面示例：
 
-![1](https://lxqt-project.org/images/screenshots/ambiance.png)
+[![1](https://camo.githubusercontent.com/016ff8803c228f26db750c8424777d8e04a3aebec4ff11d8436a0b22a2e6f58a/68747470733a2f2f6c7871742d70726f6a6563742e6f72672f696d616765732f73637265656e73686f74732f616d6269616e63652e706e67)](https://camo.githubusercontent.com/016ff8803c228f26db750c8424777d8e04a3aebec4ff11d8436a0b22a2e6f58a/68747470733a2f2f6c7871742d70726f6a6563742e6f72672f696d616765732f73637265656e73686f74732f616d6269616e63652e706e67)
 
-如果你下载小小电脑是为了体验更多桌面环境，享受折腾Linux的乐趣，这里也有一些其他版本供下载！
+如果你下载小小电脑是为了体验更多桌面环境，享受折腾 Linux 的乐趣，这里也有一些其他版本供下载！
 
-和[GXDE](https://www.gxde.org/)团队合作的版本[#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE的界面示例：
+和 [GXDE](https://www.gxde.org/) 团队合作的版本 [#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE 的界面示例：
 
-![1](https://www.gxde.org/1.png)
+[![1](https://camo.githubusercontent.com/2884358def5f52e31b9f6dfc72be081f8defcc2c1463f8050786cb1f033fe761/68747470733a2f2f7777772e677864652e6f72672f312e706e67)](https://camo.githubusercontent.com/2884358def5f52e31b9f6dfc72be081f8defcc2c1463f8050786cb1f033fe761/68747470733a2f2f7777772e677864652e6f72672f312e706e67)
 
-由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)
-
+由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)。
 
 ## 原理
 
