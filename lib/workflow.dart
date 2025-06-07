@@ -41,6 +41,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
+import 'package:tiny_computer/l10n/app_localizations.dart';
+
 class Util {
 
   static Future<void> copyAsset(String src, String dst) async {
@@ -176,11 +178,11 @@ class Util {
   //限定字符串在min和max之间, 给文本框的validator
   static String? validateBetween(String? value, int min, int max, Function opr) {
     if (value == null || value.isEmpty) {
-      return "请输入数字";
+      return AppLocalizations.of(G.homePageStateContext)!.enterNumber;
     }
     int? parsedValue = int.tryParse(value);
     if (parsedValue == null) {
-      return "请输入有效的数字";
+      return AppLocalizations.of(G.homePageStateContext)!.enterValidNumber;
     }
     if (parsedValue < min || parsedValue > max) {
       return "请输入$min到$max之间的数字";
@@ -408,7 +410,6 @@ VSCode、输入法
     {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
     {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 # 重启后完全生效"},
     {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
-    {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
     {"name":"清理包管理器缓存", "command":"sudo apt clean"},
     {"name":"关机", "command":"stopvnc\nexit\nexit"},
     {"name":"???", "command":"timeout 8 cmatrix"}

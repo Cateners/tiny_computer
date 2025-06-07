@@ -17,17 +17,11 @@
 
 
 import 'dart:async';
-import 'dart:convert';
-//import 'dart:io';
 import 'dart:math';
-//import 'dart:convert';
-
-//import 'package:flutter/services.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_pty/flutter_pty.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
@@ -35,10 +29,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xterm/xterm.dart';
-//import 'package:xterm/flutter.dart';
-import 'package:tiny_computer/workflow.dart';
 
-import 'package:ffmpeg_kit_flutter_minimal/ffmpeg_kit.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tiny_computer/l10n/app_localizations.dart';
+
+import 'package:tiny_computer/workflow.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,18 +47,25 @@ class MyApp extends StatelessWidget {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
           return MaterialApp(
-            title: 'Tiny Computer',
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('zh'),
+            ],
             theme: ThemeData(
               colorScheme: lightDynamic,
               useMaterial3: true,
-              //fontFamily: "FiraCode",
             ),
             darkTheme: ThemeData(
               colorScheme: darkDynamic,
               useMaterial3: true,
-              //fontFamily: "FiraCode",
             ),
-            home: const MyHomePage(title: 'Tiny Computer'),
+            home: MyHomePage(title: "Tiny Computer"),
           );
         }
     );
@@ -142,7 +144,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -157,80 +159,80 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[0],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("高级设置"), subtitle: Text("修改后重启生效"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.advancedSettings), subtitle: Text(AppLocalizations.of(context)!.restartAfterChange));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("重置启动命令"), onPressed: () {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.resetStartupCommand), onPressed: () {
               showDialog(context: context, builder: (context) {
-                return AlertDialog(title: const Text("注意"), content: const Text("是否重置启动命令？"), actions: [
+                return AlertDialog(title: Text(AppLocalizations.of(context)!.attention), content: Text(AppLocalizations.of(context)!.confirmResetCommand), actions: [
                   TextButton(onPressed:() {
                     Navigator.of(context).pop();
-                  }, child: const Text("取消")),
+                  }, child: Text(AppLocalizations.of(context)!.cancel)),
                   TextButton(onPressed:() async {
                     await Util.setCurrentProp("boot", D.boot);
                     G.bootTextChange.value = !G.bootTextChange.value;
                     if (!context.mounted) return;
                     Navigator.of(context).pop();
-                  }, child: const Text("是")),
+                  }, child: Text(AppLocalizations.of(context)!.yes)),
                 ]);
               });
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("Signal9错误页面"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.signal9ErrorPage), onPressed: () async {
               await D.androidChannel.invokeMethod("launchSignal9Page", {});
             }),
           ]),
           const SizedBox.square(dimension: 8),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "容器名称"), onChanged: (value) async {
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("name"), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.containerName), onChanged: (value) async {
             await Util.setCurrentProp("name", value);
-            //setState(() {});
           }),
           const SizedBox.square(dimension: 8),
           ValueListenableBuilder(valueListenable: G.bootTextChange, builder:(context, v, child) {
-            return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "启动命令"), onChanged: (value) async {
+            return TextFormField(maxLines: null, initialValue: Util.getCurrentProp("boot"), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.startupCommand), onChanged: (value) async {
               await Util.setCurrentProp("boot", value);
             });
           }),
           const SizedBox.square(dimension: 8),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc启动命令"), onChanged: (value) async {
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vnc"), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.vncStartupCommand), onChanged: (value) async {
             await Util.setCurrentProp("vnc", value);
           }),
           const SizedBox.square(dimension: 8),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("你可以在当前所有同一网络下的设备（如：连接同一WiFi的手机，电脑等）里使用小小电脑。\n\n点击下面的按钮分享链接到其他设备后使用浏览器打开即可。"),
+          Text(AppLocalizations.of(context)!.shareUsageHint),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("复制分享链接"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.copyShareLink), onPressed: () async {
               final String? ip = await NetworkInfo().getWifiIP();
               if (!context.mounted) return;
               if (G.wasX11Enabled) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("使用X11时此功能无效"))
+                  SnackBar(content: Text(AppLocalizations.of(context)!.x11InvalidHint))
                 );
                 return;
               }
               if (ip == null) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("无法获取IP地址"))
+                  SnackBar(content: Text(AppLocalizations.of(context)!.cannotGetIpAddress))
                 );
                 return;
               }
               FlutterClipboard.copy((Util.getCurrentProp("vncUrl") as String).replaceAll(RegExp.escape("localhost"), ip)).then((value) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("已复制分享链接"))
+                  SnackBar(content: Text(AppLocalizations.of(context)!.shareLinkCopied))
                 );
               });
             }),
           ]),
           const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "网页跳转地址"), onChanged: (value) async {
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUrl"), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.webRedirectUrl), onChanged: (value) async {
             await Util.setCurrentProp("vncUrl", value);
           }),
           const SizedBox.square(dimension: 8),
-          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUri"), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "vnc链接"), onChanged: (value) async {
+          TextFormField(maxLines: null, initialValue: Util.getCurrentProp("vncUri"), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.vncLink), onChanged: (value) async {
             await Util.setCurrentProp("vncUri", value);
           }),
           const SizedBox.square(dimension: 8),
@@ -238,9 +240,9 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[1],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("全局设置"), subtitle: Text("在这里开启终端编辑"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.globalSettings), subtitle: Text(AppLocalizations.of(context)!.enableTerminalEditing));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "终端最大行数(重启软件生效)"),
+          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("termMaxLines") as int).toString(), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.terminalMaxLines),
             keyboardType: TextInputType.number,
             validator: (value) {
               return Util.validateBetween(value, 1024, 2147483647, () async {
@@ -248,7 +250,7 @@ class _SettingPageState extends State<SettingPage> {
               });
             },),
           const SizedBox.square(dimension: 16),
-          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "pulseaudio接收端口"),
+          TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: (Util.getGlobal("defaultAudioPort") as int).toString(), decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.pulseaudioPort),
             keyboardType: TextInputType.number,
             validator: (value) {
               return Util.validateBetween(value, 0, 65535, () async {
@@ -257,24 +259,24 @@ class _SettingPageState extends State<SettingPage> {
             }
           ),
           const SizedBox.square(dimension: 16),
-          SwitchListTile(title: const Text("启用终端"), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.enableTerminal), value: Util.getGlobal("isTerminalWriteEnabled") as bool, onChanged:(value) {
             G.prefs.setBool("isTerminalWriteEnabled", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用终端小键盘"), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.enableTerminalKeypad), value: Util.getGlobal("isTerminalCommandsEnabled") as bool, onChanged:(value) {
             G.prefs.setBool("isTerminalCommandsEnabled", value);
             setState(() {
               G.terminalPageChange.value = !G.terminalPageChange.value;
             });
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("终端粘滞键"), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.terminalStickyKeys), value: Util.getGlobal("isStickyKey") as bool, onChanged:(value) {
             G.prefs.setBool("isStickyKey", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("屏幕常亮"), value: Util.getGlobal("wakelock") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.keepScreenOn), value: Util.getGlobal("wakelock") as bool, onChanged:(value) {
             G.prefs.setBool("wakelock", value);
             WakelockPlus.toggle(enable: value);
             setState(() {});
@@ -282,24 +284,24 @@ class _SettingPageState extends State<SettingPage> {
           const SizedBox.square(dimension: 8),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("以下选项修改后将在下次启动软件时生效。"),
+          Text(AppLocalizations.of(context)!.restartRequiredHint),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("开启时启动图形界面"), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.startWithGUI), value: Util.getGlobal("autoLaunchVnc") as bool, onChanged:(value) {
             G.prefs.setBool("autoLaunchVnc", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("重新安装引导包"), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.reinstallBootPackage), value: Util.getGlobal("reinstallBootstrap") as bool, onChanged:(value) {
             G.prefs.setBool("reinstallBootstrap", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("getifaddrs桥接"), subtitle: const Text("修复安卓13设备getifaddrs无权限"), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.getifaddrsBridge), subtitle: Text(AppLocalizations.of(context)!.fixGetifaddrsPermission), value: Util.getGlobal("getifaddrsBridge") as bool, onChanged:(value) {
             G.prefs.setBool("getifaddrsBridge", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("伪装系统为UOS"), subtitle: const Text("修复UOS微信无法启动"), value: Util.getGlobal("uos") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.fakeUOSSystem), value: Util.getGlobal("uos") as bool, onChanged:(value) {
             G.prefs.setBool("uos", value);
             setState(() {});
           },),
@@ -307,30 +309,29 @@ class _SettingPageState extends State<SettingPage> {
       ExpansionPanel(
         isExpanded: _expandState[2],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("显示设置"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.displaySettings));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const SizedBox.square(dimension: 16),
-          const Text("""AVNC可以带来相比noVNC更好的操控体验；
-如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。"""),
+          Text(AppLocalizations.of(context)!.avncAdvantages),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC设置"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.avncSettings), onPressed: () async {
               await D.androidChannel.invokeMethod("launchPrefsPage", {});
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("关于AVNC"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.aboutAVNC), onPressed: () async {
               await D.androidChannel.invokeMethod("launchAboutPage", {});
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("AVNC启动时分辨率设置"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.avncResolution), onPressed: () async {
               final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
               final w0 = max(s.width, s.height);
               final h0 = min(s.width, s.height);
               String w = (w0 * 0.75).round().toString();
               String h = (h0 * 0.75).round().toString();
               showDialog(context: context, builder: (context) {
-                return AlertDialog(title: const Text("分辨率设置"), content: SingleChildScrollView(child: Column(children: [
-                  Text("你的设备屏幕分辨率是${w0.round()}x${h0.round()}"),
+                return AlertDialog(title: Text(AppLocalizations.of(context)!.resolutionSettings), content: SingleChildScrollView(child: Column(children: [
+                  Text("${AppLocalizations.of(context)!.deviceScreenResolution} ${w0.round()}x${h0.round()}"),
                   const SizedBox.square(dimension: 8),
-                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: w, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "宽"), keyboardType: TextInputType.number,
+                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: w, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.width), keyboardType: TextInputType.number,
                     validator: (value) {
                       return Util.validateBetween(value, 200, 7680, () {
                         w = value!;
@@ -338,7 +339,7 @@ class _SettingPageState extends State<SettingPage> {
                     }
                   ),
                   const SizedBox.square(dimension: 8),
-                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: h, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "高"), keyboardType: TextInputType.number,
+                  TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction, initialValue: h, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.height), keyboardType: TextInputType.number,
                     validator: (value) {
                       return Util.validateBetween(value, 200, 7680, () {
                         h = value!;
@@ -348,41 +349,38 @@ class _SettingPageState extends State<SettingPage> {
                 ])), actions: [
                   TextButton(onPressed:() {
                     Navigator.of(context).pop();
-                  }, child: const Text("取消")),
+                  }, child: Text(AppLocalizations.of(context)!.cancel)),
                   TextButton(onPressed:() async {
                     Util.termWrite("""sed -i -E "s@(geometry)=.*@\\1=${w}x${h}@" /etc/tigervnc/vncserver-config-tmoe
 sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${w}x${h}. 下次启动时生效"))
+                      SnackBar(content: Text("${w}x${h}. ${AppLocalizations.of(context)!.applyOnNextLaunch}"))
                     );
                     if (!context.mounted) return;
                     Navigator.of(context).pop();
-                  }, child: const Text("保存")),
+                  }, child: Text(AppLocalizations.of(context)!.save)),
                 ]);
               });
             }),
           ]),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("默认使用AVNC"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.useAVNCByDefault), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
             G.prefs.setBool("useAvnc", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""Termux X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。
-支持使用DRI3（需在图形加速中开启），可以带来相当大的性能提升。
-随着版本的迭代，Termux X11如今也支持了双向剪切板等功能。
-这是一个实验性功能！如果黑屏，请尝试彻底关闭本应用再重新启动。"""),
+          Text(AppLocalizations.of(context)!.termuxX11Advantages),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("Termux X11偏好设置"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.termuxX11Preferences), onPressed: () async {
               await D.androidChannel.invokeMethod("launchX11PrefsPage", {});
             }),
           ]),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("默认使用Termux X11"), subtitle: const Text("不使用VNC。重启生效"), value: Util.getGlobal("useX11") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.useTermuxX11ByDefault), subtitle: Text(AppLocalizations.of(context)!.disableVNC), value: Util.getGlobal("useX11") as bool, onChanged:(value) {
             G.prefs.setBool("useX11", value);
             if (!value && Util.getGlobal("dri3")) {
               G.prefs.setBool("dri3", false);
@@ -392,20 +390,15 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""高分辨率支持可以为拥有高分辨率屏幕的设备带来更高清的体验！
-
-注意：
-选项开启后显示会变得很大，请设置一个合适的分辨率。
-
-一些软件可能会存在显示问题，或者显示速度变慢。"""),
+          Text(AppLocalizations.of(context)!.hidpiAdvantages),
           const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "HiDPI环境变量"),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.hidpiEnvVar),
             onChanged: (value) async {
               await G.prefs.setString("defaultHidpiOpt", value);
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("高分辨率支持"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.hidpiSupport), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
             G.prefs.setBool("isHidpiEnabled", value);
             setState(() {});
           },),
@@ -414,147 +407,55 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
       ExpansionPanel(
         isExpanded: _expandState[3],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("相机推流"), subtitle: Text("实验性功能"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.fileAccess));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("成功启动推流后可以点击快捷指令\"拉流测试\"并前往图形界面查看效果。\n注意这并不能为系统创建一个虚拟相机；\n另外使用相机是高耗电行为，不用时需及时关闭。"),
+          Text(AppLocalizations.of(context)!.fileAccessHint),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请相机权限"), onPressed: () {
-              Permission.camera.request();
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请麦克风权限"), onPressed: () {
-              Permission.microphone.request();
-            }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("查看输出"), onPressed: () {
-              if (G.streamingOutput == "") {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("无输出"))
-                );
-                return;
-              }
-              showDialog(context: context, builder: (context) {
-                return AlertDialog(content: SingleChildScrollView(child:
-                  Text(G.streamingOutput)), actions: [
-                TextButton(onPressed:() {
-                  FlutterClipboard.copy(G.streamingOutput).then(( value ) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("已复制")));
-                  });
-                  Navigator.of(context).pop();
-                }, child: const Text("复制")),
-                TextButton(onPressed:() {
-                  Navigator.of(context).pop();
-                }, child: const Text("取消")),
-              ]);
-              });
-            }),
-          ]),
-          const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultFFmpegCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "ffmpeg推流命令"), 
-            onChanged: (value) async {
-              await G.prefs.setString("defaultFFmpegCommand", value);
-            },
-          ),
-          const SizedBox.square(dimension: 16),
-          SwitchListTile(title: const Text("启动推流服务器"), subtitle: const Text("mediamtx"), value: G.isStreamServerStarted, onChanged:(value) {
-            switch (value) {
-              case true: {
-                G.streamServerPty = Pty.start("/system/bin/sh");
-                G.streamServerPty.write(const Utf8Encoder().convert("${G.dataPath}/bin/mediamtx ${G.dataPath}/bin/mediamtx.yml\nexit\n"));
-                G.streamServerPty.exitCode.then((value) {
-                  G.isStreamServerStarted = false;
-                  setState(() {});
-                });
-              }
-              break;
-              case false: {
-                G.streamServerPty.write(const Utf8Encoder().convert("\x03exit\n"));
-              }
-              break;
-            }
-            G.isStreamServerStarted = value;
-            setState(() {});
-          },),
-          const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启动推流"), value: G.isStreaming, onChanged:(value) {
-            switch (value) {
-              case true: {
-                FFmpegKit.execute(Util.getGlobal("defaultFFmpegCommand") as String).then((session) {
-                  session.getOutput().then((value) async {
-                    G.isStreaming = false;
-                    G.streamingOutput = value??"";
-                    setState(() {});
-                  });
-                });
-              }
-              break;
-              case false: {
-                FFmpegKit.cancel();
-              }
-              break;
-            }
-            G.isStreaming = value;
-            setState(() {});
-          },),
-          const SizedBox.square(dimension: 8)
-        ],))),
-      ExpansionPanel(
-        isExpanded: _expandState[4],
-        headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("文件访问"));
-        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("通过这里获取更多文件权限，以实现对特殊目录的访问。"),
-          const SizedBox.square(dimension: 16),
-          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请存储权限"), onPressed: () {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.requestStoragePermission), onPressed: () {
               Permission.storage.request();
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("申请所有文件访问权限"), onPressed: () {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.requestAllFilesAccess), onPressed: () {
               Permission.manageExternalStorage.request();
             }),
           ]),
           const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
-        isExpanded: _expandState[5],
+        isExpanded: _expandState[4],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("图形加速"), subtitle: Text("实验性功能"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.graphicsAcceleration), subtitle: Text(AppLocalizations.of(context)!.experimentalFeature));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""图形加速可部分利用设备GPU提升系统图形处理表现，但由于设备差异也可能导致容器系统及软件运行不稳定甚至异常退出。
-
-Virgl可为使用OpenGL ES的应用提供加速。"""),
+          Text(AppLocalizations.of(context)!.graphicsAccelerationHint),
           const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglCommand") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl服务器参数"),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglCommand") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.virglServerParams),
             onChanged: (value) async {
               await G.prefs.setString("defaultVirglCommand", value);
             },
           ),
           const SizedBox.square(dimension: 8),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "virgl环境变量"),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultVirglOpt") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.virglEnvVar),
             onChanged: (value) async {
               await G.prefs.setString("defaultVirglOpt", value);
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用Virgl加速"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.enableVirgl), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("virgl") as bool, onChanged:(value) {
             G.prefs.setBool("virgl", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""搭载Adreno GPU的设备通常可以使用Turnip驱动加速使用Vulkan的软件。配合Zink驱动可实现加速使用OpenGL的软件。
-
-（也就是搭载不太新也不太旧的骁龙处理器的设备）"""),
+          Text(AppLocalizations.of(context)!.turnipAdvantages),
           const SizedBox.square(dimension: 8),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultTurnipOpt") as String, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Turnip环境变量"),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultTurnipOpt") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.turnipEnvVar),
             onChanged: (value) async {
               await G.prefs.setString("defaultTurnipOpt", value);
             },
           ),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用Turnip+Zink驱动"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.enableTurnipZink), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("turnip") as bool, onChanged:(value) async {
             G.prefs.setBool("turnip", value);
             if (!value && Util.getGlobal("dri3")) {
               G.prefs.setBool("dri3", false);
@@ -562,12 +463,12 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
             setState(() {});
           },),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("启用DRI3"), subtitle: const Text("下次启动时生效"), value: Util.getGlobal("dri3") as bool, onChanged:(value) async {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.enableDRI3), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("dri3") as bool, onChanged:(value) async {
             if (value && !(Util.getGlobal("turnip") && Util.getGlobal("useX11"))) {
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("DRI3必须配合Termux X11和Turnip使用"))
+                SnackBar(content: Text(AppLocalizations.of(context)!.dri3Requirement))
               );
               return;
             }
@@ -577,36 +478,26 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
         ],))),
       ExpansionPanel(
-        isExpanded: _expandState[6],
+        isExpanded: _expandState[5],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("Windows应用支持"), subtitle: Text("实验性功能"),);
+          return ListTile(title: Text(AppLocalizations.of(context)!.windowsAppSupport), subtitle: Text(AppLocalizations.of(context)!.experimentalFeature),);
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
-          const Text("""使用Hangover（在原生Wine运行跨架构应用）运行Windows应用！
-
-运行Windows程序需要经过架构和系统两层模拟，不要对运行速度抱有期待！
-
-需要速度可以尝试配合图形加速使用。当然程序崩溃甚至打不开也是正常的。
-
-建议将要运行的Windows程序连同程序文件夹移至桌面运行。
-
-你需要耐心。即使图形界面什么也没显示。看看终端，还在继续输出吗？还是停止在某个报错？
-
-或者寻找该Windows软件官方是否提供Linux arm64版本。"""),
+          Text(AppLocalizations.of(context)!.hangoverDescription),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover稳定版（10.4）"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text("${AppLocalizations.of(context)!.installHangoverStable}（10.9）"), onPressed: () async {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover-stable");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("安装Hangover最新版（可能出错）"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.installHangoverLatest), onPressed: () async {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("卸载Hangover"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.uninstallHangover), onPressed: () async {
               Util.termWrite("sudo apt autoremove --purge -y hangover-wine hangover-libarm64ecfex");
               G.pageIndex.value = 0;
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: const Text("清空Wine数据"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.clearWineData), onPressed: () async {
               Util.termWrite("rm -rf ~/.wine");
               G.pageIndex.value = 0;
             }),
@@ -614,12 +505,7 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("""Wine的常用指令。点击后前往图形界面耐心等待。
-
-任意程序启动参考时间：
-虎贲T7510 6GB 超过一分钟
-骁龙870 12GB 约10秒
-"""),
+          Text(AppLocalizations.of(context)!.wineCommandsHint),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.wineCommands.asMap().entries.map<Widget>(
             (e) {
@@ -632,9 +518,9 @@ Virgl可为使用OpenGL ES的应用提供加速。"""),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
-          const Text("以下选项修改后将在下次启动软件时生效。"),
+          Text(AppLocalizations.of(context)!.restartRequiredHint),
           const SizedBox.square(dimension: 8),
-          SwitchListTile(title: const Text("切换系统到日语"), subtitle: const Text("システムを日本語に切り替える"), value: Util.getGlobal("isJpEnabled") as bool, onChanged:(value) async {
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.switchToJapanese), subtitle: const Text("システムを日本語に切り替える"), value: Util.getGlobal("isJpEnabled") as bool, onChanged:(value) async {
             if (value) {
                 Util.termWrite("sudo localedef -c -i ja_JP -f UTF-8 ja_JP.UTF-8");
                 G.pageIndex.value = 0;
@@ -657,7 +543,7 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
-  final List<bool> _expandState = [false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false];
   
   @override
   void initState() {
@@ -677,7 +563,7 @@ class _InfoPageState extends State<InfoPage> {
     children: [
       ExpansionPanel(
         headerBuilder: (context, isExpanded) {
-          return const ListTile(title: Text("使用说明"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.userManual));
         },
         body: Padding(padding: const EdgeInsets.all(8), child: Column(
           children: [
@@ -697,7 +583,7 @@ class _InfoPageState extends State<InfoPage> {
       ExpansionPanel(
         isExpanded: _expandState[1],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("开源许可"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.openSourceLicenses));
         }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
 Flutter, path_provider, webview_flutter, url_launcher, shared_preferences
 
@@ -1072,44 +958,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ExpansionPanel(
         isExpanded: _expandState[2],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("隐私政策"));
-        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
-本软件不会收集你的隐私信息。
-
-当然，你在容器系统内部安装或使用的软件行为（包括通过快捷指令）就不受我控制了，我不对其负责。
-
-本软件申请的权限用于以下目的：
-文件相关权限：用于系统访问手机目录；
-相机和麦克风：用于推流，默认不会开启。
-通知和无障碍：Termux X11需要。
-"""))),
+          return ListTile(title: Text(AppLocalizations.of(context)!.permissionUsage));
+        }), body: Padding(padding: EdgeInsets.all(8), child: Text(AppLocalizations.of(context)!.privacyStatement))),
       ExpansionPanel(
         isExpanded: _expandState[3],
         headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("服务条款"));
-        }), body: const Padding(padding: EdgeInsets.all(8), child: Text("""
-小小电脑: 即开即用的类PC环境
-
-版权所有(C) 2023 Caten Hu
-
-本程序是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是任何以后版都可以。
-发布该程序是希望它能有用，但是并无保障;甚至连可销售和符合某个特定的目的都不保证。请参看 GNU 通用公共许可证，了解详情。
-你应该随程序获得一份 GNU 通用公共许可证的复本。如果没有，请看 <https://www.gnu.org/licenses/>。
-"""))),
-      ExpansionPanel(
-        isExpanded: _expandState[4],
-        headerBuilder: ((context, isExpanded) {
-          return const ListTile(title: Text("支持作者"));
+          return ListTile(title: Text(AppLocalizations.of(context)!.supportAuthor));
         }), body: Column(
         children: [
-          const Padding(padding: EdgeInsets.all(8), child: Text("""
-如果认为好用的话，可以推荐给其他人用噢！
-""")),
+          Padding(padding: EdgeInsets.all(8), child: Text(AppLocalizations.of(context)!.recommendApp)),
           ElevatedButton(
             onPressed: () {
               launchUrl(Uri.parse("https://github.com/Cateners/tiny_computer"), mode: LaunchMode.externalApplication);
             },
-            child: const Text("项目地址"),
+            child: Text(AppLocalizations.of(context)!.projectUrl),
           ),
         ]
       )),
@@ -1252,12 +1114,12 @@ class _FastCommandsState extends State<FastCommands> {
         String name = e.value["name"]!;
         String command = e.value["command"]!;
         showDialog(context: context, builder: (context) {
-          return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
-            TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
+          return AlertDialog(title: Text(AppLocalizations.of(context)!.commandEdit), content: SingleChildScrollView(child: Column(children: [
+            TextFormField(initialValue: name, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.commandName), onChanged: (value) {
               name = value;
             }),
             const SizedBox.square(dimension: 8),
-            TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
+            TextFormField(maxLines: null, initialValue: command, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.commandContent), onChanged: (value) {
               command = value;
             }),
           ])), actions: [
@@ -1267,17 +1129,17 @@ class _FastCommandsState extends State<FastCommands> {
               setState(() {});
               if (!context.mounted) return;
               Navigator.of(context).pop();
-            }, child: const Text("删除该项")),
+            }, child: Text(AppLocalizations.of(context)!.deleteItem)),
             TextButton(onPressed:() {
               Navigator.of(context).pop();
-            }, child: const Text("取消")),
+            }, child: Text(AppLocalizations.of(context)!.cancel)),
             TextButton(onPressed:() async {
               await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
                 ..setAll(e.key, [{"name": name, "command": command}]));
               setState(() {});
               if (!context.mounted) return;
               Navigator.of(context).pop();
-            }, child: const Text("保存")),
+            }, child: Text(AppLocalizations.of(context)!.save)),
           ]);
         },);
       },);
@@ -1285,42 +1147,42 @@ class _FastCommandsState extends State<FastCommands> {
         String name = "";
         String command = "";
         showDialog(context: context, builder: (context) {
-          return AlertDialog(title: const Text("指令编辑"), content: SingleChildScrollView(child: Column(children: [
-            TextFormField(initialValue: name, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令名称"), onChanged: (value) {
+          return AlertDialog(title: Text(AppLocalizations.of(context)!.commandEdit), content: SingleChildScrollView(child: Column(children: [
+            TextFormField(initialValue: name, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.commandName), onChanged: (value) {
               name = value;
             }),
             const SizedBox.square(dimension: 8),
-            TextFormField(maxLines: null, initialValue: command, decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "指令内容"), onChanged: (value) {
+            TextFormField(maxLines: null, initialValue: command, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.commandContent), onChanged: (value) {
               command = value;
             }),
           ])), actions: [
             TextButton(onPressed:() {
               Navigator.of(context).pop();
-            }, child: const Text("取消")),
+            }, child: Text(AppLocalizations.of(context)!.cancel)),
             TextButton(onPressed:() async {
               await Util.setCurrentProp("commands", Util.getCurrentProp("commands")
                 ..add({"name": name, "command": command}));
               setState(() {});
               if (!context.mounted) return;
               Navigator.of(context).pop();
-            }, child: const Text("添加")),
+            }, child: Text(AppLocalizations.of(context)!.add)),
           ]);
         },);
     }, onLongPress: () {
       showDialog(context: context, builder: (context) {
-        return AlertDialog(title: const Text("重置指令"), content: const Text("是否重置所有快捷指令？"), actions: [
+        return AlertDialog(title: Text(AppLocalizations.of(context)!.resetCommand), content: Text(AppLocalizations.of(context)!.confirmResetAllCommands), actions: [
           TextButton(onPressed:() {
             Navigator.of(context).pop();
-          }, child: const Text("取消")),
+          }, child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(onPressed:() async {
             await Util.setCurrentProp("commands", D.commands);
             setState(() {});
             if (!context.mounted) return;
             Navigator.of(context).pop();
-          }, child: const Text("是")),
+          }, child: Text(AppLocalizations.of(context)!.yes)),
         ]);
       });
-    }, child: const Text("添加快捷指令"))));
+    }, child: Text(AppLocalizations.of(context)!.addShortcutCommand))));
   }
 }
 
@@ -1401,9 +1263,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // )
           child: NavigationBar(
             selectedIndex: G.pageIndex.value,
-            destinations: const [
-              NavigationDestination(icon: Icon(Icons.monitor), label: "终端"),
-              NavigationDestination(icon: Icon(Icons.video_settings), label: "控制")
+            destinations: [
+              NavigationDestination(icon: Icon(Icons.monitor), label: AppLocalizations.of(context)!.terminal),
+              NavigationDestination(icon: Icon(Icons.video_settings), label: AppLocalizations.of(context)!.control)
             ],
             onDestinationSelected: (index) {
               G.pageIndex.value = index;
@@ -1414,7 +1276,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
         return Visibility(visible: isLoadingComplete && (value == 0),
           child: FloatingActionButton(
-            tooltip: "进入图形界面",
+            tooltip: AppLocalizations.of(context)!.enterGUI,
             onPressed: () {
               if (G.wasX11Enabled) {
                 Workflow.launchX11();
