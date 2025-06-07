@@ -48,3 +48,5 @@ app.*.map.json
 /backup
 
 assets/xa*
+
+lib/l10n/app_localizations*
