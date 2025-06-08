@@ -1,88 +1,87 @@
-<p align="center"><img src="readme/cover0.png" alt="小小电脑使用照片" height="400"></img></p>
+<p align="center"><img src="readme/cover0.png" alt="Tiny Computer Usage Photo" height="400"></img></p>
 
-# 小小电脑
+# Tiny Computer
 
-给所有安卓arm64设备的“PC应用引擎”平替。你可以在小小电脑上安装PC级WPS、CAJ Viewer、亿图图示等软件。
+A "PC application engine" alternative for all Android arm64 devices. You can install PC-level software such as WPS, CAJ Viewer, and EdrawMax on Tiny Computer.
 
 Click-to-run Debian Bookworm XFCE/LXQt/... on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
 
-## 特点
+## Features
 
-- 一键安装，即开即用
-- 来自kali-undercover的win10主题(仅xfce版本)，友好的界面
+- One-click installation, ready to use out of the box
+- Win10 theme from kali-undercover (XFCE version only), friendly interface
 
 ![1](readme/img1.png)
 
-- 提供常用软件的一键安装指令
+- Provides one-click installation commands for commonly used software
 
 ![1](readme/img2.png)
 
-- 可方便地改变屏幕缩放，不用担心屏幕过大或过小
+- Easily change screen scaling, no need to worry about the screen being too large or too small
 
 ![1](readme/img3.gif)
 
-- 便捷访问设备文件，或通过设备SAF访问软件文件
+- Conveniently access device files, or access software files through the device's SAF
 
 ![1](readme/img4.png)
 
-- 提供终端和众多可调节参数供高级用户使用
+- Provides a terminal and many adjustable parameters for advanced users
 
 ![1](readme/img5.png)
 
-## 下载
+## Download
 
-小小电脑提供多个版本。要将小小电脑作为PC应用引擎使用，请在[Releases](https://github.com/Cateners/tiny_computer/releases)页面下载并安装[XFCE](https://xfce.org/)版本（tiny-computer-xfce.apk）。
+Tiny Computer offers multiple versions. To use Tiny Computer as a PC application engine, please download and install the [XFCE](https://xfce.org/) version (tiny-computer-xfce.apk) from the [Releases](https://github.com/Cateners/tiny_computer/releases) page.
 
-如果遇到黑屏问题，请卸载后尝试[LXQt](https://lxqt-project.org/)版本（Releases页寻找tiny-computer-lxqt.apk）。
+If you encounter a black screen issue, please uninstall and try the [LXQt](https://lxqt-project.org/) version (look for tiny-computer-lxqt.apk on the Releases page).
 
-这些版本的区别在于桌面环境不同。你可以简单地理解为界面不一样，但功能基本一致。
+The difference between these versions lies in the desktop environment. You can simply understand it as the interface being different, but the functionality is basically the same.
 
-LXQt的界面示例：
+LXQt interface example:
 
 ![1](https://lxqt-project.org/images/screenshots/ambiance.png)
 
-如果你下载小小电脑是为了体验更多桌面环境，享受折腾Linux的乐趣，这里也有一些其他版本供下载！
+If you are downloading Tiny Computer to experience more desktop environments and enjoy the fun of tinkering with Linux, here are some other versions available for download!
 
-和[GXDE](https://www.gxde.org/)团队合作的版本[#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE的界面示例：
+A version in collaboration with the [GXDE](https://www.gxde.org/) team [#129](https://github.com/Cateners/tiny_computer/issues/129). It can be downloaded [here](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/). GXDE interface example:
 
 ![1](https://www.gxde.org/1.png)
 
-由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)
+A version provided by the [Lingmo Desktop](https://www.lingmo.org/) developer [#218](https://github.com/Cateners/tiny_computer/issues/218). Lingmo Desktop interface [example](https://www.bilibili.com/video/BV1Ci421R7AR)
 
+## Principle
 
-## 原理
+Uses proot to run the Debian environment.
 
-使用proot运行debian环境
+Built-in [noVNC](https://github.com/novnc/noVNC)/[AVNC](https://github.com/gujjwal00/avnc)/[Termux:X11](https://github.com/termux/termux-x11) to display the graphical interface.
 
-内置[noVNC](https://github.com/novnc/noVNC)/[AVNC](https://github.com/gujjwal00/avnc)/[Termux:X11](https://github.com/termux/termux-x11)显示图形界面
+## Project Structure
 
-## 项目结构
+Information about the source of files in assets can be found [here](extra/readme.md).
 
-assets的文件来源信息可以在[这里](extra/readme.md)找到。
+The complete container creation process can be seen [here](extra/build-tiny-rootfs.md).
 
-完整的容器制作过程可以在[这里](extra/build-tiny-rootfs.md)看到。
+Data packages are no longer updated in assets but are provided with releases, mainly to prevent git from becoming increasingly large.
 
-数据包不再在assets中更新，而是随releases提供，主要是为了避免git越来越大
+lib directory:
 
-lib目录：
+- main.dart file, page layout, a bit messy
+- workflow.dart file, logic part, currently still understandable
+  - Util utility class
+  - TermPty a terminal
+  - G global variable class
+  - Workflow all steps from opening the software to starting the container
 
-- main.dart文件，页面布局，有点乱
-- workflow.dart文件，逻辑部分，目前也还可以理解
-  - Util 工具类
-  - TermPty 一个终端
-  - G 全局变量类
-  - Workflow 从软件点开到容器启动的所有步骤
+## Compilation
 
-## 编译
+You need to have Flutter and Android SDK configured, and also install python3, bison, patch, gcc, then clone this project.
 
-你需要配置好flutter和安卓sdk，还需安装python3、bison、patch、gcc，然后克隆此项目。
-
-在编译之前，需要在release中下载patch.tar.gz拷贝到assets；以及下载系统rootfs(或者[自行制作](extra/build-tiny-rootfs.md))，之后使用split命令分割，拷贝到assets。一般我将其分为98MB。
+Before compiling, you need to download patch.tar.gz from releases and copy it to assets; also download the system rootfs (or [make it yourself](extra/build-tiny-rootfs.md)), then use the split command to segment it and copy it to assets. I usually split it into 98MB.
 
 `split -b 98M debian.tar.xz`
 
-还需要对flutter的一些默认配置作修改，因为其与项目中build.gradle的一些设置冲突。
-- 注释或删除`flutter\packages\flutter_tools\gradle\src\main\groovy\flutter.groovy`路径下与`ShrinkResources`相关的`if`代码块。
+You also need to modify some default configurations of Flutter because they conflict with some settings in the project's build.gradle.
+- Comment out or delete the `if` code block related to `ShrinkResources` in the `flutter\packages\flutter_tools\gradle\src\main\groovy\flutter.groovy` path.
 ```groovy
             // if (shouldShrinkResources(project)) {
             //     release {
@@ -99,25 +98,25 @@ lib目录：
             // }
 ```
 
-接下来就可以编译了。我使用的命令如下：
+Then you can compile. The command I use is as follows:
 
 `flutter build apk --target-platform android-arm64 --split-per-abi --obfuscate  --split-debug-info=tiny_computer/sdi`
 
-有一些C代码可能报错。比如KeyBind.c等文件，报错一些符号未定义。但其实包含那些符号的函数并没有被使用，所以可以把它们删掉再编译。
-应该有编译选项可以避免这种情况，但我对cmake不熟，就先这样了:P
+Some C code may report errors. For example, files like KeyBind.c may report some symbols as undefined. But in fact, the functions containing those symbols are not used, so you can delete them and compile again.
+There should be compilation options to avoid this situation, but I'm not familiar with cmake, so I'll leave it like this for now :P
 
-## 目前已知bug
+## Currently Known Bugs
 
-多用户/分身情形无法sudo, 其它见issue
+Cannot sudo in multi-user/clone scenarios, other issues see issues.
 
-## 一些链接
+## Some Links
 
-这是我的第一个flutter软件，感谢这些项目为我指路
+This is my first Flutter software, thanks to these projects for guiding me
 
-- 要一点基础的 [《Flutter实战·第二版》](https://book.flutterchina.club)
-- 也许是零基础的Flutter视频课程 [freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
+- Requires some basics [《Flutter实战·第二版》](https://book.flutterchina.club) (Flutter in Action, 2nd Edition)
+- Maybe a zero-based Flutter video course [freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
 
-- 安卓上的VS Code [Code FA](https://github.com/nightmare-space/vscode_for_android)
+- VS Code on Android [Code FA](https://github.com/nightmare-space/vscode_for_android)
 
 ## Getting Started
 

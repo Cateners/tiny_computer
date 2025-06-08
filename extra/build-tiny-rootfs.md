@@ -1,76 +1,76 @@
 # build-tiny-rootfs
- 对小小电脑项目rootfs制作的说明
+Instructions for creating the rootfs for the Tiny Computer project.
 
-### 为什么不直接制作一个脚本呢？
+### Why not just create a script?
 
-因为我不会，所以只能用自然语言记录一下制作步骤。
+Because I don't know how, I can only record the production steps in natural language.
 
-## 制作步骤（xfce和lxqt）
+## Production Steps (xfce and lxqt)
 
-### 安装Debian容器
+### Install Debian Container
 
-- 安装Termux
-- 在Termux内安装tmoe
-- 在tmoe内安装Debian Bookworm的proot容器
-  - 是否新建sudo用户-是-用户名tiny-密码tiny
-  - 是否设置tiny为默认用户-是
-  - 是否为root配置zsh-否
-  - 是否删除zsh.sh等-是
-  - 是否启动tmoe tools-是
-  - 其余对话框默认直接按回车
-  - 来到tmoe tool界面时取消，退出
+- Install Termux
+- Install tmoe in Termux
+- Install Debian Bookworm proot container in tmoe
+  - Create new sudo user - Yes - Username tiny - Password tiny
+  - Set tiny as default user - Yes
+  - Configure zsh for root - No
+  - Delete zsh.sh etc. - Yes
+  - Start tmoe tools - Yes
+  - For the remaining dialog boxes, press Enter directly by default
+  - When you get to the tmoe tool interface, cancel and exit
 
-### 安装其他软件
+### Install Other Software
 
-安装xfce部分是根据记忆写的，如果有误请指出。
+The xfce installation part is written from memory, please point out any errors.
 
-桌面环境只安装一个。
+Only install one desktop environment.
 
-#### 安装桌面环境(lxqt)
+#### Install Desktop Environment (lxqt)
 
-- 输入debian-i进入tmoe tools
-- 图形界面-rootless-lxqt-core
-- 不安装electron apps
-- 不安装chromium
+- Enter debian-i to enter tmoe tools
+- Graphical Interface - rootless - lxqt-core
+- Do not install electron apps
+- Do not install chromium
 
-- 按需调整
+- Adjust as needed
 
-#### 安装桌面环境(xfce)
+#### Install Desktop Environment (xfce)
 
-前面的部分和lxqt一致，只是选桌面环境时选了xfce-lite。
+The previous part is the same as lxqt, except that xfce-lite was chosen when selecting the desktop environment.
 
-下面是额外的美化部分。推荐先安装软件再做这个，因为使用kali-undercover时可能有依赖报错，但我忘记是哪些依赖了。但后面安装的某个软件会帮我们把依赖补上。
+The following is an additional beautification part. It is recommended to install the software before doing this, because there may be dependency errors when using kali-undercover, but I forgot which dependencies they were. However, a certain software installed later will help us supplement the dependencies.
 
-- xfce美化
-  - 前往kali源下载kali-undercover包并apt install安装
-  - 修改kali-undercover脚本中检测xfce环境的地方，强制允许
-    - 即注释第一个if里的exit 1
-  - 执行kali-undercover
-  - 按需调整
-    - 注释.bashrc中把bash风格改为windows风格的语句
-    - 调整状态栏
+- xfce Beautification
+  - Go to the kali source to download the kali-undercover package and install it with apt install
+  - Modify the place in the kali-undercover script that detects the xfce environment to force allow it
+    - That is, comment out exit 1 in the first if
+  - Execute kali-undercover
+  - Adjust as needed
+    - Comment out the statement in .bashrc that changes the bash style to windows style
+    - Adjust status bar
     - ......
 
-#### 安装VNC
+#### Install VNC
 
-安装桌面环境后会自动进行这一步，使用tmoe tools全部安装即可。
+This step will be performed automatically after installing the desktop environment. Just install everything using tmoe tools.
 
-- 选择tigervnc
-- 密码12345678
+- Select tigervnc
+- Password 12345678
 
-安装完成后，输入debian-i回到tmoe继续修改一些参数，主要目的是避免与termux的容器端口一致产生冲突
+After installation, enter debian-i to return to tmoe to continue modifying some parameters, the main purpose is to avoid conflicts with the termux container port
 
-- 修改显示端口到5904
-  - 远程桌面-tigervnc-显示端口-4
-- 修改novnc端口到36082
-  - 远程桌面-novnc-端口-36082
-- 修改startnovnc启动脚本(避免每次启动novnc时打开浏览器，虽然不是windows)
-  - 注释start_win10_edge_novnc_addr(大概在倒数第五行)
+- Modify display port to 5904
+  - Remote Desktop - tigervnc - Display Port - 4
+- Modify novnc port to 36082
+  - Remote Desktop - novnc - Port - 36082
+- Modify startnovnc startup script (to avoid opening the browser every time novnc starts, although it is not windows)
+  - Comment out start_win10_edge_novnc_addr (probably in the fifth line from the bottom)
 
-接下来对novnc应用补丁，以添加"通过滑块修改分辨率"等功能
+Next, apply a patch to novnc to add functions such as "modify resolution via slider"
 
-- [下载novnc.patch](https://github.com/Cateners/noVNC/releases/tag/1.2)
-- 切换目录到/usr/local/etc/tmoe-linux/novnc
+- [Download novnc.patch](https://github.com/Cateners/noVNC/releases/tag/1.2)
+- Switch directory to /usr/local/etc/tmoe-linux/novnc
 - `patch -p1 < novnc.patch`
 - ```bash
     find . '(' \
@@ -82,143 +82,142 @@
     ')' -delete
     ```
 
+#### Fix tmoe not being able to download software
 
-#### 修复tmoe不能下载软件
+In the xfce version I released, I added the --async-dns=false parameter to every aria2c call.
 
-在我发布的xfce版本中，我给每个aria2c调用都添加了--async-dns=false参数。
-
-先切换到tmoe目录`/usr/local/etc/tmoe-linux/git/share`，然后执行脚本`./replace.sh old-version`：
+First switch to the tmoe directory `/usr/local/etc/tmoe-linux/git/share`, then execute the script `./replace.sh old-version`:
 ```shell
 #!/bin/bash
-# 用法: ./replace.sh 目录
-# 该脚本会递归地在给定目录下的所有文件中替换文本
-# 原文本: aria2c --console-log-level
-# 新文本: aria2c --async-dns=false --console-log-level
+# Usage: ./replace.sh directory
+# This script recursively replaces text in all files in the given directory
+# Original text: aria2c --console-log-level
+# New text: aria2c --async-dns=false --console-log-level
 
-# 检查参数是否正确
+# Check if the parameters are correct
 if [ $# -ne 1 ]; then
-  echo "错误: 需要一个目录作为参数"
+  echo "Error: A directory is required as a parameter"
   exit 1
 fi
 
-# 检查目录是否存在
+# Check if the directory exists
 if [ ! -d "$1" ]; then
-  echo "错误: 目录 $1 不存在"
+  echo "Error: Directory $1 does not exist"
   exit 2
 fi
 
-# 遍历目录下的所有文件
+# Traverse all files in the directory
 find "$1" -type f | while read file; do
-  # 使用sed命令替换文本
+  # Use sed command to replace text
   sed -i 's/aria2c --console-log-level/aria2c --async-dns=false --console-log-level/g' "$file"
   echo
 done
 ```
 
-用完后删除replace.sh；
+Delete replace.sh after use;
 
-另外现在tmoe官方给出了[解决办法](https://gitee.com/mo2/linux/issues/I8BQG3)，不过我测试似乎还是不行，所以就先这样了
+In addition, tmoe official has now given a [solution](https://gitee.com/mo2/linux/issues/I8BQG3), but my test seems to still not work, so I'll leave it like this for now
 
-#### 修改apt源
+#### Modify apt source
 
-按需修改/etc/apt/sources.list，另外把non-free改为non-free-firmware
+Modify /etc/apt/sources.list as needed, and also change non-free to non-free-firmware
 
-#### 安装火狐浏览器
+#### Install Firefox Browser
 
 `sudo apt install firefox-esr firefox-esr-l10n-zh-cn`
 
-#### 安装输入法
+#### Install Input Method
 
 - debian-i
-- 03秘密花园-10输入法-fcitx4-安装4libpinyin和6云拼音模块
-- 在图形界面应用找到fcitx配置-附加组件-云拼音-配置-云拼音来源，把Google改为百度，确认
-  - 启动图形界面：输入startnovnc，会出现一个类似xxx.xxx.xxx.xxx:36082/vnc.html的网址，复制到本机的浏览器中输入vnc密码12345678就可以访问了。
+- 03 Secret Garden - 10 Input Method - fcitx4 - Install 4libpinyin and 6 Cloud Pinyin modules
+- In the graphical interface application, find fcitx configuration - Add-ons - Cloud Pinyin - Configuration - Cloud Pinyin source, change Google to Baidu, confirm
+  - Start the graphical interface: enter startnovnc, a URL similar to xxx.xxx.xxx.xxx:36082/vnc.html will appear, copy it to the browser of the local machine and enter the vnc password 12345678 to access it.
 
-#### 安装gdebi
+#### Install gdebi
 
-这个软件包能使用户通过图形界面安装deb安装包
+This software package allows users to install deb packages through a graphical interface
 
-安装：`sudo apt install gdebi`
+Installation: `sudo apt install gdebi`
 
-修改启动器：在/usr/share/applications/gdebi.desktop的Exec=后加上sudo
+Modify launcher: Add sudo after Exec= in /usr/share/applications/gdebi.desktop
 
-#### 安装VSCode
+#### Install VSCode
 
-VSCode使用tmoe安装，正好测试一下不能下载软件的问题是否存在
+VSCode is installed using tmoe, just to test whether the problem of not being able to download software exists
 
-- 2软件-2开发-1VSCode-1Official
+- 2 Software - 2 Development - 1 VSCode - 1 Official
 
-tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反复弹窗更新密钥环所以被我卸载了，这个按需决定是否保留吧
+tmoe will also install gnome-keyring. Since it caused VSCode to repeatedly pop up windows to update the keyring when I was making the xfce package, I uninstalled it. You can decide whether to keep it as needed.
 
-#### 安装ffmpeg
+#### Install ffmpeg
 
-这个是为了预览推流用的，按需安装
+This is for previewing streaming, install as needed
 
 `sudo apt install ffmpeg`
 
-### 其他修补
+### Other Patches
 
 #### cmatrix
 
-**（20241112）注意，这一步可以略过，因为cmatrix已被内置到patch.tar.gz**
+**（20241112）Note, this step can be skipped because cmatrix has been built into patch.tar.gz**
 
-这个是给快捷指令的彩蛋。下载cmatrix的包，并将cmatrix文件提取放到/home/tiny/.local/bin里即可，记得添加执行权限
+This is an Easter egg for the shortcut command. Download the cmatrix package, extract the cmatrix file and put it in /home/tiny/.local/bin, remember to add execution permission
 
 #### WPS
 
-**（20241112）注意，新版wps不再需要将整合模式改为多组件模式也能正常使用，所以可以跳过软件设置修改的步骤**
+**（20241112）Note, the new version of wps no longer needs to change the integration mode to multi-component mode to be used normally, so the software setting modification step can be skipped**
 
-- 软件设置修改
-  - 从官网下载WPS linux arm64 deb安装包，直接在图形界面点开用gdebi安装(正好测试一下gdebi是否能用)
-  - 打开WPS-右上角设置-其他-切换窗口管理模式-整合模式改为多组件模式(否则一些设备在新建文档等操作时卡死，目前原因不明)
-  - 使用gdebi(或自行)卸载WPS
-- libtiff.so.5库修补
-  - 切换到/lib/aarch64-linux-gnu文件夹，创建软链把libtiff.so.6链接到libtiff.so.5
-  - 或者找libtiff.so.5的包并安装，这样可能更好一些
-- 预装ttf-mscorefonts-installer
-  - 这个包是WPS的依赖，会在sourceforge下载字体，可能会非常慢，所以提前apt装好
+- Software Settings Modification
+  - Download the WPS linux arm64 deb installation package from the official website, and install it directly by clicking on it in the graphical interface with gdebi (just to test if gdebi can be used)
+  - Open WPS - Settings in the upper right corner - Other - Switch window management mode - Change integration mode to multi-component mode (otherwise some devices will freeze when creating new documents, etc., the reason is currently unknown)
+  - Uninstall WPS using gdebi (or by yourself)
+- libtiff.so.5 library patch
+  - Switch to the /lib/aarch64-linux-gnu folder, create a soft link to link libtiff.so.6 to libtiff.so.5
+  - Or find the libtiff.so.5 package and install it, which may be better
+- Pre-install ttf-mscorefonts-installer
+  - This package is a dependency of WPS and will download fonts from sourceforge, which may be very slow, so install it with apt in advance
 
 
-### 额外步骤
+### Extra Steps
 
-- 修复系统更新时变英文（v1.0.19）：把/etc/locale.gen文件里包含zh_CN.UTF-8的那行代码解除注释
-- 修复了xfce使用Termux:X11时占用过高（v1.0.19）：把底部面板的电量管理插件移除（右键-面板-面板首选项-项目）
-- 不弹出终端窗口（v1.0.18）：把/etc/X11/xinit/Xsession文件倒数第二行open_terminal删掉
-- 关闭垂直同步以使用Turnip+Zink（v1.0.17）：把文件~/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml内vblank_mode值从auto改为off
-- xfce版本安装了图片查看器ristretto和压缩文件管理器xarchiver（v1.0.16）
+- Fix the system turning into English during updates (v1.0.19): Uncomment the line containing zh_CN.UTF-8 in the /etc/locale.gen file
+- Fixed high CPU usage when xfce uses Termux:X11 (v1.0.19): Remove the power management plugin from the bottom panel (Right click - Panel - Panel Preferences - Items)
+- Do not pop up terminal window (v1.0.18): Delete the open_terminal in the second to last line of the /etc/X11/xinit/Xsession file
+- Disable vertical sync to use Turnip+Zink (v1.0.17): Change the vblank_mode value from auto to off in the file ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+- The xfce version has the image viewer ristretto and the archive manager xarchiver installed (v1.0.16)
 
-### 打包
+### Packaging
 
-- 首先退出容器，在容器挂载选项里取消对sd和termux的挂载，之后进入容器删除termux软连接
-  - 在后面使用tar打包时，即使指定了exclude，tar也会尝试把它们打包进去
-  - 这个很可能因为我自己没用对参数，如果你非常自信的话就不需要这么做，自行打包即可=v=
-- 在[这里](https://github.com/meefik/busybox/releases)下载提取busybox的可执行文件，并放到系统根目录
-  - 我使用busybox的tar来打包，而不是容器自带的tar，原因是容器自带的tar会把硬链接打包成单独的文件，导致打包解包后占用多出1GB
-  - 这个也很可能是我自己没用对参数，如果你非常自信就不用这么做......
-- 尽可能多地删除使用痕迹，包括但不限于
+- First, exit the container, cancel the mounting of sd and termux in the container mount options, then enter the container and delete the termux soft link
+  - When using tar for packaging later, even if exclude is specified, tar will try to package them
+  - This is likely because I didn't use the parameters correctly. If you are very confident, you don't need to do this, just package it yourself =v=
+- Download and extract the busybox executable file [here](https://github.com/meefik/busybox/releases) and place it in the system root directory
+  - I use busybox's tar for packaging, not the container's own tar, because the container's own tar will package hard links into separate files, causing an extra 1GB of space to be occupied after packaging and unpacking
+  - This is also likely because I didn't use the parameters correctly. If you are very confident, you don't need to do this......
+- Delete as many usage traces as possible, including but not limited to
   - apt clean
-  - /tmp下的文件，退出容器后删
-  - tiny和root目录下的
+  - Files under /tmp, delete after exiting the container
+  - Under tiny and root directories
     - .cache
     - .vnc/vnc.log, .vnc/x.log
     - .bash_history
     - .ICEauthority
     - .Xauthority
-    - 等等
-- 切换到root用户，切换到根目录，`/busybox tar -Jcpvf /debian.tar.xz --exclude=debian.tar.xz --exclude=dev --exclude=proc --exclude=system --exclude=storage --exclude=apex --exclude=sys --exclude=media/sd --exclude=busybox --exclude=".l2s.*" /`
+    - etc.
+- Switch to root user, switch to root directory, `/busybox tar -Jcpvf /debian.tar.xz --exclude=debian.tar.xz --exclude=dev --exclude=proc --exclude=system --exclude=storage --exclude=apex --exclude=sys --exclude=media/sd --exclude=busybox --exclude=".l2s.*" /`
 
 
-## 制作步骤（GXDE OS）
+## Production Steps (GXDE OS)
 
-### 咕咕咕
+### Coo Coo Coo (placeholder/coming soon)
 
-其实流程和前面差不多。基本上就是 装图形界面->修复中文->修复tmoe->修non-free-firmware->（随便看看空间占用，略）->修wps->准备busybox以便打包->添加Xsession文件以便启动
+Actually, the process is similar to the previous one. Basically, it is Install graphical interface -> Fix Chinese -> Fix tmoe -> Fix non-free-firmware -> (Casually check disk space usage, omit) -> Fix wps -> Prepare busybox for packaging -> Add Xsession file for startup
 
-请看VCR：
+Please see VCR:
 ```
     1  exit
-    2  sudo apt install sd/Download/gxde-source_1.0.1_all.deb 
-    3  sudo apt install ./sd/Download/gxde-source_1.0.1_all.deb 
+    2  sudo apt install sd/Download/gxde-source_1.0.1_all.deb
+    3  sudo apt install ./sd/Download/gxde-source_1.0.1_all.deb
     4  sudo apt update
     5  sudo apt install gxde-testing-source
     6  sudo apt update
@@ -227,9 +226,9 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
     9  cd /usr/local/etc/tmoe-linux/git/share
    10  nano replace.sh
    11  ./replace.sh old-version
-   12  chmod +x replace.sh 
+   12  chmod +x replace.sh
    13  ./replace.sh old-version
-   14  rm replace.sh 
+   14  rm replace.sh
    15  cd
    16  tmoe
    17  nano /etc/apt/sources.list
@@ -253,18 +252,18 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
    35  cd /etc/X11/xinit/
    36  ls
    37  cp ~/termux/home/.local/share/tmoe-linux/containers/proot/debian-bookworm_arm64/etc/X11/xinit/Xsession .
-   38  ls -l Xsession 
+   38  ls -l Xsession
    39  cd /
-   40  ls -l busybox 
+   40  ls -l busybox
    41  exit
    42  sudo apt clean;sudo apt autoclean;sudo apt autoremove --purge || sudo apt autoremove
    43  history
    44  history > /sd/history.txt
 ```
 
-关于Xsession文件：
+About Xsession file:
 
-因为当前小小电脑代码写死了启动X11图形界面就通过执行/etc/X11/xinit/Xsession，如果通过tmoe安装图形界面这个文件是自带的，但安装GXDE没有通过tmoe，所以随便写了个：
+Because the current Tiny Computer code hardcodes the startup of the X11 graphical interface by executing /etc/X11/xinit/Xsession, if you install the graphical interface through tmoe, this file is included. However, GXDE is not installed through tmoe, so I just wrote one casually:
 ```
 rm -rf /run/dbus/pid
 sudo dbus-daemon --system

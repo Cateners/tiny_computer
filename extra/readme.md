@@ -1,60 +1,60 @@
-## 这个readme介绍assets文件夹中文件的制作方式。
+## This readme describes how the files in the assets folder are made.
 
-### assets.zip中的文件：
+### Files in assets.zip:
 
 - [busybox](https://github.com/meefik/busybox)
-- [mediamtx相关](https://github.com/bluenviron/mediamtx)
+- [mediamtx related](https://github.com/bluenviron/mediamtx)
 - [tar](https://github.com/Rprop/tar-android-static)
-- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
+- [Xserver XSDL, pulseaudio related files](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
 - [virgl](https://github.com/termux/termux-packages/tree/master/x11-packages/virglrenderer-android)
 
-以上文件没有经过更改。
-一般是使用了仓库直接提供的二进制文件，或者是使用了仓库提供的patch编译而来。
+The above files have not been modified.
+Generally, binary files directly provided by the repository were used, or they were compiled using patches provided by the repository.
 
-- [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
-- [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)，制作了[容器文件xa*](build-tiny-rootfs.md)
-- getifaddrs_bridge_server，见下面的介绍和getifaddrs_bridge子文件夹
+- [proot](https://github.com/Cateners/proot), compiled using the [build-proot-android](https://github.com/green-green-avk/build-proot-android) script
+- [Tmoe Linux, debian package source](https://github.com/2moe/tmoe), created [container files xa*](build-tiny-rootfs.md)
+- getifaddrs_bridge_server, see the introduction below and the getifaddrs_bridge subfolder
 
-### patch.tar.gz中的文件：
+### Files in patch.tar.gz:
 
 #### extra/getifaddrs_bridge_client_lib.so:
 
-在安卓13以上的系统中，proot容器无权使用默认的getifaddrs，而这个库包含了一个getifaddrs实现。
+On systems Android 13 and above, the proot container does not have permission to use the default getifaddrs, and this library contains a getifaddrs implementation.
 
-linux在需要数据时，使用socket通知位于安卓的getifaddrs_bridge_server，让getifaddrs_bridge_server执行getifaddrs函数，并将结构体数据序列化后发送回linux端，这边接收数据并反序列化还原成指针结构体。简单来说就是用安卓的getifaddrs代替linux的getifaddrs。
+When linux needs data, it uses a socket to notify getifaddrs_bridge_server located in Android, letting getifaddrs_bridge_server execute the getifaddrs function, and serialize the structure data before sending it back to the linux side, which then receives the data and deserializes it back into a pointer structure. Simply put, it uses Android's getifaddrs to replace linux's getifaddrs.
 
-源码和编译信息在getifaddrs_bridge文件夹查看。
+Source code and compilation information can be found in the getifaddrs_bridge folder.
 
 #### extra/install-hangover, extra/install-hangover-stable:
 
-这些是用于Windows应用支持的Hangover安装脚本。
+These are Hangover installation scripts for Windows application support.
 
 #### extra/chn_fonts.reg:
 
-修复wine显示方块字的注册表文件。
+Registry file to fix wine displaying square characters.
 
 #### extra/libvulkan_freedreno.so, extra/freedreno_icd.aarch64.json:
 
-Turnip驱动。根据[这里](https://github.com/xDoge26/proot-setup/issues/26#issuecomment-1712404849)和[这里](https://github.com/MastaG/mesa-turnip-ppa)编译
+Turnip driver. Compiled according to [here](https://github.com/xDoge26/proot-setup/issues/26#issuecomment-1712404849) and [here](https://github.com/MastaG/mesa-turnip-ppa)
 
 #### extra/cmatrix
 
-快捷指令的彩蛋。原本放在容器里，但显然放这里更为合适
+Easter egg for shortcut command. Originally placed in the container, but it is clearly more appropriate to put it here.
 
 #### caj, edraw
 
-这些分别是cajviewer，亿图图示的补丁
+These are patches for cajviewer and EdrawMax respectively.
 
-- 亿图图示补丁的库文件是在小小电脑上下载了Qt对应版本源码后编译得到的；
-- 编译进行了两次，第一次直接编译，可以得到Gui和Widgets两个库。第二次编译带上XcbQpa，虽然会编译失败，但在这之前就可以得到XcbQpa的库。
+- The library files for the EdrawMax patch were compiled after downloading the corresponding Qt version source code on Tiny Computer;
+- Compilation was performed twice. The first time, it was compiled directly, yielding the Gui and Widgets libraries. The second time, it was compiled with XcbQpa. Although the compilation failed, the XcbQpa library could be obtained before that.
 
 #### wechat
 
-微信的补丁。license, uos-lsb和uos-release来自星火的微信包或arch的wechat-uos打包（嗯，我忘记到底是哪的了。不过都差不多）。
+WeChat patch. license, uos-lsb, and uos-release come from Spark Store's WeChat package or Arch's wechat-uos packaging (well, I forgot which one. But they are pretty much the same).
 
-libssl1.1来自debian官方源。deepin-elf-verifier是我打的空包。
+libssl1.1 comes from the official Debian source. deepin-elf-verifier is an empty package I created.
 
 #### font
 
-[小赖字体](https://github.com/lxgw/kose-font)用于修复wine的方块字
-其他字体用于避免wps报字体缺失的错误
+[Xiaolai Font](https://github.com/lxgw/kose-font) is used to fix wine's square characters.
+Other fonts are used to prevent wps from reporting missing font errors.

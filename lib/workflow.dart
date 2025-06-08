@@ -176,14 +176,14 @@ class Util {
   //限定字符串在min和max之间, 给文本框的validator
   static String? validateBetween(String? value, int min, int max, Function opr) {
     if (value == null || value.isEmpty) {
-      return "请输入数字";
+      return "Please enter a number";
     }
     int? parsedValue = int.tryParse(value);
     if (parsedValue == null) {
-      return "请输入有效的数字";
+      return "Please enter a valid number";
     }
     if (parsedValue < min || parsedValue > max) {
-      return "请输入$min到$max之间的数字";
+      return "Please enter a number between $min and $max";
     }
     opr();
     return null;
@@ -301,135 +301,135 @@ class D {
 
   //帮助信息
   static const faq = [
-    {"q":"安卓12及以上注意事项:错误码9", "a":"""如果你的系统版本大于等于android 12
-可能会在使用过程中异常退出(返回错误码9)
-届时本软件会提供方案指引你修复
-并不难
-但是软件没有权限
-不能帮你修复
+    {"q":"Notes for Android 12 and above: Error code 9", "a":"""If your system version is Android 12 or higher,
+you may experience abnormal exits (returning error code 9) during use.
+At that time, this software will provide a solution to guide you to fix it.
+It's not difficult,
+but the software does not have permission
+and cannot help you fix it.
 
-你也可以在高级设置里手动前往错误页面"""},
-    {"q":"安卓13注意事项", "a":"""如果你的系统版本大于等于android 13
-那么很可能一些网页应用如jupyter notebook
-bilibili客户端等等不可用
-可以去全局设置开启getifaddrs桥接"""},
-    {"q":"用一会就断掉", "a":"""这应该是出现了错误9的情况
-下次出现此情况时
-按设备的返回键(或用返回手势)
-应该能看到软件提供的修复引导"""},
-    {"q":"如何访问设备文件？", "a":"""如果你给了存储权限
-那么通过主目录下的文件夹
-就可以访问设备存储
-要访问整个设备存储可以访问sd文件夹
-此外主文件夹的很多文件夹与设备文件夹绑定
-比如主文件夹的下载文件夹就是设备的下载文件夹
+You can also manually go to the error page in advanced settings."""},
+    {"q":"Notes for Android 13", "a":"""If your system version is Android 13 or higher,
+then it is likely that some web applications such as Jupyter Notebook,
+Bilibili client, etc. will not be available.
+You can go to global settings to enable getifaddrs bridge."""},
+    {"q":"Disconnects after a while", "a":"""This should be a case of error 9.
+The next time this happens,
+press the device's back button (or use the back gesture),
+and you should see the repair guide provided by the software."""},
+    {"q":"How to access device files?", "a":"""If you have granted storage permission,
+then through the folders in the home directory,
+you can access device storage.
+To access the entire device storage, you can access the sd folder.
+In addition, many folders in the home folder are bound to device folders.
+For example, the Download folder in the home folder is the device's Download folder.
 
-另外！任何支持SAF的安卓软件
-都可以在不打开小小电脑的情况下直接访问小小电脑的文件"""},
-    {"q":"如何访问SD卡文件？", "a":"""首先用其他文件管理器查看SD卡路径
-（通常为/storage/xxxx...）
-然后把该地址输入到小小电脑的文件管理器回车即可
+Also! Any Android software that supports SAF
+can directly access Tiny Computer's files without opening Tiny Computer."""},
+    {"q":"How to access SD card files?", "a":"""First, use another file manager to view the SD card path
+(usually /storage/xxxx...).
+Then enter this address into Tiny Computer's file manager and press Enter.
 
-注意不要只输/storage
-或者从/storage文件夹点进去
-那样是没有权限的"""},
-    {"q":"自带的火狐浏览器无法下载文件", "a":"""检查是否授予小小电脑存储权限
+Note: do not just enter /storage
+or click into it from the /storage folder,
+as that will not have permission."""},
+    {"q":"The built-in Firefox browser cannot download files", "a":"""Check if Tiny Computer has been granted storage permission.
 
-火狐下载的文件会保存在设备的下载文件夹
-如果不想授予存储权限也可在火狐的设置里更改下载文件保存位置"""},
-    {"q":"安装更多软件？", "a":"""本软件的初衷是作为PC应用引擎的平替
-所以我不会提供安装除WPS等软件外的帮助
-另外你需要一些Linux系统使用经验
+Files downloaded by Firefox will be saved in the device's Download folder.
+If you do not want to grant storage permission, you can also change the download file save location in Firefox's settings."""},
+    {"q":"Install more software?", "a":"""The original intention of this software is to be an alternative to PC application engines,
+so I will not provide help for installing software other than WPS, etc.
+In addition, you need some experience using Linux systems.
 
-如果你想安装其他软件
-可以使用容器自带的tmoe
-但并不保证安装了能用哦
-(事实上, 目前容器里的
-VSCode、输入法
-都是用tmoe安装的
-就连系统本身也是用tmoe安装的)
+If you want to install other software,
+you can use the tmoe that comes with the container,
+but there is no guarantee that it will work after installation.
+(In fact, currently in the container,
+VSCode, input methods
+are all installed using tmoe.
+Even the system itself is installed using tmoe.)
 
-也可以在网上搜索
-"ubuntu安装xxx教程"
-"linux安装xxx教程"等等
+You can also search online for
+"ubuntu install xxx tutorial"
+"linux install xxx tutorial" etc.
 
-要注意容器环境和完整Linux有不同
-你可能需要做一些修补工作
-比如基于Electron的软件通常需要添加--no-sandbox参数才能使用"""},
-    {"q":"WPS没有常用字体？", "a":"""如果你需要更多字体
-在给了存储权限的情况下
-直接将字体复制到设备存储的Fonts文件夹即可
-一些常用的办公字体
-可以在Windows电脑的C:\\Windows\\Fonts文件夹找到
-由于可能的版权问题
-软件不能帮你做"""},
-    {"q":"中文输入法？", "a":"""关于中文输入的问题
-强烈建议不要使用安卓中文输入法直接输入中文
-而是使用英文键盘通过容器的输入法(Ctrl+空格切换)输入中文
-避免丢字错字"""},
-    {"q":"外接鼠标移不到边缘", "a":"""最可能的情况是
-你的设备使用手势控制而不是三大金刚键
-边缘是系统留给你手势操作用的
-大概没什么办法
-不过也许可以双指捏合使屏幕范围稍微变小一点？"""},
-    {"q":"镜像正在同步", "a":"""偶尔会出现这种情况
-一段时间后就会同步完成
+Note that the container environment is different from a full Linux system.
+You may need to do some patching work.
+For example, Electron-based software usually needs to add the --no-sandbox parameter to be used."""},
+    {"q":"WPS doesn't have common fonts?", "a":"""If you need more fonts,
+and have granted storage permission,
+you can directly copy the fonts to the Fonts folder in the device storage.
+Some commonly used office fonts
+can be found in the C:\\Windows\\Fonts folder on a Windows computer.
+Due to possible copyright issues,
+the software cannot do this for you."""},
+    {"q":"Chinese input method?", "a":"""Regarding the Chinese input issue,
+it is strongly recommended not to use the Android Chinese input method to directly input Chinese,
+but to use an English keyboard to input Chinese through the container's input method (Ctrl+Space to switch),
+to avoid missing or incorrect characters."""},
+    {"q":"External mouse cannot reach the edge", "a":"""The most likely situation is that
+your device uses gesture control instead of the three navigation buttons.
+The edge is reserved by the system for your gesture operations.
+There is probably nothing that can be done.
+However, maybe you can pinch with two fingers to make the screen range slightly smaller?"""},
+    {"q":"Mirror is synchronizing", "a":"""This situation occurs occasionally.
+It will complete synchronization after a period of time.
 
-请几个小时后再试一次"""},
-    {"q":"找不到sys/cdefs.h", "a":"""点击上面无法编译C语言程序的快捷指令"""},
-    {"q":"安装一些软件很慢", "a":"""请尝试使用魔法"""},
-    {"q":"联发科处理器可以用吗？", "a":"""联发科处理器只是没有成熟的开源图形驱动供加速而已
-不考虑速度的话都能用的"""},
+Please try again in a few hours."""},
+    {"q":"Cannot find sys/cdefs.h", "a":"""Click the shortcut command above that says "Cannot compile C language programs"."""},
+    {"q":"Installing some software is very slow", "a":"""Please try using magic (VPN/proxy)."""},
+    {"q":"Can MediaTek processors be used?", "a":"""MediaTek processors just don't have mature open-source graphics drivers for acceleration.
+If you don't consider speed, they can all be used."""},
   ];
 
   //默认快捷指令
-  static const commands = [{"name":"检查更新并升级", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
-    {"name":"查看系统信息", "command":"neofetch -L && neofetch --off"},
-    {"name":"清屏", "command":"clear"},
-    {"name":"中断任务", "command":"\x03"},
-    {"name":"安装图形处理软件Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
-    {"name":"卸载Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
-    {"name":"安装视频剪辑软件Kdenlive", "command":"sudo apt update && sudo apt install -y kdenlive"},
-    {"name":"卸载Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
-    {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
-    {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
-    {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
+  static const commands = [{"name":"Check for updates and upgrade", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
+    {"name":"View system information", "command":"neofetch -L && neofetch --off"},
+    {"name":"Clear screen", "command":"clear"},
+    {"name":"Interrupt task", "command":"\x03"},
+    {"name":"Install graphics software Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
+    {"name":"Uninstall Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
+    {"name":"Install video editing software Kdenlive", "command":"sudo apt update && sudo apt install -y kdenlive"},
+    {"name":"Uninstall Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
+    {"name":"Install scientific computing software Octave", "command":"sudo apt update && sudo apt install -y octave"},
+    {"name":"Uninstall Octave", "command":"sudo apt autoremove --purge -y octave"},
+    {"name":"Install WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
 wget https://mirrors.sdu.edu.cn/spark-store-repository/aarch64-store/office/wps-office/wps-office_11.1.0.11720-fix2_arm64.deb -O /tmp/wps.deb
 EOF
 rm /tmp/wps.deb"""},
-    {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
-    {"name":"安装CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
-    {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
-    {"name":"安装亿图图示", "command":"wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
-    {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
-    {"name":"安装QQ", "command":"""wget \$(curl -L https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/linuxQQDownload.js | grep -oP '(?<=armDownloadUrl":\\{"deb":")[^"]+') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
-    {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
-    {"name":"安装微信", "command":"wget https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb && echo '安装完成。如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
-    {"name":"卸载微信", "command":"sudo apt autoremove --purge -y wechat"},
-    {"name":"安装钉钉", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
-    {"name":"卸载钉钉", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
-    {"name":"修复无法编译C语言程序", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
-    {"name":"修复系统语言到中文", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 # 重启后完全生效"},
-    {"name":"启用回收站", "command":"sudo apt update && sudo apt install -y gvfs && echo '安装完成, 重启软件即可使用回收站。'"},
-    {"name":"拉流测试", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
-    {"name":"清理包管理器缓存", "command":"sudo apt clean"},
-    {"name":"关机", "command":"stopvnc\nexit\nexit"},
+    {"name":"Uninstall WPS", "command":"sudo apt autoremove --purge -y wps-office"},
+    {"name":"Install CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
+    {"name":"Uninstall CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
+    {"name":"Install EdrawMax", "command":"wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
+    {"name":"Uninstall EdrawMax", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
+    {"name":"Install QQ", "command":"""wget \$(curl -L https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/linuxQQDownload.js | grep -oP '(?<=armDownloadUrl":\\{"deb":")[^"]+') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
+    {"name":"Uninstall QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
+    {"name":"Install WeChat", "command":"wget https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb && echo 'Installation complete. If you only use WeChat to transfer files, you can consider using an SAF-enabled file manager (e.g., Material Files) to directly access all files in Tiny Computer.'; rm /tmp/wechat.deb"},
+    {"name":"Uninstall WeChat", "command":"sudo apt autoremove --purge -y wechat"},
+    {"name":"Install DingTalk", "command":"""wget \$(curl -L https://g.alicdn.com/dingding/h5-home-download/0.2.4/js/index.js | grep -oP 'url:"\\K[^"]*arm64\\.deb' | head -n 1) -O /tmp/dingtalk.deb && sudo apt update && sudo apt install -y /tmp/dingtalk.deb libglut3.12 libglu1-mesa && sed -i 's#\\./com.alibabainc.dingtalk#\\./com.alibabainc.dingtalk --no-sandbox#g' /opt/apps/com.alibabainc.dingtalk/files/Elevator.sh; rm /tmp/dingtalk.deb"""},
+    {"name":"Uninstall DingTalk", "command":"sudo apt autoremove --purge -y com.alibabainc.dingtalk"},
+    {"name":"Fix unable to compile C programs", "command":"sudo apt update && sudo apt reinstall -y libc6-dev"},
+    {"name":"Fix system language to Chinese", "command":"sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8 # Takes full effect after restart"},
+    {"name":"Enable Recycle Bin", "command":"sudo apt update && sudo apt install -y gvfs && echo 'Installation complete, restart the software to use the recycle bin.'"},
+    {"name":"Test Stream Pull", "command":"ffplay rtsp://127.0.0.1:8554/stream &"},
+    {"name":"Clear Package Manager Cache", "command":"sudo apt clean"},
+    {"name":"Shutdown", "command":"stopvnc\nexit\nexit"},
     {"name":"???", "command":"timeout 8 cmatrix"}
   ];
 
   //默认wine快捷指令
-  static const wineCommands = [{"name":"Wine配置", "command":"winecfg"},
-    {"name":"修复方块字", "command":"regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
-    {"name":"开始菜单文件夹", "command":"wine explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
-    {"name":"我的电脑", "command":"wine explorer"},
-    {"name":"记事本", "command":"notepad"},
-    {"name":"扫雷", "command":"winemine"},
-    {"name":"注册表", "command":"regedit"},
-    {"name":"控制面板", "command":"wine control"},
-    {"name":"文件管理器", "command":"winefile"},
-    {"name":"任务管理器", "command":"wine taskmgr"},
-    {"name":"IE浏览器", "command":"wine iexplore"},
-    {"name":"强制关闭Wine", "command":"wineserver -k"}
+  static const wineCommands = [{"name":"Wine Configuration", "command":"winecfg"},
+    {"name":"Fix Square Characters", "command":"regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
+    {"name":"Start Menu Folder", "command":"wine explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
+    {"name":"My Computer", "command":"wine explorer"},
+    {"name":"Notepad", "command":"notepad"},
+    {"name":"Minesweeper", "command":"winemine"},
+    {"name":"Registry Editor", "command":"regedit"},
+    {"name":"Control Panel", "command":"wine control"},
+    {"name":"File Manager", "command":"winefile"},
+    {"name":"Task Manager", "command":"wine taskmgr"},
+    {"name":"IE Browser", "command":"wine iexplore"},
+    {"name":"Force Close Wine", "command":"wineserver -k"}
   ];
 
   //默认小键盘
@@ -500,57 +500,57 @@ class G {
   static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
   static ValueNotifier<bool> bootTextChange = ValueNotifier(true); //更改值，用于刷新启动命令
-  static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
+  static ValueNotifier<String> updateText = ValueNotifier("Tiny Computer"); //加载界面的说明文字
   static ValueNotifier<String> helpText = ValueNotifier("""
-第一次加载大概需要5到10分钟...
-正常情况下，加载完成后软件会自动跳转到图形界面
+The first load takes about 5 to 10 minutes...
+Normally, the software will automatically jump to the graphical interface after loading is complete.
 
-在图形界面时，点击即鼠标左键
-长按为鼠标右键
-双指点击弹出键盘
-双指划动为鼠标滚轮
+In the graphical interface, click for left mouse button,
+long press for right mouse button,
+two-finger click to pop up the keyboard,
+two-finger swipe for mouse wheel.
 
-!!!在图形界面返回，可以回到终端界面和控制界面!!!
-你可以在控制界面安装更多软件或者阅读帮助信息
+!!!Returning from the graphical interface will take you back to the terminal and control interfaces!!!
+You can install more software or read help information in the control interface.
 
-请不要在安装时退出软件
+Please do not exit the software during installation.
 
-如果过了很长时间都没有加载完成
-可以去设置里看看小小电脑占用空间是不是一直没变
-如果是说明卡在什么地方了
-建议清除本软件数据重来一次
+If it takes a long time to load,
+you can go to settings to see if the space occupied by Tiny Computer has not changed.
+If so, it means it's stuck somewhere.
+It is recommended to clear the software data and try again.
 
-(有一位网友提到过
-自己无论怎么清软件数据都装不上
-但在重启手机之后就装上了)
+(A netizen mentioned that
+they couldn't install it no matter how many times they cleared the software data,
+but it installed after restarting the phone.)
 
-一些注意事项：
-此软件以GPL协议免费开源
-如果是买的就是被骗了, 请举报
-源代码在这里: https://github.com/Cateners/tiny_computer
-软件也会第一时间在这里更新
-请尽可能在这里下载软件, 确保是正版
+Some notes:
+This software is free and open source under the GPL license.
+If you bought it, you were scammed. Please report it.
+The source code is here: https://github.com/Cateners/tiny_computer
+The software will also be updated here first.
+Please download the software here as much as possible to ensure it is genuine.
 
-如果你遇到了问题
-可以去https://github.com/Cateners/tiny_computer/issues/
-留言反馈
+If you encounter problems,
+you can go to https://github.com/Cateners/tiny_computer/issues/
+to leave feedback.
 
-如果软件里有程序正在正常运行
-请不要强行关闭本软件
-否则可能会损坏容器
-(如dpkg被中断)
-特别是在安装WPS的时候
-可能以为卡20%了
-其实耐心等待就好
+If a program is running normally in the software,
+please do not force close this software,
+otherwise it may damage the container
+(e.g., dpkg being interrupted).
+Especially when installing WPS,
+you might think it's stuck at 20%,
+but actually, just wait patiently.
 
-感谢使用!
+Thanks for using!
 
-(顺带一提, 全部解压完大概需要4~5GB空间
-解压途中占用空间可能更多
-请确保有足够的空间
-(这样真的Tiny吗><))
+(By the way, it takes about 4~5GB of space after full decompression.
+The space occupied during decompression may be even more.
+Please ensure you have enough space.
+(Is this really Tiny? ><))
 
-常见问题："""); //帮助页的说明文字
+Frequently Asked Questions:"""); //帮助页的说明文字
   static String postCommand = ""; //第一次进入容器时额外运行的命令
   
   static bool wasAvncEnabled = false;
@@ -613,10 +613,10 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
   //初次启动要做的事情
   static Future<void> initForFirstTime() async {
     //首先设置bootstrap
-    G.updateText.value = "正在安装引导包";
+    G.updateText.value = "Installing bootstrap package";
     await setupBootstrap();
     
-    G.updateText.value = "正在复制容器系统";
+    G.updateText.value = "Copying container system";
     //存放容器的文件夹0和存放硬链接的文件夹.l2s
     Util.createDirFromString("${G.dataPath}/containers/0/.l2s");
     //这个是容器rootfs，被split命令分成了xa*，放在assets里
@@ -625,7 +625,7 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     //-J
-    G.updateText.value = "正在安装容器系统";
+    G.updateText.value = "Installing container system";
     await Util.execute(
 """
 export DATA_DIR=${G.dataPath}
@@ -664,7 +664,7 @@ done
 "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
 "commands":${jsonEncode(D.commands)}
 }"""]);
-    G.updateText.value = "安装完成";
+    G.updateText.value = "Installation complete";
   }
 
   static Future<void> initData() async {
@@ -699,7 +699,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
 
     //是否需要重新安装引导包?
     if (Util.getGlobal("reinstallBootstrap")) {
-      G.updateText.value = "正在重新安装引导包";
+      G.updateText.value = "Reinstalling bootstrap package";
       await setupBootstrap();
       G.prefs.setBool("reinstallBootstrap", false);
     }
@@ -854,5 +854,3 @@ clear""");
     }
   }
 }
-
-

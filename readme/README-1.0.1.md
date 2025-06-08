@@ -1,75 +1,75 @@
-这个文件夹存放过时的readme
+This folder contains outdated readmes
 
-# 小小电脑
+# Tiny Computer
 
 <img decoding="async" src="cover0.png" width="50%">
 
-点开软件就是电脑
+Open the software and it's a computer
 
 Click-to-run debian 12 xfce on android for Chinese users, with fcitx pinyin input method and wps office preinstalled. No termux required.
 
-## 原理
+## Principle
 
-使用proot运行debian环境
+Uses proot to run the debian environment
 
-内置[noVNC](https://github.com/novnc/noVNC)显示图形界面
+Built-in [noVNC](https://github.com/novnc/noVNC) to display the graphical interface
 
-初次启动由于解压的缘故要点时间
-以后点开就能用
+The first startup takes some time due to decompression
+After that, you can use it by clicking on it
 
-只支持arm64安卓
+Only supports arm64 Android
 
-**目前新安装的软件无法读写文件，但可以访问手机存储，原因未知**
+**Currently, newly installed software cannot read or write files, but can access phone storage. The reason is unknown.**
 
-（我接下来可能会排查一下是proot还是容器的问题
-顺便学习一下容器是怎么做的
-毕竟我的修改可能出了问题）
+(I might investigate whether it's a proot or container issue next.
+By the way, I'll learn how containers are made.
+After all, my modifications might have caused problems.)
 
-## 项目结构
+## Project Structure
 
-assets的文件来源如下:
+The sources of the files in assets are as follows:
 
-- [build-proot-android, proot二进制文件](https://github.com/green-green-avk/build-proot-android)
+- [build-proot-android, proot binary file](https://github.com/green-green-avk/build-proot-android)
 - [busybox](https://github.com/meefik/busybox)
-- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
-- [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)
+- [Xserver XSDL, pulseaudio related files](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
+- [Tmoe Linux, debian package source](https://github.com/2moe/tmoe)
 
-其中proot、busybox和pulseaudio相关文件都是直接用了二进制文件。
+Among them, proot, busybox, and pulseaudio related files are all directly used binary files.
 
-（pulseaudio我真的编译不来，如果你会的话请教教我吧）
+(I really can't compile pulseaudio. If you know how, please teach me.)
 
-对debian容器进行了如下修改：
-- 使用tmoe工具安装了xfce环境和全套VNC；
-- 安装了wps office, 对wps office进行了如下修改：
-  - 界面改成了多组件，避免无法打开wps；
-  - 根据[这篇文章](https://forums.debiancn.org/t/topic/4015/8)创建了libtiff软链，避免无法打开wpspdf
-  - 补上了缺失的字体；
-- 安装了VS Code和中文插件；
-- 安装了fcitx输入法和云拼音组件。按<Ctrl+空格>切换输入法。
-  - 强烈建议**不要**使用安卓中文输入法直接输入中文，而是使用英文键盘通过容器的输入法输入中文，避免丢字错字。
-- 对VNC启动脚本进行修改，删除了tigerVNC密码验证；
-  - 虽然不太可能，但如果还是被问到密码的话输12345678
-- 对noVNC脚本(/usr/local/etc/tmoe-linux/novnc/core/rfb.js)进行修改，添加了userScale变量控制缩放
-  - 默认显示太大了，很多窗口点开都超出了屏幕范围，目前我使显示缩小了userScale=1.5倍
-- 改掉了一些容器里的Termux硬链接，有一些.git文件夹里的没改，应该无伤大雅吧=v=
-- 最后采用tar.xz压缩，用split命令分成了xa*等多个文件
+The following modifications were made to the debian container:
+- Installed xfce environment and full VNC using tmoe tool;
+- Installed wps office, and made the following modifications to wps office:
+  - The interface was changed to multiple components to avoid being unable to open wps;
+  - Created a libtiff soft link according to [this article](https://forums.debiancn.org/t/topic/4015/8) to avoid being unable to open wpspdf
+  - Added missing fonts;
+- Installed VS Code and Chinese plugins;
+- Installed fcitx input method and cloud pinyin components. Press <Ctrl+Space> to switch input methods.
+  - It is strongly recommended **not** to use the Android Chinese input method to directly input Chinese, but to use an English keyboard to input Chinese through the container's input method to avoid missing or incorrect characters.
+- Modified the VNC startup script to remove tigerVNC password verification;
+  - Although it is unlikely, if you are still asked for a password, enter 12345678
+- Modified the noVNC script (/usr/local/etc/tmoe-linux/novnc/core/rfb.js) to add the userScale variable to control scaling
+  - The default display was too large, and many windows opened beyond the screen range. Currently, I have reduced the display by userScale=1.5 times
+- Changed some Termux hard links in the container. Some in the .git folder were not changed, which should be harmless =v=
+- Finally, it was compressed with tar.xz and split into multiple files like xa* using the split command
 
-lib目录：
+lib directory:
 
-- main.dart文件，页面布局，目前只有一个页面，非常简单
-- workflow.dart文件，逻辑部分，目前也还算简单
-  - Util 工具类
-  - G 全局变量类
-  - Workflow 从软件点开到容器启动的所有步骤
+- main.dart file, page layout, currently only one page, very simple
+- workflow.dart file, logic part, currently relatively simple
+  - Util utility class
+  - G global variable class
+  - Workflow All steps from opening the software to starting the container
 
-## 一些链接
+## Some Links
 
-这是我的第一个flutter软件，感谢这些项目为我指路
+This is my first flutter software, thanks to these projects for guiding me
 
-- 要一点基础的 [《Flutter实战·第二版》](https://book.flutterchina.club)
-- 也许是零基础的Flutter视频课程 [freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
+- Requires some basics [《Flutter实战·第二版》](https://book.flutterchina.club)
+- Perhaps a zero-based Flutter video course [freeCodeCamp Flutter Course](https://www.youtube.com/watch?v=wFn-m-OgKPU&list=PL6yRaaP0WPkVtoeNIGqILtRAgd3h2CNpT)
 
-- 安卓上的VS Code [Code FA](https://github.com/nightmare-space/vscode_for_android)
+- VS Code on Android [Code FA](https://github.com/nightmare-space/vscode_for_android)
 
 ## Getting Started
 
