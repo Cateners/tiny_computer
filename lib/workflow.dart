@@ -121,7 +121,7 @@ class Util {
       case "useAvnc" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "useX11" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
       case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
-      case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
+      case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--use-egl-surfaceless --use-gles --socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
       case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("MESA_LOADER_DRIVER_OVERRIDE=zink VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform");
       case "defaultHidpiOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GDK_SCALE=2 QT_FONT_DPI=192");
@@ -189,6 +189,11 @@ class Util {
     }
     opr();
     return null;
+  }
+
+  //获取预制可执行文件路径
+  static String elf(String value) {
+    return "applib/libexec_$value.so";
   }
 
 }
@@ -401,7 +406,7 @@ VSCode、输入法
     {"name":"卸载CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
     {"name":"安装亿图图示", "command":"wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
     {"name":"卸载亿图图示", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
-    {"name":"安装QQ", "command":"""wget \$(curl -s https://im.qq.com/rainbow/linuxQQDownload | grep -o 'https://[^"]+arm64[^"]+deb') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
+    {"name":"安装QQ", "command":"""wget \$(curl -s https://im.qq.com/rainbow/linuxQQDownload | grep -oP '"armDownloadUrl":{[^}]*"deb":"\\K[^"]+') -O /tmp/qq.deb && sudo apt update && sudo apt install -y /tmp/qq.deb && sed -i 's#Exec=/opt/QQ/qq %U#Exec=/opt/QQ/qq --no-sandbox %U#g' /usr/share/applications/qq.desktop; rm /tmp/qq.deb"""},
     {"name":"卸载QQ", "command":"sudo apt autoremove --purge -y linuxqq"},
     {"name":"安装微信", "command":"wget https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.deb -O /tmp/wechat.deb && sudo apt update && sudo apt install -y /tmp/wechat.deb && echo '安装完成。如果你使用微信只是为了传输文件，那么可以考虑使用支持SAF的文件管理器（如：质感文件），直接访问小小电脑所有文件。'; rm /tmp/wechat.deb"},
     {"name":"卸载微信", "command":"sudo apt autoremove --purge -y wechat"},
@@ -568,6 +573,10 @@ class Workflow {
   static Future<void> setupBootstrap() async {
     //用来共享数据文件的文件夹
     Util.createDirFromString("${G.dataPath}/share");
+    //用来存放可执行文件的文件夹
+    Util.createDirFromString("${G.dataPath}/bin");
+    //用来存放库的文件夹
+    Util.createDirFromString("${G.dataPath}/lib");
     //挂载到/dev/shm的文件夹
     Util.createDirFromString("${G.dataPath}/tmp");
     //给proot的tmp文件夹，虽然我不知道为什么proot要这个
@@ -587,24 +596,31 @@ class Workflow {
     "assets/patch.tar.gz",
     "${G.dataPath}/patch.tar.gz",
     );
-    //dddd
-    await Util.copyAsset(
-    "assets/busybox",
-    "${G.dataPath}/busybox",
-    );
     await Util.execute(
 """
 export DATA_DIR=${G.dataPath}
+export LD_LIBRARY_PATH=\$DATA_DIR/lib
 cd \$DATA_DIR
-chmod +x busybox
-\$DATA_DIR/busybox unzip -o assets.zip
+ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/busybox
+ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/xz
+ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/gzip
+ln -sf ../applib/libexec_proot.so \$DATA_DIR/bin/proot
+ln -sf ../applib/libexec_tar.so \$DATA_DIR/bin/tar
+ln -sf ../applib/libexec_virgl_test_server.so \$DATA_DIR/bin/virgl_test_server
+ln -sf ../applib/libexec_getifaddrs_bridge_server.so \$DATA_DIR/bin/getifaddrs_bridge_server
+ln -sf ../applib/libbusybox.so \$DATA_DIR/lib/libbusybox.so.1.36.1
+ln -sf ../applib/libtalloc.so \$DATA_DIR/lib/libtalloc.so.2
+ln -sf ../applib/libvirglrenderer.so \$DATA_DIR/lib/libvirglrenderer.so
+ln -sf ../applib/libepoxy.so \$DATA_DIR/lib/libepoxy.so
+ln -sf ../applib/libproot-loader32.so \$DATA_DIR/lib/loader32
+ln -sf ../applib/libproot-loader.so \$DATA_DIR/lib/loader
+
+\$DATA_DIR/bin/busybox unzip -o assets.zip
 chmod -R +x bin/*
 chmod -R +x libexec/proot/*
 chmod 1777 tmp
-ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/xz
-ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
 \$DATA_DIR/bin/tar zxf patch.tar.gz
-\$DATA_DIR/busybox rm -rf assets.zip patch.tar.gz
+\$DATA_DIR/bin/busybox rm -rf assets.zip patch.tar.gz
 """);
   }
 
@@ -627,13 +643,14 @@ ln -sf \$DATA_DIR/busybox \$DATA_DIR/bin/gzip
     await Util.execute(
 """
 export DATA_DIR=${G.dataPath}
+export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/0
 export EXTRA_OPT=""
 cd \$DATA_DIR
 export PATH=\$DATA_DIR/bin:\$PATH
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
-export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
-export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
+export PROOT_LOADER=\$DATA_DIR/applib/libproot-loader.so
+export PROOT_LOADER_32=\$DATA_DIR/applib/libproot-loader32.so
 #export PROOT_L2S_DIR=\$CONTAINER_DIR/.l2s
 \$DATA_DIR/bin/proot --link2symlink sh -c "cat xa* | \$DATA_DIR/bin/tar x -J --delay-directory-restore --preserve-permissions -v -C containers/0"
 #Script from proot-distro
@@ -642,7 +659,7 @@ echo "aid_\$(id -un):x:\$(id -u):\$(id -g):Termux:/:/sbin/nologin" >> "\$CONTAIN
 echo "aid_\$(id -un):*:18446:0:99999:7:::" >> "\$CONTAINER_DIR/etc/shadow"
 id -Gn | tr ' ' '\\n' > tmp1
 id -G | tr ' ' '\\n' > tmp2
-\$DATA_DIR/busybox paste tmp1 tmp2 > tmp3
+\$DATA_DIR/bin/busybox paste tmp1 tmp2 > tmp3
 local group_name group_id
 cat tmp3 | while read -r group_name group_id; do
 	echo "aid_\${group_name}:x:\${group_id}:root,aid_\$(id -un)" >> "\$CONTAINER_DIR/etc/group"
@@ -650,7 +667,7 @@ cat tmp3 | while read -r group_name group_id; do
 		echo "aid_\${group_name}:*::root,aid_\$(id -un)" >> "\$CONTAINER_DIR/etc/gshadow"
 	fi
 done
-\$DATA_DIR/busybox rm -rf xa* tmp1 tmp2 tmp3
+\$DATA_DIR/bin/busybox rm -rf xa* tmp1 tmp2 tmp3
 """);
     //一些数据初始化
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
@@ -675,12 +692,7 @@ done
     
     G.prefs = await SharedPreferences.getInstance();
 
-    //限制一天内观看视频广告不超过5次
-    final String currentDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
-    if (currentDate != (Util.getGlobal("lastDate") as String)) {
-      await G.prefs.setString("lastDate", currentDate);
-      //await G.prefs.setInt("adsWatchedToday", 0);
-    }
+    await Util.execute("ln -sf ${await D.androidChannel.invokeMethod("getNativeLibraryPath", {})} ${G.dataPath}/applib");
 
     //如果没有这个key，说明是初次启动
     if (!G.prefs.containsKey("defaultContainer")) {
@@ -731,9 +743,10 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
     );
     G.audioPty!.write(const Utf8Encoder().convert("""
 export DATA_DIR=${G.dataPath}
-\$DATA_DIR/busybox sed "s/4713/${Util.getGlobal("defaultAudioPort") as int}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
+export LD_LIBRARY_PATH=\$DATA_DIR/lib
+\$DATA_DIR/bin/busybox sed "s/4713/${Util.getGlobal("defaultAudioPort") as int}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
 rm -rf \$DATA_DIR/pulseaudio_tmp/*
-TMPDIR=\$DATA_DIR/pulseaudio_tmp HOME=\$DATA_DIR/pulseaudio_tmp XDG_CONFIG_HOME=\$DATA_DIR/pulseaudio_tmp LD_LIBRARY_PATH=\$DATA_DIR/bin \$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
+TMPDIR=\$DATA_DIR/pulseaudio_tmp HOME=\$DATA_DIR/pulseaudio_tmp XDG_CONFIG_HOME=\$DATA_DIR/pulseaudio_tmp LD_LIBRARY_PATH=\$DATA_DIR/bin:\$LD_LIBRARY_PATH /system/bin/linker64 \$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
 exit
 """));
   await G.audioPty?.exitCode;
@@ -756,6 +769,7 @@ exit
     if (Util.getGlobal("virgl")) {
       Util.execute("""
 export DATA_DIR=${G.dataPath}
+export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
 ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""");
       extraOpt += "${Util.getGlobal("defaultVirglOpt")} ";
@@ -774,14 +788,15 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     Util.termWrite(
 """
 export DATA_DIR=${G.dataPath}
+export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
 export EXTRA_MOUNT="$extraMount"
 export EXTRA_OPT="$extraOpt"
 #export PROOT_L2S_DIR=\$DATA_DIR/containers/0/.l2s
 cd \$DATA_DIR
 export PROOT_TMP_DIR=\$DATA_DIR/proot_tmp
-export PROOT_LOADER=\$DATA_DIR/libexec/proot/loader
-export PROOT_LOADER_32=\$DATA_DIR/libexec/proot/loader32
+export PROOT_LOADER=\$DATA_DIR/applib/libproot-loader.so
+export PROOT_LOADER_32=\$DATA_DIR/applib/libproot-loader32.so
 ${Util.getCurrentProp("boot")}
 ${G.postCommand}
 ${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"""mkdir -p "\$HOME/.vnc" && bash /etc/X11/xinit/Xsession &> "\$HOME/.vnc/x.log" &""":Util.getCurrentProp("vnc")):""}

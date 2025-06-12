@@ -66,6 +66,9 @@ class MainActivity: FlutterActivity() {
                     startActivity(Intent(this, com.termux.x11.MainActivity::class.java))
                     result.success(0)
                 }
+                "getNativeLibraryPath" -> {
+                    result.success(getApplicationInfo().nativeLibraryDir)
+                }
                 else -> {
                     // 不支持的方法名
                     result.notImplemented()

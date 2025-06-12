@@ -48,5 +48,10 @@ app.*.map.json
 /backup
 
 assets/xa*
+assets/patch.tar.gz
+
+android/app/src/main/jniLibs/*
+
+devtools_options.yaml
 
 lib/l10n/app_localizations*
