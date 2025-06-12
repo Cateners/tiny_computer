@@ -2,17 +2,18 @@
 
 ### assets.zip中的文件：
 
-- [busybox](https://github.com/meefik/busybox)
-- [tar](https://github.com/Rprop/tar-android-static)
-- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
-- [virgl](https://github.com/termux/termux-packages/tree/master/x11-packages/virglrenderer-android)
-
-以上文件没有经过更改。
-一般是使用了仓库直接提供的二进制文件，或者是使用了仓库提供的patch编译而来。
-
-- [proot](https://github.com/Cateners/proot), 使用[build-proot-android](https://github.com/green-green-avk/build-proot-android)脚本编译
+- [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)。直接从Xserver XSDL的apk中的lib解包获得，并还原了名称。
 - [Tmoe Linux, debian包来源](https://github.com/2moe/tmoe)，制作了[容器文件xa*](build-tiny-rootfs.md)
 - getifaddrs_bridge_server，见下面的介绍和getifaddrs_bridge子文件夹
+
+### jniLibs中的文件
+
+所有文件均通过[termux-packages](https://github.com/termux-play-store/termux-packages)构建。[见这个修改后的仓库](https://github.com/tiny-computer/termux-packages)
+
+运行scripts/generate-bootstraps.sh即可获得bootstraps压缩包，其中会包含busybox、proot、tar、virglrenderer的可执行文件和依赖库。将可执行文件全部重命名为libexec_xxx.so的格式，将依赖库全部抹去版本号，放到jniLibs/arm64-v8a。
+
+运行build-package.sh proot，可在output文件夹找到loader和loader32，重命名为libproot-loader.so和libproot-loader32.so，放到jniLibs/arm64-v8a。
+
 
 ### patch.tar.gz中的文件：
 

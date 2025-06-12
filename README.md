@@ -4,7 +4,11 @@
 
 给所有安卓 arm64 设备的“PC 应用引擎”平替。你可以在小小电脑上安装 PC 级 WPS、CAJ Viewer、亿图图示等软件。
 
-Click-to-run Debian Bookworm XFCE on Android for Chinese users, with the Fcitx Pinyin input method preinstalled. No Termux is required. If you want to change the language in the container, run "tmoe", since this root filesystem is made using [tmoe](https://github.com/2moe/tmoe).
+Run Debian Bookworm with XFCE/LXQt/... on Android with just one click - optimized for Chinese users. This package comes preinstalled with the Fcitx Pinyin input method and doesn't require Termux.
+
+To change the language in the container, simply run the "tmoe" command (this root filesystem was created using [tmoe](https://github.com/2moe/tmoe)). You'll need to remove the LANG=zh_CN.UTF-8 environment variable from the startup command (Control -> Advanced Settings -> Startup Command) when switching languages.
+
+Note: Since version 1.0.23, English UI is supported, though some hint texts remain in Chinese.
 
 ## 特点
 
@@ -45,7 +49,7 @@ LXQt 的界面示例：
 
 和 [GXDE](https://www.gxde.org/) 团队合作的版本 [#129](https://github.com/Cateners/tiny_computer/issues/129)。可在[此处](https://mirrors.sdu.edu.cn/spark-store-repository/GXDE-OS/APK/)下载。GXDE 的界面示例：
 
-[![1](https://camo.githubusercontent.com/2884358def5f52e31b9f6dfc72be081f8defcc2c1463f8050786cb1f033fe761/68747470733a2f2f7777772e677864652e6f72672f312e706e67)](https://camo.githubusercontent.com/2884358def5f52e31b9f6dfc72be081f8defcc2c1463f8050786cb1f033fe761/68747470733a2f2f7777772e677864652e6f72672f312e706e67)
+[![1](https://www.gxde.top/1.jpg)](https://www.gxde.top/1.jpg)
 
 由[灵墨桌面](https://www.lingmo.org/)开发者提供的版本[#218](https://github.com/Cateners/tiny_computer/issues/218)。灵墨桌面的界面[示例](https://www.bilibili.com/video/BV1Ci421R7AR)。
 
@@ -57,11 +61,11 @@ LXQt 的界面示例：
 
 ## 项目结构
 
-assets 的文件源信息可以在[这里](https://github.com/Cateners/tiny_computer/blob/master/extra/readme.md)找到。
+assets 和 android/app/src/main/jniLibs 的文件源信息可以在[这里](https://github.com/Cateners/tiny_computer/blob/master/extra/readme.md)找到。
 
 完整的容器制作过程可以在[这里](https://github.com/Cateners/tiny_computer/blob/master/extra/build-tiny-rootfs.md)看到。
 
-数据包不再在 assets 中更新，而是随 releases 提供，主要是为了避免 git 越来越大。
+数据包、patch.tar.gz 以及 jniLibs 的文件不在代码仓更新，而是随 releases 提供，主要是为了避免 git 越来越大。
 
 lib 目录：
 
@@ -71,12 +75,13 @@ lib 目录：
 	- TermPty 一个终端
 	- G 全局变量类
 	- Workflow 从软件点开到容器启动的所有步骤
+- l10n 文件夹，包含多语言文件
 
 ## 编译
 
 你需要配置好 flutter 和安卓 sdk，还需安装 python3、bison、patch 和 gcc，然后克隆此项目。
 
-在编译之前，需要在 release 中下载 patch.tar.gz 拷贝到 assets；以及下载系统 rootfs（或者[自行制作](https://github.com/Cateners/tiny_computer/blob/master/extra/build-tiny-rootfs.md)），之后使用 split 命令分割，拷贝到 assets。一般我将其分为 98MB。
+在编译之前，需要在 release 中下载 jniLibs.zip ，将里面的库文件解压后放到 android/app/src/main/jniLibs/arm64-v8a；下载 patch.tar.gz 拷贝到 assets。以及下载系统 rootfs（或者[自行制作](https://github.com/Cateners/tiny_computer/blob/master/extra/build-tiny-rootfs.md)），之后使用 split 命令分割，拷贝到 assets。一般我将其分为 98MB。
 
 ```bash
 split -b 98M debian.tar.xz
