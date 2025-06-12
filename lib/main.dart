@@ -485,7 +485,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           Text(AppLocalizations.of(context)!.hangoverDescription),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: Text("${AppLocalizations.of(context)!.installHangoverStable}（10.9）"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text("${AppLocalizations.of(context)!.installHangoverStable}（10.6.1）"), onPressed: () async {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover-stable");
               G.pageIndex.value = 0;
             }),
@@ -494,7 +494,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
               G.pageIndex.value = 0;
             }),
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.uninstallHangover), onPressed: () async {
-              Util.termWrite("sudo apt autoremove --purge -y hangover-wine hangover-libarm64ecfex");
+              Util.termWrite("sudo apt autoremove --purge -y hangover*");
               G.pageIndex.value = 0;
             }),
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.clearWineData), onPressed: () async {
@@ -1196,100 +1196,122 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   bool bannerAdsFailedToLoad = false;
-
-  //安装完成了吗？
-  //完成后从加载界面切换到主界面
   bool isLoadingComplete = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _initializeWorkflow();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: []);
+  }
 
-    G.homePageStateContext = context;
-
-    if (!isLoadingComplete) {
-      Workflow.workflow().then((value) {
-        setState(() {
-          isLoadingComplete = true;
-        });
+  Future<void> _initializeWorkflow() async {
+    await Workflow.workflow();
+    if (mounted) {
+      setState(() {
+        isLoadingComplete = true;
       });
     }
+  }
 
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,overlays: []);
+  @override
+  Widget build(BuildContext context) {
+    G.homePageStateContext = context;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLoadingComplete?Util.getCurrentProp("name"):widget.title),
+        title: Text(isLoadingComplete ? Util.getCurrentProp("name") : widget.title),
       ),
-      body: isLoadingComplete?
-        ValueListenableBuilder(valueListenable: G.pageIndex, builder: (context, value, child) {
-          return IndexedStack(index: G.pageIndex.value, children: const [TerminalPage(), Padding(
-              padding: EdgeInsets.all(8),
-              child: AspectRatioMax1To1(child: Scrollbar(child: SingleChildScrollView(restorationId: "control-scroll", child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: FractionallySizedBox(
-                      widthFactor: 0.4,
-                      child: Image(
-                        image: AssetImage("images/icon.png")
-                      )
+      body: isLoadingComplete
+          ? ValueListenableBuilder(
+              valueListenable: G.pageIndex,
+              builder: (context, value, child) {
+                return IndexedStack(
+                  index: G.pageIndex.value,
+                  children: const [
+                    TerminalPage(),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: AspectRatioMax1To1(
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            restorationId: "control-scroll",
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: FractionallySizedBox(
+                                    widthFactor: 0.4,
+                                    child: Image(image: AssetImage("images/icon.png")),
+                                  ),
+                                ),
+                                FastCommands(),
+                                Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Column(
+                                        children: [
+                                          SettingPage(),
+                                          SizedBox.square(dimension: 8),
+                                          InfoPage(openFirstInfo: false),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  FastCommands(),
-                  Padding(padding: EdgeInsets.all(8), child: Card(child: Padding(padding: EdgeInsets.all(8), child: 
-                    Column(children: [
-                      SettingPage(),
-                      SizedBox.square(dimension: 8),
-                      InfoPage(openFirstInfo: false)
-                    ])
-                  )))
-                ]
-              ))))
-          )]);
-        }):const LoadingPage(),
-      bottomNavigationBar: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
-        return Visibility(visible: isLoadingComplete,
-          // child: BottomNavigationBar(currentIndex: G.pageIndex.value,
-          //   onTap: (index) {
-          //     G.pageIndex.value = index;
-          //   },
-          //   items: const [
-          //     BottomNavigationBarItem(icon: Icon(Icons.monitor), label: "终端"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.video_settings), label: "控制"),
-          //   ],
-          // )
-          child: NavigationBar(
-            selectedIndex: G.pageIndex.value,
-            destinations: [
-              NavigationDestination(icon: Icon(Icons.monitor), label: AppLocalizations.of(context)!.terminal),
-              NavigationDestination(icon: Icon(Icons.video_settings), label: AppLocalizations.of(context)!.control)
-            ],
-            onDestinationSelected: (index) {
-              G.pageIndex.value = index;
-            },
-          ),
-        );}
+                  ],
+                );
+              },
+            )
+          : const LoadingPage(),
+      bottomNavigationBar: ValueListenableBuilder(
+        valueListenable: G.pageIndex,
+        builder: (context, value, child) {
+          return Visibility(
+            visible: isLoadingComplete,
+            child: NavigationBar(
+              selectedIndex: G.pageIndex.value,
+              destinations: [
+                NavigationDestination(icon: const Icon(Icons.monitor), label: AppLocalizations.of(context)!.terminal),
+                NavigationDestination(icon: const Icon(Icons.video_settings), label: AppLocalizations.of(context)!.control),
+              ],
+              onDestinationSelected: (index) {
+                G.pageIndex.value = index;
+              },
+            ),
+          );
+        },
       ),
-      floatingActionButton: ValueListenableBuilder(valueListenable: G.pageIndex, builder:(context, value, child) {
-        return Visibility(visible: isLoadingComplete && (value == 0),
-          child: FloatingActionButton(
-            tooltip: AppLocalizations.of(context)!.enterGUI,
-            onPressed: () {
-              if (G.wasX11Enabled) {
-                Workflow.launchX11();
-              } else if (G.wasAvncEnabled) {
-                Workflow.launchAvnc();
-              } else {
-                Workflow.launchBrowser();
-              }
-            },
-            child: const Icon(Icons.play_arrow),
-          )
-        );
-      }), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: ValueListenableBuilder(
+        valueListenable: G.pageIndex,
+        builder: (context, value, child) {
+          return Visibility(
+            visible: isLoadingComplete && (value == 0),
+            child: FloatingActionButton(
+              tooltip: AppLocalizations.of(context)!.enterGUI,
+              onPressed: () {
+                if (G.wasX11Enabled) {
+                  Workflow.launchX11();
+                } else if (G.wasAvncEnabled) {
+                  Workflow.launchAvnc();
+                } else {
+                  Workflow.launchBrowser();
+                }
+              },
+              child: const Icon(Icons.play_arrow),
+            ),
+          );
+        },
+      ),
     );
   }
 }

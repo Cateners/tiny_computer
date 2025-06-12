@@ -234,7 +234,8 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
         String libPath = res != null ? res.getFile().replace("file:", "") : null;
         if (libPath != null) {
             try {
-                System.load(libPath);
+                //System.load(libPath);
+                System.loadLibrary("Xlorie");
             } catch (Exception e) {
                 Log.e("CmdEntryPoint", "Failed to dlopen " + libPath, e);
                 System.err.println("Failed to load native library. Did you install the right apk? Try the universal one.");

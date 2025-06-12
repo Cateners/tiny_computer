@@ -3,7 +3,6 @@
 ### assets.zip中的文件：
 
 - [busybox](https://github.com/meefik/busybox)
-- [mediamtx相关](https://github.com/bluenviron/mediamtx)
 - [tar](https://github.com/Rprop/tar-android-static)
 - [Xserver XSDL, pulseaudio相关文件](https://github.com/pelya/commandergenius/tree/sdl_android/project/jni/application/xserver)
 - [virgl](https://github.com/termux/termux-packages/tree/master/x11-packages/virglrenderer-android)
