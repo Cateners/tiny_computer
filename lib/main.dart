@@ -55,7 +55,8 @@ class MyApp extends StatelessWidget {
             ],
             supportedLocales: const [
               Locale('en'),
-              Locale('zh'),
+              Locale('zh'),         // 简体
+              Locale('zh', 'Hant'), // 繁體
             ],
             theme: ThemeData(
               colorScheme: lightDynamic,
