@@ -189,9 +189,27 @@ class Util {
     return null;
   }
 
-  //获取预制可执行文件路径
-  static String elf(String value) {
-    return "applib/libexec_$value.so";
+  static Future<bool> isXServerReady(String host, int port, {int timeoutSeconds = 5}) async {
+    try {
+      final socket = await Socket.connect(host, port, timeout: Duration(seconds: timeoutSeconds));
+      await socket.close();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<void> waitForXServer() async {
+    const host = '127.0.0.1';
+    const port = 7897;
+    
+    while (true) {
+      bool isReady = await isXServerReady(host, port);
+      if (isReady) {
+        return;
+      }
+      await Future.delayed(Duration(seconds: 1));
+    }
   }
 
 }
@@ -610,6 +628,8 @@ export DATA_DIR=${G.dataPath}
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 cd \$DATA_DIR
 ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/busybox
+ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/sh
+ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/cat
 ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/xz
 ln -sf ../applib/libexec_busybox.so \$DATA_DIR/bin/gzip
 ln -sf ../applib/libexec_proot.so \$DATA_DIR/bin/proot
@@ -651,6 +671,7 @@ chmod 1777 tmp
     await Util.execute(
 """
 export DATA_DIR=${G.dataPath}
+export PATH=\$DATA_DIR/bin:\$PATH
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/0
 export EXTRA_OPT=""
@@ -751,6 +772,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
     );
     G.audioPty!.write(const Utf8Encoder().convert("""
 export DATA_DIR=${G.dataPath}
+export PATH=\$DATA_DIR/bin:\$PATH
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 \$DATA_DIR/bin/busybox sed "s/4713/${Util.getGlobal("defaultAudioPort") as int}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
 rm -rf \$DATA_DIR/pulseaudio_tmp/*
@@ -777,6 +799,7 @@ exit
     if (Util.getGlobal("virgl")) {
       Util.execute("""
 export DATA_DIR=${G.dataPath}
+export PATH=\$DATA_DIR/bin:\$PATH
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
 ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""");
@@ -796,6 +819,7 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     Util.termWrite(
 """
 export DATA_DIR=${G.dataPath}
+export PATH=\$DATA_DIR/bin:\$PATH
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 export CONTAINER_DIR=\$DATA_DIR/containers/${G.currentContainer}
 export EXTRA_MOUNT="$extraMount"
@@ -868,6 +892,7 @@ clear""");
     launchCurrentContainer();
     if (Util.getGlobal("autoLaunchVnc") as bool) {
       if (G.wasX11Enabled) {
+        await Util.waitForXServer();
         launchX11();
         return;
       }
