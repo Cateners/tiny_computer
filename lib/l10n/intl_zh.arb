@@ -72,7 +72,7 @@
   "installHangoverLatest": "安装Hangover最新版（可能出错）",
   "uninstallHangover": "卸载Hangover",
   "clearWineData": "清空Wine数据",
-  "wineCommandsHint": "Wine的常用指令。点击后前往图形界面耐心等待。\n\n任意程序启动参考时间：\n虎贲T7510 6GB 超过一分钟\n骁龙870 12GB 约10秒\n",
+  "wineCommandsHint": "Wine的常用指令。点击后前往图形界面耐心等待。\n\n注：DXVK默认为开启状态，如程序崩溃可尝试关闭\n\n任意程序启动参考时间：\n虎贲T7510 6GB 超过一分钟\n骁龙870 12GB 约10秒\n",
   "switchToJapanese": "切换系统到日语",
   "userManual": "使用说明",
   "openSourceLicenses": "开源许可",

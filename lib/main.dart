@@ -55,8 +55,30 @@ class MyApp extends StatelessWidget {
             ],
             supportedLocales: const [
               Locale('en'),
-              Locale('zh'),         // 简体
-              Locale('zh', 'Hant'), // 繁體
+              Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
+              Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hans',
+              ), // generic simplified Chinese 'zh_Hans'
+              Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hant',
+              ), // generic traditional Chinese 'zh_Hant'
+              Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hans',
+                countryCode: 'CN',
+              ), // 'zh_Hans_CN'
+              Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hant',
+                countryCode: 'TW',
+              ), // 'zh_Hant_TW'
+              Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hant',
+                countryCode: 'HK',
+              ), // 'zh_Hant_HK'
             ],
             theme: ThemeData(
               colorScheme: lightDynamic,
@@ -486,7 +508,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           Text(AppLocalizations.of(context)!.hangoverDescription),
           const SizedBox.square(dimension: 8),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
-            OutlinedButton(style: D.commandButtonStyle, child: Text("${AppLocalizations.of(context)!.installHangoverStable}（10.6.1）"), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, child: Text("${AppLocalizations.of(context)!.installHangoverStable}（10.10.1）"), onPressed: () async {
               Util.termWrite("bash ~/.local/share/tiny/extra/install-hangover-stable");
               G.pageIndex.value = 0;
             }),
