@@ -4,8 +4,8 @@ echo "正在更新软件包..."
 sudo apt update
 sudo apt upgrade -y
 
-hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-9.20.1/hangover_9.20.1_debian12_bookworm_arm64.tar"
-latest_version="10.6.1"
+hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-10.10.1/hangover_10.10.1_debian12_bookworm_arm64.tar"
+latest_version="10.10.1"
 
 mirror_sites=(
     "https://gh.llkk.cc/"
