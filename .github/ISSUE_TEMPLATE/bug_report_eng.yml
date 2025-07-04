@@ -1,0 +1,95 @@
+name: Bug Report
+description: Report abnormal software behavior (please read all instructions before submitting)
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Important Notes:**
+        - First search [all issues](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue). **Duplicate reports will be closed immediately**
+        - Every requirement in this template has its specific purpose. Please complete all fields
+
+  - type: input
+    id: device
+    attributes:
+      label: "Device Model"
+      description: |
+        **Why is this needed?**  
+        Many bugs are device-specific, such as:
+        - Samsung OneUI 7 incompatible with v1.0.23 and below (issue #303)
+        - HarmonyOS 4 missing wireless debugging option
+      placeholder: "Brand + specific model"
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: "Operating System Version"
+      description: |
+        **Why is this needed?**  
+        Compatibility varies across Android versions
+      placeholder: "Full OS name + version number"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "Tiny Computer Version"
+      description: |
+        **Why is this needed?**  
+        1. Old version issues may have been fixed in newer releases (always use the latest version)  
+        2. Different desktop environments (XFCE/LXQT/GXDE) may behave differently  
+        **If not using the latest version, be prepared for your issue to be ignored**
+      placeholder: "Version number + desktop environment (e.g., v1.0.23 GXDE)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-latest
+    attributes:
+      label: "Is this the latest version?"
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-not-latest
+    attributes:
+      label: "If not latest version, explanation is mandatory"
+      placeholder: "Explain in detail..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce the issue"
+      description: |
+        **Why detailed steps?**  
+        Linux offers extreme flexibility where any operation may affect results, such as:  
+        - Did you run with sudo?  
+        - Modified environment variables?  
+        - Installed third-party dependencies?
+      placeholder: "Maybe start from launching the application..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Provide terminal screenshots or other relevant information"
+      description: |
+        **Why is this needed?**  
+        Text descriptions might omit critical details
+      placeholder: "Paste log text or drag images here..."
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **Issue Priority Explanation:**  
+        This software's primary purpose is running PC-level applications like WPS, CAJ Viewer, and Edraw Max. Issues related to these applications will receive priority. Other issues will be handled case-by-case (limited by time and capabilities...). Unresolved issues will remain open for community visibility - maybe someone has a better solution!
