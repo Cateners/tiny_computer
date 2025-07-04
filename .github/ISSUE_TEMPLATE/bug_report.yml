@@ -1,0 +1,95 @@
+name: Bug 报告
+description: 报告软件异常行为（提交前请阅读所有说明文字）
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **必读须知：**
+        - 请先搜索[所有issue](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue)，**相同问题重复提交会被直接关闭**
+        - 本模板中的每项要求都有其特定原因，请完整填写
+
+  - type: input
+    id: device
+    attributes:
+      label: "设备型号"
+      description: |
+        **为什么需要这个信息？**  
+        许多Bug与设备强相关，例如：
+        - 三星OneUI 7无法使用v1.0.23及以下版本（issue #303）
+        - 鸿蒙4缺少无线调试选项
+      placeholder: "品牌+具体型号"
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: "操作系统版本"
+      description: |
+        **为什么需要这个信息？**  
+        Android各版本存在兼容性差异
+      placeholder: "完整系统名称+版本号"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "小小电脑版本"
+      description: |
+        **为什么需要这个信息？**  
+        1. 旧版问题可能已在新版修复（请始终使用最新版）  
+        2. 不同桌面环境（XFCE/LXQT/GXDE）行为可能不同  
+        **如果不是最新版，请做好问题被忽略的准备**
+      placeholder: "版本号+桌面环境（如：v1.0.23 GXDE）"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-latest
+    attributes:
+      label: "是否最新版？"
+      options:
+        - "是"
+        - "否"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-not-latest
+    attributes:
+      label: "若非最新版，必须说明原因"
+      placeholder: "详细解释原因..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "出现问题的重现步骤"
+      description: |
+        **为什么需要详细步骤？**  
+        Linux的自由度极高，任何操作都可能影响结果，例如：  
+        - 是否通过sudo运行？  
+        - 是否修改过环境变量？  
+        - 是否安装过第三方依赖？
+      placeholder: "也许可以从启动软件开始逐步描述..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "提供终端截图或其他相关信息"
+      description: |
+        **为什么需要这些？**  
+        文字描述可能遗漏关键信息
+      placeholder: "粘贴日志文本或拖入图片..."
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **问题优先级说明：**  
+        本软件的初衷是安装PC级软件如WPS、CAJ Viewer、亿图图示。和这些软件相关的问题会得到重视。如果是其他问题得视情况（受限于精力和能力...），没能修复的issue会保留以让更多人看到，也许网友会有更好的解决办法！

@@ -1,0 +1,20 @@
+name: Feature Request  
+description: "Please confirm first: Will this feature significantly improve the user experience of Tiny Computer?"  
+title: "[Feature] "  
+labels: ["enhancement"]  
+body:  
+  - type: markdown  
+    attributes:  
+      value: |  
+        **Important Notes:**  
+        - Please search [all issues](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue) first. **Duplicate submissions will be closed directly**  
+
+  - type: textarea  
+    id: rationale  
+    attributes:  
+      label: "Must specify usage scenarios and value"  
+      description: |  
+        **Why is this needed? (User research data or screenshot statistics are preferred. Avoid subjective descriptions.)**  
+        Due to limited resources, I'm more likely to adopt valuable and easily implementable features. Unaddressed issues will remain visible for community solutions!  
+    validations:  
+      required: true  
