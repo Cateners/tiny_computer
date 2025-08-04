@@ -181,6 +181,8 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
 
 ### 额外步骤
 
+- 修复用vscode打开文件时只打开了vscode本身（v1.0.25）：去掉/usr/share/applications/code-no-sandbox.desktop的Exec的--unity-launch
+- 修复选择文本时会把文本发送到剪切板（v1.0.25）：在/usr/local/bin/startvnc文件的start_tmoe_xvnc()的start_win10_tigervnc行前面加入`vncconfig -set SendPrimary=0 SetPrimary=0`
 - 修复系统更新时变英文（v1.0.19）：把/etc/locale.gen文件里包含zh_CN.UTF-8的那行代码解除注释
 - 修复了xfce使用Termux:X11时占用过高（v1.0.19）：把底部面板的电量管理插件移除（右键-面板-面板首选项-项目）
 - 不弹出终端窗口（v1.0.18）：把/etc/X11/xinit/Xsession文件倒数第二行open_terminal删掉
