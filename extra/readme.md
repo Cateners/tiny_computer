@@ -8,7 +8,7 @@
 
 ### jniLibs中的文件
 
-所有文件均通过[termux-packages](https://github.com/termux-play-store/termux-packages)构建。[见这个修改后的仓库](https://github.com/tiny-computer/termux-packages)
+除libexec_pulseaudio.so(pulseaudio可执行文件)来自Xserver XSDL的apk外，所有文件均通过[termux-packages](https://github.com/termux-play-store/termux-packages)构建。[见这个修改后的仓库](https://github.com/tiny-computer/termux-packages)
 
 运行scripts/generate-bootstraps.sh即可获得bootstraps压缩包，其中会包含busybox、proot、tar、virglrenderer的可执行文件和依赖库。将可执行文件全部重命名为libexec_xxx.so的格式，将依赖库全部抹去版本号，放到jniLibs/arm64-v8a。
 

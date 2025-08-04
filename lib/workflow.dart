@@ -638,6 +638,7 @@ ln -sf ../applib/libexec_proot.so \$DATA_DIR/bin/proot
 ln -sf ../applib/libexec_tar.so \$DATA_DIR/bin/tar
 ln -sf ../applib/libexec_virgl_test_server.so \$DATA_DIR/bin/virgl_test_server
 ln -sf ../applib/libexec_getifaddrs_bridge_server.so \$DATA_DIR/bin/getifaddrs_bridge_server
+ln -sf ../applib/libexec_pulseaudio.so \$DATA_DIR/bin/pulseaudio
 ln -sf ../applib/libbusybox.so \$DATA_DIR/lib/libbusybox.so.1.36.1
 ln -sf ../applib/libtalloc.so \$DATA_DIR/lib/libtalloc.so.2
 ln -sf ../applib/libvirglrenderer.so \$DATA_DIR/lib/libvirglrenderer.so
@@ -778,7 +779,7 @@ export PATH=\$DATA_DIR/bin:\$PATH
 export LD_LIBRARY_PATH=\$DATA_DIR/lib
 \$DATA_DIR/bin/busybox sed "s/4713/${Util.getGlobal("defaultAudioPort") as int}/g" \$DATA_DIR/bin/pulseaudio.conf > \$DATA_DIR/bin/pulseaudio.conf.tmp
 rm -rf \$DATA_DIR/pulseaudio_tmp/*
-TMPDIR=\$DATA_DIR/pulseaudio_tmp HOME=\$DATA_DIR/pulseaudio_tmp XDG_CONFIG_HOME=\$DATA_DIR/pulseaudio_tmp LD_LIBRARY_PATH=\$DATA_DIR/bin:\$LD_LIBRARY_PATH /system/bin/linker64 \$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
+TMPDIR=\$DATA_DIR/pulseaudio_tmp HOME=\$DATA_DIR/pulseaudio_tmp XDG_CONFIG_HOME=\$DATA_DIR/pulseaudio_tmp LD_LIBRARY_PATH=\$DATA_DIR/bin:\$LD_LIBRARY_PATH \$DATA_DIR/bin/pulseaudio -F \$DATA_DIR/bin/pulseaudio.conf.tmp
 exit
 """));
   await G.audioPty?.exitCode;
