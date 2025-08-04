@@ -41,6 +41,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:tiny_computer/l10n/app_localizations.dart';
 
+import 'package:avnc_flutter/avnc_flutter.dart';
+
 class Util {
 
   static Future<void> copyAsset(String src, String dst) async {
@@ -876,7 +878,7 @@ clear""");
   }
 
   static Future<void> launchAvnc() async {
-    await D.androidChannel.invokeMethod("launchUsingUri", {"vncUri": Util.getCurrentProp("vncUri") as String});
+    await AvncFlutter.launchUsingUri(Util.getCurrentProp("vncUri") as String);
   }
 
   static Future<void> launchXServer() async {

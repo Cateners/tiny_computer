@@ -46,32 +46,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.tiny_computer.Signal9Activity" />
-        <activity-alias
-            android:name="com.gaurav.avnc.UriReceiverActivity"
-            android:targetActivity="com.gaurav.avnc.ui.vnc.IntentReceiverActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="vnc" />
-            </intent-filter>
-        </activity-alias>
-        <activity
-            android:name="com.gaurav.avnc.ui.vnc.VncActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:resizeableActivity="true"
-            android:supportsPictureInPicture="true"
-            tools:ignore="UnusedAttribute" />
-
-        <activity
-            android:name="com.gaurav.avnc.ui.vnc.IntentReceiverActivity"
-            android:theme="@style/App.SplashTheme.Dark" />
-
-        <activity android:name="com.gaurav.avnc.ui.prefs.PrefsActivity" />
-        <activity android:name="com.gaurav.avnc.ui.about.AboutActivity" />
         <activity
             android:name="com.termux.x11.MainActivity"
             android:supportsPictureInPicture="true"

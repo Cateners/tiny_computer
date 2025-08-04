@@ -35,6 +35,8 @@ import 'package:tiny_computer/l10n/app_localizations.dart';
 
 import 'package:tiny_computer/workflow.dart';
 
+import 'package:avnc_flutter/avnc_flutter.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -339,10 +341,10 @@ class _SettingPageState extends State<SettingPage> {
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.avncSettings), onPressed: () async {
-              await D.androidChannel.invokeMethod("launchPrefsPage", {});
+              await AvncFlutter.launchPrefsPage();
             }),
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.aboutAVNC), onPressed: () async {
-              await D.androidChannel.invokeMethod("launchAboutPage", {});
+              await AvncFlutter.launchAboutPage();
             }),
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.avncResolution), onPressed: () async {
               final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;

@@ -17,6 +17,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.0"
+  avnc_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "6043043b081d5f24d99ce7b1402dae2ae061ec27"
+      resolved-ref: "6043043b081d5f24d99ce7b1402dae2ae061ec27"
+      url: "https://github.com/tiny-computer/avnc_flutter.git"
+    source: git
+    version: "0.0.1"
   boolean_selector:
     dependency: transitive
     description:

@@ -57,12 +57,6 @@ android {
 
         buildConfigField "String", "COMMIT", "\"" + ("git rev-parse HEAD\n".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: "NO_COMMIT")) + "\""
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += ["room.schemaLocation": "$projectDir/roomSchema/".toString()]
-            }
-        }
-
     }
 
     buildTypes {
@@ -98,7 +92,7 @@ android {
     externalNativeBuild {
         cmake {
             version '3.22.1'
-            path file('CMakeLists.txt')
+            path file('src/main/cpp/CMakeLists.txt')
         }
     }
     
@@ -131,13 +125,6 @@ dependencies {
     implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-
-    
-    def roomVersion = "2.6.1"
-    implementation "androidx.room:room-runtime:$roomVersion"
-    implementation "androidx.room:room-ktx:$roomVersion"
-    kapt "androidx.room:room-compiler:$roomVersion"
-
     
     implementation "com.google.android.material:material:1.11.0"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
