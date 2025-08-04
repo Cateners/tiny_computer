@@ -1,12 +1,3 @@
-[submodule "android/extern/libvncserver"]
-	path = android/extern/libvncserver
-	url = https://github.com/gujjwal00/libvncserver.git
-[submodule "android/extern/libjpeg-turbo"]
-	path = android/extern/libjpeg-turbo
-	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
-[submodule "android/extern/wolfssl"]
-	path = android/extern/wolfssl
-	url = https://github.com/wolfSSL/wolfssl.git
 [submodule "android/app/src/main/cpp/libtirpc"]
 	path = android/app/src/main/cpp/libtirpc
 	url = https://github.com/alisw/libtirpc
