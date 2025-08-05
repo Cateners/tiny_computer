@@ -214,6 +214,21 @@ class Util {
     }
   }
 
+  static String getl10nText(String key, BuildContext context) {
+    switch (key) {
+      case 'projectUrl':
+        return AppLocalizations.of(context)!.projectUrl;
+      case 'issueUrl':
+        return AppLocalizations.of(context)!.issueUrl;
+      case 'faqUrl':
+        return AppLocalizations.of(context)!.faqUrl;
+      case 'solutionUrl':
+        return AppLocalizations.of(context)!.solutionUrl;
+      default:
+        return AppLocalizations.of(context)!.projectUrl;
+    }
+  }
+
 }
 
 //来自xterms关于操作ctrl, shift, alt键的示例
@@ -324,87 +339,12 @@ class TermPty {
 //default values
 class D {
 
-  //帮助信息
-  static const faq = [
-    {"q":"安卓12及以上注意事项:错误码9", "a":"""如果你的系统版本大于等于android 12
-可能会在使用过程中异常退出(返回错误码9)
-届时本软件会提供方案指引你修复
-并不难
-但是软件没有权限
-不能帮你修复
-
-你也可以在高级设置里手动前往错误页面"""},
-    {"q":"安卓13注意事项", "a":"""如果你的系统版本大于等于android 13
-那么很可能一些网页应用如jupyter notebook
-bilibili客户端等等不可用
-可以去全局设置开启getifaddrs桥接"""},
-    {"q":"用一会就断掉", "a":"""这应该是出现了错误9的情况
-下次出现此情况时
-按设备的返回键(或用返回手势)
-应该能看到软件提供的修复引导"""},
-    {"q":"如何访问设备文件？", "a":"""如果你给了存储权限
-那么通过主目录下的文件夹
-就可以访问设备存储
-要访问整个设备存储可以访问sd文件夹
-此外主文件夹的很多文件夹与设备文件夹绑定
-比如主文件夹的下载文件夹就是设备的下载文件夹
-
-另外！任何支持SAF的安卓软件
-都可以在不打开小小电脑的情况下直接访问小小电脑的文件"""},
-    {"q":"如何访问SD卡文件？", "a":"""首先用其他文件管理器查看SD卡路径
-（通常为/storage/xxxx...）
-然后把该地址输入到小小电脑的文件管理器回车即可
-
-注意不要只输/storage
-或者从/storage文件夹点进去
-那样是没有权限的"""},
-    {"q":"自带的火狐浏览器无法下载文件", "a":"""检查是否授予小小电脑存储权限
-
-火狐下载的文件会保存在设备的下载文件夹
-如果不想授予存储权限也可在火狐的设置里更改下载文件保存位置"""},
-    {"q":"安装更多软件？", "a":"""本软件的初衷是作为PC应用引擎的平替
-所以我不会提供安装除WPS等软件外的帮助
-另外你需要一些Linux系统使用经验
-
-如果你想安装其他软件
-可以使用容器自带的tmoe
-但并不保证安装了能用哦
-(事实上, 目前容器里的
-VSCode、输入法
-都是用tmoe安装的
-就连系统本身也是用tmoe安装的)
-
-也可以在网上搜索
-"ubuntu安装xxx教程"
-"linux安装xxx教程"等等
-
-要注意容器环境和完整Linux有不同
-你可能需要做一些修补工作
-比如基于Electron的软件通常需要添加--no-sandbox参数才能使用"""},
-    {"q":"WPS没有常用字体？", "a":"""如果你需要更多字体
-在给了存储权限的情况下
-直接将字体复制到设备存储的Fonts文件夹即可
-一些常用的办公字体
-可以在Windows电脑的C:\\Windows\\Fonts文件夹找到
-由于可能的版权问题
-软件不能帮你做"""},
-    {"q":"中文输入法？", "a":"""关于中文输入的问题
-强烈建议不要使用安卓中文输入法直接输入中文
-而是使用英文键盘通过容器的输入法(Ctrl+空格切换)输入中文
-避免丢字错字"""},
-    {"q":"外接鼠标移不到边缘", "a":"""最可能的情况是
-你的设备使用手势控制而不是三大金刚键
-边缘是系统留给你手势操作用的
-大概没什么办法
-不过也许可以双指捏合使屏幕范围稍微变小一点？"""},
-    {"q":"镜像正在同步", "a":"""偶尔会出现这种情况
-一段时间后就会同步完成
-
-请几个小时后再试一次"""},
-    {"q":"找不到sys/cdefs.h", "a":"""点击上面无法编译C语言程序的快捷指令"""},
-    {"q":"安装一些软件很慢", "a":"""请尝试使用魔法"""},
-    {"q":"联发科处理器可以用吗？", "a":"""联发科处理器只是没有成熟的开源图形驱动供加速而已
-不考虑速度的话都能用的"""},
+  //常用链接
+  static const links = [
+    {"name": "projectUrl", "value": "https://github.com/Cateners/tiny_computer"},
+    {"name": "issueUrl", "value": "https://github.com/Cateners/tiny_computer/issues"},
+    {"name": "faqUrl", "value": "https://github.com/Cateners/tiny_computer/blob/master/extra/faq.md"},
+    {"name": "solutionUrl", "value": "https://github.com/Cateners/tiny_computer/blob/master/extra/solution.md"},
   ];
 
   //默认快捷指令
@@ -419,7 +359,7 @@ VSCode、输入法
     {"name":"安装科学计算软件Octave", "command":"sudo apt update && sudo apt install -y octave"},
     {"name":"卸载Octave", "command":"sudo apt autoremove --purge -y octave"},
     {"name":"安装WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
-wget https://gh.llkk.cc/https://github.com/tiny-computer/third-party-archives/releases/download/archives/wps-office_11.1.0.11720_arm64.deb -O /tmp/wps.deb
+wget https://github.akams.cn/https://github.com/tiny-computer/third-party-archives/releases/download/archives/wps-office_11.1.0.11720_arm64.deb -O /tmp/wps.deb
 EOF
 rm /tmp/wps.deb"""},
     {"name":"卸载WPS", "command":"sudo apt autoremove --purge -y wps-office"},
@@ -535,56 +475,6 @@ class G {
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
   static ValueNotifier<bool> bootTextChange = ValueNotifier(true); //更改值，用于刷新启动命令
   static ValueNotifier<String> updateText = ValueNotifier("小小电脑"); //加载界面的说明文字
-  static ValueNotifier<String> helpText = ValueNotifier("""
-第一次加载大概需要5到10分钟...
-正常情况下，加载完成后软件会自动跳转到图形界面
-
-在图形界面时，点击即鼠标左键
-长按为鼠标右键
-双指点击弹出键盘
-双指划动为鼠标滚轮
-
-!!!在图形界面返回，可以回到终端界面和控制界面!!!
-你可以在控制界面安装更多软件或者阅读帮助信息
-
-请不要在安装时退出软件
-
-如果过了很长时间都没有加载完成
-可以去设置里看看小小电脑占用空间是不是一直没变
-如果是说明卡在什么地方了
-建议清除本软件数据重来一次
-
-(有一位网友提到过
-自己无论怎么清软件数据都装不上
-但在重启手机之后就装上了)
-
-一些注意事项：
-此软件以GPL协议免费开源
-如果是买的就是被骗了, 请举报
-源代码在这里: https://github.com/Cateners/tiny_computer
-软件也会第一时间在这里更新
-请尽可能在这里下载软件, 确保是正版
-
-如果你遇到了问题
-可以去https://github.com/Cateners/tiny_computer/issues/
-留言反馈
-
-如果软件里有程序正在正常运行
-请不要强行关闭本软件
-否则可能会损坏容器
-(如dpkg被中断)
-特别是在安装WPS的时候
-可能以为卡20%了
-其实耐心等待就好
-
-感谢使用!
-
-(顺带一提, 全部解压完大概需要4~5GB空间
-解压途中占用空间可能更多
-请确保有足够的空间
-(这样真的Tiny吗><))
-
-常见问题："""); //帮助页的说明文字
   static String postCommand = ""; //第一次进入容器时额外运行的命令
   
   static bool wasAvncEnabled = false;

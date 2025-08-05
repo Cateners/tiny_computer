@@ -50,7 +50,7 @@ android {
         applicationId "com.fct.tiny"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 27 //proot version //ffmpeg_kit; flutter.minSdkVersion
+        minSdkVersion 28 // glob() version //proot version //ffmpeg_kit; flutter.minSdkVersion
         targetSdkVersion 28 //https://github.com/termux/termux-app/issues/1072; native; linker; flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

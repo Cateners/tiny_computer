@@ -55,6 +55,7 @@
   "fileAccessHint": "通过这里获取更多文件权限，以实现对特殊目录的访问。",
   "requestStoragePermission": "申请存储权限",
   "requestAllFilesAccess": "申请所有文件访问权限",
+  "ignoreBatteryOptimization": "忽略电池优化",
   "graphicsAcceleration": "图形加速",
   "experimentalFeature": "实验性功能",
   "graphicsAccelerationHint": "图形加速可部分利用设备GPU提升系统图形处理表现，但由于设备差异也可能导致容器系统及软件运行不稳定甚至异常退出。\n\nVirgl可为使用OpenGL ES的应用提供加速。",
@@ -98,5 +99,9 @@
   "copyingContainerSystem": "正在复制容器系统",
   "installingContainerSystem": "正在安装容器系统",
   "installationComplete": "安装完成",
-  "reinstallingBootPackage": "正在重新安装引导包"
+  "reinstallingBootPackage": "正在重新安装引导包",
+  "issueUrl": "问题反馈",
+  "faqUrl": "常见问题",
+  "solutionUrl": "典型场景使用指南",
+  "firstLoadInstructions": "第一次加载大概需要5到10分钟...\n\n正常情况下，加载完成后软件会自动跳转到图形界面。\n\n在图形界面时：\n- 点击为鼠标左键\n- 长按为鼠标右键\n- 双指点击可弹出键盘\n- 双指划动为鼠标滚轮\n\n请不要在安装时退出软件。\n\n在等待时，可以点击下面的按钮申请一下权限。\n\n小小电脑的许多文件夹，比如下载、文档、图片等等都和设备的这些文件夹绑定，如果不授予这些权限会导致这些文件夹无权访问。\n\n但如果你不需要访问这些文件夹，也可以不授予文件权限（可能导致火狐浏览器下载文件失败，因为无权访问下载文件夹）。"
 }
