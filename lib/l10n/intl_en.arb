@@ -55,6 +55,7 @@
   "fileAccessHint": "Request additional file permissions to access special directories.",
   "requestStoragePermission": "Request Storage Permission",
   "requestAllFilesAccess": "Request All Files Access",
+  "ignoreBatteryOptimization": "Ignore Battery Optimization",
   "graphicsAcceleration": "Graphics Acceleration",
   "experimentalFeature": "Experimental Feature",
   "graphicsAccelerationHint": "Utilizes device GPU to improve graphics performance, but may cause system instability due to device variations.\n\nVirgl provides acceleration for OpenGL ES applications.",
@@ -98,5 +99,9 @@
   "copyingContainerSystem": "Copying Container System",
   "installingContainerSystem": "Installing Container System",
   "installationComplete": "Installation Complete",
-  "reinstallingBootPackage": "Reinstalling Boot Package"
+  "reinstallingBootPackage": "Reinstalling Boot Package",
+  "issueUrl": "Issue Report",
+  "faqUrl": "FAQ",
+  "solutionUrl": "Usage Guide",
+  "firstLoadInstructions": "The first load may take about 5 to 10 minutes...\n\nNormally, the software will automatically redirect to the graphical interface after loading.\n\nIn the graphical interface:\n- Tap for left-click\n- Long press for right-click\n- Two-finger tap to open the keyboard\n- Two-finger swipe for mouse wheel\n\nPlease do not exit the software during installation.\n\nWhile waiting, you can click the button below to request permissions.\n\nMany folders in Tiny Computer (e.g., Downloads, Documents, Pictures) are bound to the corresponding device folders. Without these permissions, access to these folders will be denied.\n\nIf you don't need to access these folders, you can skip granting file permissions (but this may cause Firefox to fail when downloading files due to denied access to the Downloads folder)."
 }

@@ -592,16 +592,27 @@ class _InfoPageState extends State<InfoPage> {
         },
         body: Padding(padding: const EdgeInsets.all(8), child: Column(
           children: [
-            ValueListenableBuilder(valueListenable: G.helpText, builder:(context, value, child) {
-              return Text(value);
-            }),
+            Text(AppLocalizations.of(context)!.firstLoadInstructions),
             const SizedBox.square(dimension: 16),
-            Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.faq
+            Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
+              OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.requestStoragePermission), onPressed: () {
+                Permission.storage.request();
+              }),
+              OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.requestAllFilesAccess), onPressed: () {
+                Permission.manageExternalStorage.request();
+              }),
+              OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.ignoreBatteryOptimization), onPressed: () {
+                Permission.ignoreBatteryOptimizations.request();
+              }),
+            ]),
+            const SizedBox.square(dimension: 16),
+            Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.links
             .asMap().entries.map<Widget>((e) {
-            return OutlinedButton(style: D.commandButtonStyle, child: Text(e.value["q"]!), onPressed: () {
-              G.helpText.value = e.value["a"]!;
-            });
-          }).toList())],
+              return OutlinedButton(style: D.commandButtonStyle, child: Text(Util.getl10nText(e.value["name"]!, context)), onPressed: () {
+                launchUrl(Uri.parse(e.value["value"]!), mode: LaunchMode.externalApplication);
+              });
+            }).toList()),
+          ],
         )),
         isExpanded: _expandState[0],
       ),

@@ -55,6 +55,7 @@
   "fileAccessHint": "在此處取得更多檔案權限，以便存取特殊目錄。",
   "requestStoragePermission": "申請儲存權限",
   "requestAllFilesAccess": "申請所有檔案存取權限",
+  "ignoreBatteryOptimization": "忽略電池優化",
   "graphicsAcceleration": "圖形加速",
   "experimentalFeature": "實驗性功能",
   "graphicsAccelerationHint": "圖形加速可部分利用裝置 GPU 增強系統圖形效能，但因裝置差異可能導致容器系統與軟體執行不穩或異常退出。\n請酌情開啟。",
@@ -98,5 +99,9 @@
   "copyingContainerSystem": "正在複製容器系統",
   "installingContainerSystem": "正在安裝容器系統",
   "installationComplete": "安裝完成",
-  "reinstallingBootPackage": "正在重新安裝啟動套件"
+  "reinstallingBootPackage": "正在重新安裝啟動套件",
+  "issueUrl": "問題回報",
+  "faqUrl": "常見問題",
+  "solutionUrl": "使用指南",
+  "firstLoadInstructions": "第一次載入大概需要5到10分鐘...\n\n正常情況下，載入完成後軟體會自動跳轉到圖形介面。\n\n在圖形介面時：\n- 點擊為滑鼠左鍵\n- 長按為滑鼠右鍵\n- 雙指點擊可彈出鍵盤\n- 雙指滑動為滑鼠滾輪\n\n請不要在安裝時退出軟體。\n\n在等待時，可以點擊下面的按鈕申請權限。\n\n小小電腦的許多資料夾，比如下載、文件、圖片等等都和裝置的這些資料夾綁定，如果不授予這些權限會導致這些資料夾無權存取。\n\n但如果你不需要存取這些資料夾，也可以不授予檔案權限（可能導致火狐瀏覽器下載檔案失敗，因為無權存取下載資料夾）。"
 }
