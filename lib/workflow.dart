@@ -42,6 +42,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:tiny_computer/l10n/app_localizations.dart';
 
 import 'package:avnc_flutter/avnc_flutter.dart';
+import 'package:x11_flutter/x11_flutter.dart';
 
 class Util {
 
@@ -770,11 +771,11 @@ clear""");
   }
 
   static Future<void> launchXServer() async {
-    await D.androidChannel.invokeMethod("launchXServer", {"tmpdir":"${G.dataPath}/containers/${G.currentContainer}/tmp", "xkb":"${G.dataPath}/containers/${G.currentContainer}/usr/share/X11/xkb"});
+    await X11Flutter.launchXServer("${G.dataPath}/containers/${G.currentContainer}/tmp", "${G.dataPath}/containers/${G.currentContainer}/usr/share/X11/xkb", [":4"]);
   }
 
   static Future<void> launchX11() async {
-    await D.androidChannel.invokeMethod("launchX11Page", {});
+    await X11Flutter.launchX11Page();
   }
 
   static Future<void> workflow() async {

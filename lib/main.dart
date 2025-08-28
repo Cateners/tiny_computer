@@ -36,6 +36,7 @@ import 'package:tiny_computer/l10n/app_localizations.dart';
 import 'package:tiny_computer/workflow.dart';
 
 import 'package:avnc_flutter/avnc_flutter.dart';
+import 'package:x11_flutter/x11_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -401,7 +402,7 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.termuxX11Preferences), onPressed: () async {
-              await D.androidChannel.invokeMethod("launchX11PrefsPage", {});
+              await X11Flutter.launchX11PrefsPage();
             }),
           ]),
           const SizedBox.square(dimension: 8),

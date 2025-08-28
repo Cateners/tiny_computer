@@ -21,8 +21,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6043043b081d5f24d99ce7b1402dae2ae061ec27"
-      resolved-ref: "6043043b081d5f24d99ce7b1402dae2ae061ec27"
+      ref: "91b175bd524102601bc5506a56f8842469f6b559"
+      resolved-ref: "91b175bd524102601bc5506a56f8842469f6b559"
       url: "https://github.com/tiny-computer/avnc_flutter.git"
     source: git
     version: "0.0.1"
@@ -707,6 +707,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  x11_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: e5a718b9755de9101a8ee83eb74ec1efede9d8bb
+      resolved-ref: e5a718b9755de9101a8ee83eb74ec1efede9d8bb
+      url: "https://github.com/tiny-computer/x11_flutter.git"
+    source: git
+    version: "0.0.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -740,5 +749,5 @@ packages:
     source: hosted
     version: "0.0.6"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
+  dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.29.0"
