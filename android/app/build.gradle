@@ -2,10 +2,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    
-    id "org.jetbrains.kotlin.kapt"
-    id "org.jetbrains.kotlin.plugin.serialization" version "1.9.10"
-    id "org.jetbrains.kotlin.plugin.parcelize"
 }
 
 def localProperties = new Properties()
@@ -29,7 +25,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.tiny_computer"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion "27.0.12077973"  // flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -50,8 +46,8 @@ android {
         applicationId "com.fct.tiny"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 28 // glob() version //proot version //ffmpeg_kit; flutter.minSdkVersion
-        targetSdkVersion 28 //https://github.com/termux/termux-app/issues/1072; native; linker; flutter.targetSdkVersion
+        minSdk 28 // glob() version //proot version //ffmpeg_kit; flutter.minSdkVersion
+        targetSdk 28 //https://github.com/termux/termux-app/issues/1072; native; linker; flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 
@@ -61,25 +57,16 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
-            // remove flutter's default ShrinkResources settings at flutter\packages\flutter_tools\gradle\src\main\groovy\flutter.groovy
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false
-                optimizeCode true
-            }
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.debug
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false
-                optimizeCode true
-            }
+            minifyEnabled true
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -87,13 +74,6 @@ android {
         aidl true
         dataBinding true
         buildConfig true
-    }
-
-    externalNativeBuild {
-        cmake {
-            version '3.22.1'
-            path file('src/main/cpp/CMakeLists.txt')
-        }
     }
     
     lintOptions {
@@ -114,80 +94,8 @@ flutter {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:1.12.0"
-    implementation "androidx.activity:activity-ktx:1.8.2"
-    implementation "androidx.fragment:fragment-ktx:1.6.2"
-    implementation "androidx.appcompat:appcompat:1.6.1"
-    implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation "androidx.preference:preference:1.2.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
-    implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
-    implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
-    implementation "androidx.recyclerview:recyclerview:1.2.1"
-    
-    implementation "com.google.android.material:material:1.11.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
-    implementation "org.connectbot:sshlib:2.2.23"
-    implementation 'com.github.tiann:FreeReflection:3.1.0'
-
-    compileOnly project(':shell-loader:stub')
-}
-
-afterEvaluate {
-    tasks.register("generatePrefs") {
-        //noinspection UnnecessaryQualifiedReference
-        def xml = groovy.xml.DOMBuilder.parse((new StringReader(file('src/main/res/xml/preferences.xml').text)))
-        def preferenceNodes = xml.documentElement.getElementsByTagName("*")
-        def preferences = []
-
-        for (int i = 0; i < preferenceNodes.length; i++) {
-            def node = preferenceNodes.item(i)
-            if (node.nodeName == 'EditTextPreference' && node.getAttribute("app:key") != "extra_keys_config")
-                preferences << [ type: 'String',  key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
-            else if (node.nodeName == 'SeekBarPreference')
-                preferences << [ type: 'Int', key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
-            else if (node.nodeName == 'ListPreference') {
-                def entries = node.getAttribute("app:entries")
-                def values = node.getAttribute("app:entryValues")
-                preferences << [type: 'List', key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue"),
-                                entries: entries.substring(7, entries.length()), values: values.substring(7, values.length())]
-            }
-            else if (node.nodeName == 'SwitchPreferenceCompat')
-                preferences << [ type: 'Boolean',  key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
-        }
-
-        def out = file('build/generated/java/com/termux/x11/Prefs.java')
-        out.getParentFile().exists() || out.getParentFile().mkdirs()
-        out.delete()
-        out.createNewFile()
-
-        out << 'package com.termux.x11;\n'
-        out << 'import java.util.HashMap;\n'
-        out << 'import android.content.Context;\n'
-        out << 'import com.termux.x11.utils.TermuxX11ExtraKeys;\n'
-        out << 'import com.example.tiny_computer.R;\n'
-        out << '\n'
-        out << 'public class Prefs extends LoriePreferences.PrefsProto {\n'
-        preferences.each {
-            if (it.type == 'Int' || it.type == 'Boolean')
-                out << "  public final ${it.type}Preference ${it.key} = new ${it.type}Preference(\"${it.key}\", ${it.default});\n"
-            else if (it.type == 'String')
-                out << "  public final StringPreference ${it.key} = new StringPreference(\"${it.key}\", \"${it.default}\");\n"
-            else if (it.type == 'List')
-                out << "  public final ${it.type}Preference ${it.key} = new ${it.type}Preference(\"${it.key}\", \"${it.default}\", R.array.${it.entries}, R.array.${it.values});\n"
-        }
-        out << '  public final StringPreference extra_keys_config = new StringPreference("extra_keys_config", TermuxX11ExtraKeys.DEFAULT_IVALUE_EXTRA_KEYS);\n'
-        out << '  public final HashMap<String, Preference> keys = new HashMap<String, Preference>() {{\n'
-        preferences.each { out << '    put("' + it.key + '", ' + it.key + ');\n' }
-        out << '    put("extra_keys_config", extra_keys_config);\n'
-        out << '  }};\n'
-        out << '\n'
-        out << '  public Prefs(Context ctx) {\n'
-        out << '    super(ctx);\n'
-        out << '  }\n'
-        out << '}\n'
-    }
-    android.sourceSets.main.java.srcDirs += 'build/generated/java'
-    preBuild.dependsOn generatePrefs
+    implementation "androidx.core:core-ktx:1.15.0"
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "com.google.android.material:material:1.7.0"
+    implementation 'com.github.tiann:FreeReflection:3.2.2'
 }

@@ -24,21 +24,6 @@ class MainActivity: FlutterActivity() {
                     startActivity(Intent(this, Signal9Activity::class.java))
                     result.success(0)
                 }
-                "launchX11PrefsPage" -> {
-                    startActivity(Intent(this, com.termux.x11.LoriePreferences::class.java))
-                    result.success(0)
-                }
-                "launchXServer" -> {
-                    setenv("TMPDIR", call.argument("tmpdir")!!, true)
-                    setenv("XKB_CONFIG_ROOT", call.argument("xkb")!!, true)
-                    setenv("TERMUX_X11_DEBUG", "1", true)
-                    com.termux.x11.CmdEntryPoint.main(arrayOf(":4"))
-                    result.success(0)
-                }
-                "launchX11Page" -> {
-                    startActivity(Intent(this, com.termux.x11.MainActivity::class.java))
-                    result.success(0)
-                }
                 "getNativeLibraryPath" -> {
                     result.success(getApplicationInfo().nativeLibraryDir)
                 }
