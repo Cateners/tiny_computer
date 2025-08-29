@@ -344,8 +344,8 @@ class D {
   static const links = [
     {"name": "projectUrl", "value": "https://github.com/Cateners/tiny_computer"},
     {"name": "issueUrl", "value": "https://github.com/Cateners/tiny_computer/issues"},
-    {"name": "faqUrl", "value": "https://github.com/Cateners/tiny_computer/blob/master/extra/faq.md"},
-    {"name": "solutionUrl", "value": "https://github.com/Cateners/tiny_computer/blob/master/extra/solution.md"},
+    {"name": "faqUrl", "value": "https://gitee.com/caten/tc-hints/blob/master/pool/faq.md"},
+    {"name": "solutionUrl", "value": "https://gitee.com/caten/tc-hints/blob/master/pool/solution.md"},
   ];
 
   //默认快捷指令
