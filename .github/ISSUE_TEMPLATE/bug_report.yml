@@ -8,7 +8,7 @@ body:
       value: |
         **必读须知：**
         - 请先搜索[所有issue](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue)，**相同问题重复提交会被直接关闭**
-        - 请先自查[常见使用问题](https://github.com/Cateners/tiny_computer/blob/master/extra/faq.md)，是否能解决你的问题
+        - 请先自查[常见使用问题](https://gitee.com/caten/tc-hints/blob/master/pool/faq.md)，是否能解决你的问题
         - 本模板中的每项要求都有其特定原因，请完整填写
 
   - type: input
