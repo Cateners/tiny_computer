@@ -36,7 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.example.tiny_computer.Signal9Activity" />
+        <activity
+            android:name=".Signal9Activity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <provider
             android:name="com.example.tiny_computer.filepicker.TinyDocumentsProvider"
             android:authorities="com.example.tiny_computer.documents"

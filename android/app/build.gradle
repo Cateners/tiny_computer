@@ -73,6 +73,7 @@ android {
     buildFeatures {
         aidl true
         dataBinding true
+        viewBinding true
         buildConfig true
     }
     

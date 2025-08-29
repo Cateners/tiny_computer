@@ -1,129 +1,62 @@
 package com.example.tiny_computer
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.widget.Button
-import android.widget.ScrollView
-import android.widget.TextView
-import android.widget.Toast
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import com.example.tiny_computer.databinding.ActivitySignal9Binding
 
 class Signal9Activity : AppCompatActivity() {
 
-    private val helperLink = "https://www.vmos.cn/zhushou.htm"
-    private val helperLink2 = "https://www.cnblogs.com/yejiuluo/articles/18271904"
+    private lateinit var binding: ActivitySignal9Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val rootLayout = LinearLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            gravity = Gravity.CENTER
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            setBackgroundColor(Color.parseColor("#4A148C"))
-        }
-
-        val scrollView = ScrollView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-
-        val fullScreen = LinearLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#4A148C"))
-        }
-
-        val text1 = TextView(this).apply {
-            text = ":(\n发生了什么？"
-            textSize = 32f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-        }
-
-        val text2 = TextView(this).apply {
-            text = "终端异常退出, 返回错误码9\n此错误通常是高版本安卓系统(12+)限制进程造成的, \n可以使用以下工具修复:"
-            textSize = 16f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setPadding(0, 16, 0, 0)
-        }
-
-        val helperLinkText = TextView(this).apply {
-            text = helperLink
-            textSize = 16f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setPadding(0, 16, 0, 0)
-            setOnClickListener { copyToClipboard(helperLink) }
-        }
-
-        val copyHintText = TextView(this).apply {
-            text = "(复制链接到浏览器查看)"
-            textSize = 16f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setPadding(0, 8, 0, 0)
-        }
-
-        val copyButton = Button(this).apply {
-            text = "复制"
-            textSize = 16f
-            setOnClickListener { copyToClipboard(helperLink) }
-        }
-
-        val tutorialText = TextView(this).apply {
-            text = "如果你的设备版本大于等于安卓14，可以在开发者选项里开启“停止限制子进程”选项即可，无需额外修复。\n\n如果不能解决请参考此教程: "
-            textSize = 16f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setPadding(0, 16, 0, 0)
-        }
-
-        val viewButton = Button(this).apply {
-            text = "查看"
-            textSize = 16f
-            setOnClickListener { copyToClipboard(helperLink2) }
-        }
-
-        rootLayout.addView(text1)
-        rootLayout.addView(text2)
-        rootLayout.addView(helperLinkText)
-        rootLayout.addView(copyHintText)
-        rootLayout.addView(copyButton)
-        rootLayout.addView(tutorialText)
-        rootLayout.addView(viewButton)
-
-        scrollView.addView(rootLayout)
-        fullScreen.addView(scrollView)
-
-        setContentView(fullScreen)
+        binding = ActivitySignal9Binding.inflate(layoutInflater)
+        setContentView(binding.root)
+        
+        // 设置状态栏和导航栏颜色匹配蓝屏背景
+        window.statusBarColor = ContextCompat.getColor(this, R.color.tc_s9a_blue_screen_blue)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.tc_s9a_blue_screen_blue)
+        
+        setupContent()
     }
 
-    private fun copyToClipboard(text: String) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Copied Text", text)
-        clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, "已复制", Toast.LENGTH_SHORT).show()
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(text))
-        startActivity(this, intent, null)
+    private fun setupContent() {
+        // 设置错误信息
+        binding.errorDetails.text = getString(R.string.tc_s9a_error_message)
+        
+        // 根据Android版本显示不同的解决方案
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // Android 14以下版本
+            binding.preAndroid14Layout.isVisible = true
+            binding.solutionIntro.text = getString(R.string.tc_s9a_solution_intro)
+            binding.solutionAlternative.text = getString(R.string.tc_s9a_solution_alternative)
+            binding.toolButton.text = getString(R.string.tc_s9a_tool_button)
+            binding.tutorialButton.text = getString(R.string.tc_s9a_tutorial_button)
+
+            binding.toolButton.setOnClickListener {
+                openBrowserLink("https://www.vmos.cn/zhushou.htm")
+            }
+
+            binding.tutorialButton.setOnClickListener {
+                openBrowserLink("https://gitee.com/caten/tc-hints/blob/master/pool/signal9fix.md")
+            }
+        } else {
+            // Android 14及以上版本
+            binding.solutionAndroid14.isVisible = true
+            binding.solutionAndroid14.text = getString(R.string.tc_s9a_solution_android14)
+        }
+    }
+
+    private fun openBrowserLink(url: String) {
+        if (url.isNotEmpty()) {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
+        // 如果URL为空，则不执行任何操作（等待后续补充链接）
     }
 }

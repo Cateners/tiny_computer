@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tc_s9a_blue_screen_blue"
+    tools:context=".Signal9Activity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/kaomoji_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tc_s9a_kaomoji"
+            android:textColor="@color/tc_s9a_white"
+            android:textSize="96sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/error_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/tc_s9a_white"
+            android:textSize="16sp" />
+
+        <!-- Android 14以下版本的内容 -->
+        <LinearLayout
+            android:id="@+id/pre_android14_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/solution_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/tc_s9a_white"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/tool_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/tc_s9a_white"
+                android:textColor="@color/tc_s9a_blue_screen_blue" />
+
+            <TextView
+                android:id="@+id/solution_alternative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/tc_s9a_white"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/tutorial_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/tc_s9a_white"
+                android:textColor="@color/tc_s9a_blue_screen_blue" />
+
+        </LinearLayout>
+
+        <!-- Android 14及以上版本的内容 -->
+        <TextView
+            android:id="@+id/solution_android14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/tc_s9a_white"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>
