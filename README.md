@@ -79,7 +79,7 @@ lib 目录：
 
 ## 编译
 
-你需要配置好 flutter 和安卓 sdk，还需安装 python3、bison、patch 和 gcc，然后克隆此项目。
+你需要配置好 flutter 和安卓 sdk。
 
 在编译之前，需要在 release 中下载 jniLibs.zip ，将里面的库文件解压后放到 android/app/src/main/jniLibs/arm64-v8a；下载 patch.tar.gz 拷贝到 assets。以及下载系统 rootfs（或者[自行制作](https://github.com/Cateners/tiny_computer/blob/master/extra/build-tiny-rootfs.md)），之后使用 split 命令分割，拷贝到 assets。一般我将其分为 98MB。
 
@@ -87,13 +87,13 @@ lib 目录：
 split -b 98M debian.tar.xz
 ```
 
-接下来就可以编译了。我使用的命令如下：
+接下来就可以编译了。如果要编译release版本，需要设置发布密钥，可以参考android/keystore.properties.example文件。
+
+我使用的编译命令如下：
 
 ```bash
-flutter build apk --target-platform android-arm64 --split-per-abi --obfuscate  --split-debug-info=tiny_computer/sdi
+flutter build apk --target-platform android-arm64 --split-per-abi --obfuscate --split-debug-info=tiny_computer/sdi
 ```
-
-有一些 C 代码可能报错。比如 KeyBind.c 等文件，报错一些符号未定义。但其实包含那些符号的函数并没有被使用，所以可以把它们删掉再编译。 应该有编译选项可以避免这种情况，但我对 cmake 不熟，就先这样了:P
 
 ## 目前已知 bug
 

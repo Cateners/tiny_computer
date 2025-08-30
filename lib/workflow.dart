@@ -225,6 +225,8 @@ class Util {
         return AppLocalizations.of(context)!.faqUrl;
       case 'solutionUrl':
         return AppLocalizations.of(context)!.solutionUrl;
+      case 'discussionUrl':
+        return AppLocalizations.of(context)!.discussionUrl;
       default:
         return AppLocalizations.of(context)!.projectUrl;
     }
@@ -346,6 +348,7 @@ class D {
     {"name": "issueUrl", "value": "https://github.com/Cateners/tiny_computer/issues"},
     {"name": "faqUrl", "value": "https://gitee.com/caten/tc-hints/blob/master/pool/faq.md"},
     {"name": "solutionUrl", "value": "https://gitee.com/caten/tc-hints/blob/master/pool/solution.md"},
+    {"name": "discussionUrl", "value": "https://github.com/Cateners/tiny_computer/discussions"},
   ];
 
   //默认快捷指令
