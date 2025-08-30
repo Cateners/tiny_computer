@@ -179,6 +179,7 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
 
 ### 额外步骤
 
+- 将桌面壁纸的配置从monitorBuiltinDisplay改为monitorbuiltin（xfce，v1.0.99），疑似Termux:X11显示器名称改变导致壁纸失效
 - 修复用vscode打开文件时只打开了vscode本身（v1.0.25）：去掉/usr/share/applications/code-no-sandbox.desktop的Exec的--unity-launch
 - 修复选择文本时会把文本发送到剪切板（v1.0.25）：在/usr/local/bin/startvnc文件的start_tmoe_xvnc()的start_win10_tigervnc行前面加入`vncconfig -set SendPrimary=0 SetPrimary=0`
 - 修复系统更新时变英文（v1.0.19）：把/etc/locale.gen文件里包含zh_CN.UTF-8的那行代码解除注释
@@ -205,7 +206,7 @@ tmoe还会安装gnome-keyring，由于之前我做xfce包时会造成VSCode反�
     - .ICEauthority
     - .Xauthority
     - 等等
-- 切换到root用户，切换到根目录，`/busybox tar -Jcpvf /debian.tar.xz --exclude=debian.tar.xz --exclude=dev --exclude=proc --exclude=system --exclude=storage --exclude=apex --exclude=sys --exclude=media/sd --exclude=busybox --exclude=".l2s.*" /`
+- 切换到root用户，切换到根目录，`/busybox tar -Jcpvf /debian.tar.xz --exclude=".l2s.*" bin boot etc home lib media mnt opt root run sbin sd srv tmp usr var`
 
 
 ## 制作步骤（GXDE OS）

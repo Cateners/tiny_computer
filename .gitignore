@@ -55,3 +55,11 @@ android/app/src/main/jniLibs/*
 devtools_options.yaml
 
 lib/l10n/app_localizations*
+
+# Keystore files
+*.jks
+*.keystore
+
+# Configuration files
+android/keystore.properties
+android/local.properties

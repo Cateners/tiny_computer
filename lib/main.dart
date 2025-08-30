@@ -444,6 +444,9 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.requestAllFilesAccess), onPressed: () {
               Permission.manageExternalStorage.request();
             }),
+            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.fileAccessGuide), onPressed: () {
+              launchUrl(Uri.parse("https://gitee.com/caten/tc-hints/blob/master/pool/fileaccess.md"), mode: LaunchMode.externalApplication);
+            }),
           ]),
           const SizedBox.square(dimension: 16),
         ],))),
@@ -606,6 +609,8 @@ class _InfoPageState extends State<InfoPage> {
                 Permission.ignoreBatteryOptimizations.request();
               }),
             ]),
+            const SizedBox.square(dimension: 16),
+            Text(AppLocalizations.of(context)!.updateRequest),
             const SizedBox.square(dimension: 16),
             Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.links
             .asMap().entries.map<Widget>((e) {
@@ -1193,6 +1198,9 @@ class _FastCommandsState extends State<FastCommands> {
               command = value;
             }),
           ])), actions: [
+            TextButton(onPressed:() {
+              launchUrl(Uri.parse("https://gitee.com/caten/tc-hints/blob/master/pool/extracommand.md"), mode: LaunchMode.externalApplication);
+            }, child: Text(AppLocalizations.of(context)!.more)),
             TextButton(onPressed:() {
               Navigator.of(context).pop();
             }, child: Text(AppLocalizations.of(context)!.cancel)),
