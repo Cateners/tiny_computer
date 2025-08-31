@@ -353,7 +353,7 @@ class D {
 
   //默认快捷指令
   static const commands = [{"name":"检查更新并升级", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo localedef -c -i zh_CN -f UTF-8 zh_CN.UTF-8"},
-    {"name":"查看系统信息", "command":"fastfetch --structure meow && neofetch --logo none"},
+    {"name":"查看系统信息", "command":"fastfetch --structure meow && fastfetch --logo none"},
     {"name":"清屏", "command":"clear"},
     {"name":"中断任务", "command":"\x03"},
     {"name":"安装图形处理软件Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
