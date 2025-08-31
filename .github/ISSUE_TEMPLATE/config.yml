@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: 获取帮助或提问
+    url: https://github.com/Cateners/tiny_computer/discussions
+    about: 请在这里提问和讨论，不要将其作为 Issue。
