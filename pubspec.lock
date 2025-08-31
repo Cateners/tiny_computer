@@ -21,8 +21,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "91b175bd524102601bc5506a56f8842469f6b559"
-      resolved-ref: "91b175bd524102601bc5506a56f8842469f6b559"
+      ref: "73f6672f955ae89606336e0a018d4958af3570e6"
+      resolved-ref: "73f6672f955ae89606336e0a018d4958af3570e6"
       url: "https://github.com/tiny-computer/avnc_flutter.git"
     source: git
     version: "0.0.1"
