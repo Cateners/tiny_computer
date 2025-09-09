@@ -2,7 +2,7 @@
 <resources>
     <string name="tc_app_name">Tiny Computer</string>
 
-    <string name="tc_s9a_error_message">Terminal terminated abnormally with error code 9. This error is caused by Android 12+ system limiting the number of child processes and requires manual removal of the restriction.</string>
+    <string name="tc_s9a_error_message">Terminal terminated abnormally with signal 9. This error is caused by Android 12+ system limiting the number of child processes and requires manual removal of the restriction.</string>
     <string name="tc_s9a_kaomoji">:(</string>
     <string name="tc_s9a_solution_intro">You can use the following tool to fix:</string>
     <string name="tc_s9a_solution_alternative">If the above tool cannot fix the issue, or if the device is a HarmonyOS device, please follow the tutorial below (requires a computer and data cable):</string>
