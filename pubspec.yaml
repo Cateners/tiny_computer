@@ -50,11 +50,11 @@ dependencies:
   x11_flutter:
     git:
       url: https://github.com/tiny-computer/x11_flutter.git
-      ref: 778ae0873d9bf953d1fdbbd6bc4937ccf1020bb5
+      ref: ed10bd71a24af6019ce7bccd173ee367546dac2c
   avnc_flutter:
     git:
       url: https://github.com/tiny-computer/avnc_flutter.git
-      ref: 73f6672f955ae89606336e0a018d4958af3570e6
+      ref: 4008565259f88fe4613b885979f79e439bc5a420
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
