@@ -463,6 +463,12 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             if (!value && Util.getGlobal("dri3")) {
               G.prefs.setBool("dri3", false);
             }
+            if (value) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(AppLocalizations.of(context)!.recommendHidpi))
+              );
+            }
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
