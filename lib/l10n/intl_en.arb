@@ -44,7 +44,7 @@
   "save": "Save",
   "applyOnNextLaunch": "Apply on next launch",
   "useAVNCByDefault": "Use AVNC by default",
-  "termuxX11Advantages": "Termux:X11 may provide faster speeds than VNC in certain scenarios.\n\nNote that Termux:X11 operates slightly differently from AVNC:\n- A two-finger tap acts as a right mouse click\n- Pressing the back button reveals the additional keyboard\n\nSupports DRI3 (requires enabling in graphics acceleration settings), which can significantly improve performance.\nIf you encounter a black screen, try completely closing and restarting the application.",
+  "termuxX11Advantages": "Termux:X11 may provide faster speeds than VNC in certain scenarios.\n\nNote that Termux:X11 operates slightly differently from AVNC:\n- A two-finger tap acts as a right mouse click\n- Pressing the back button reveals the additional keyboard\n\nIf you encounter a black screen, try completely closing and restarting the application.",
   "termuxX11Preferences": "Termux:X11 Preferences",
   "useTermuxX11ByDefault": "Use Termux:X11 by default",
   "disableVNC": "Disable VNC. Requires restart",
