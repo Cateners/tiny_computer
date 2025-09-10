@@ -172,6 +172,8 @@ class _SettingPageState extends State<SettingPage> {
 
   final List<bool> _expandState = [false, false, false, false, false, false];
 
+  double _avncScaleFactor = Util.getGlobal("avncScaleFactor") as double;
+
   @override
   Widget build(BuildContext context) {
     return ExpansionPanelList(
@@ -338,6 +340,25 @@ class _SettingPageState extends State<SettingPage> {
           return ListTile(title: Text(AppLocalizations.of(context)!.displaySettings));
         }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
           const SizedBox.square(dimension: 16),
+          Text(AppLocalizations.of(context)!.hidpiAdvantages),
+          const SizedBox.square(dimension: 16),
+          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.hidpiEnvVar),
+            onChanged: (value) async {
+              await G.prefs.setString("defaultHidpiOpt", value);
+            },
+          ),
+          const SizedBox.square(dimension: 8),
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.hidpiSupport), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
+            G.prefs.setBool("isHidpiEnabled", value);
+            // 开启高分辨率后把缩放比调为原来的两倍 +log4(2) = 0.5
+            _avncScaleFactor += value ? 0.5 : -0.5;
+            _avncScaleFactor = _avncScaleFactor.clamp(-1, 1);
+            G.prefs.setDouble("avncScaleFactor", _avncScaleFactor);
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 16),
+          const Divider(height: 2, indent: 8, endIndent: 8),
+          const SizedBox.square(dimension: 16),
           Text(AppLocalizations.of(context)!.avncAdvantages),
           const SizedBox.square(dimension: 16),
           Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: [
@@ -347,7 +368,7 @@ class _SettingPageState extends State<SettingPage> {
             OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.aboutAVNC), onPressed: () async {
               await AvncFlutter.launchAboutPage();
             }),
-            OutlinedButton(style: D.commandButtonStyle, child: Text(AppLocalizations.of(context)!.avncResolution), onPressed: () async {
+            OutlinedButton(style: D.commandButtonStyle, onPressed: Util.getGlobal("avncResizeDesktop") as bool ? null : () async {
               final s = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
               final w0 = max(s.width, s.height);
               final h0 = min(s.width, s.height);
@@ -388,13 +409,44 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
                   }, child: Text(AppLocalizations.of(context)!.save)),
                 ]);
               });
-            }),
+            }, child: Text(AppLocalizations.of(context)!.avncResolution)),
           ]),
           const SizedBox.square(dimension: 8),
           SwitchListTile(title: Text(AppLocalizations.of(context)!.useAVNCByDefault), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("useAvnc") as bool, onChanged:(value) {
             G.prefs.setBool("useAvnc", value);
             setState(() {});
           },),
+          const SizedBox.square(dimension: 8),
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.avncScreenResize), value: Util.getGlobal("avncResizeDesktop") as bool, onChanged:(value) {
+            G.prefs.setBool("avncResizeDesktop", value);
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 8),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.avncResizeFactor),
+            onTap: () {},
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 8),
+                Text('${AppLocalizations.of(context)!.avncResizeFactorValue} ${pow(4, _avncScaleFactor).toStringAsFixed(2)}x'),
+                SizedBox(height: 12),
+                Slider(
+                  value: _avncScaleFactor,
+                  min: -1,
+                  max: 1,
+                  divisions: 96,
+                  onChangeEnd: (double value) {
+                    G.prefs.setDouble("avncScaleFactor", value);
+                  },
+                  onChanged: Util.getGlobal("avncResizeDesktop") as bool ? (double value) {
+                    _avncScaleFactor = value;
+                    setState(() {});
+                  } : null,
+                ),
+              ],
+            ),
+          ),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
@@ -411,21 +463,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             if (!value && Util.getGlobal("dri3")) {
               G.prefs.setBool("dri3", false);
             }
-            setState(() {});
-          },),
-          const SizedBox.square(dimension: 16),
-          const Divider(height: 2, indent: 8, endIndent: 8),
-          const SizedBox.square(dimension: 16),
-          Text(AppLocalizations.of(context)!.hidpiAdvantages),
-          const SizedBox.square(dimension: 16),
-          TextFormField(maxLines: null, initialValue: Util.getGlobal("defaultHidpiOpt") as String, decoration: InputDecoration(border: OutlineInputBorder(), labelText: AppLocalizations.of(context)!.hidpiEnvVar),
-            onChanged: (value) async {
-              await G.prefs.setString("defaultHidpiOpt", value);
-            },
-          ),
-          const SizedBox.square(dimension: 8),
-          SwitchListTile(title: Text(AppLocalizations.of(context)!.hidpiSupport), subtitle: Text(AppLocalizations.of(context)!.applyOnNextLaunch), value: Util.getGlobal("isHidpiEnabled") as bool, onChanged:(value) {
-            G.prefs.setBool("isHidpiEnabled", value);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),

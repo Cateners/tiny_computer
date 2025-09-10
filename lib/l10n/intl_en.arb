@@ -33,7 +33,7 @@
   "fixGetifaddrsPermission": "Fix getifaddrs permission on Android 13",
   "fakeUOSSystem": "Pretend System as UOS",
   "displaySettings": "Display Settings",
-  "avncAdvantages": "AVNC provides better control experience than noVNC:\nTouchpad controls, two-finger tap for keyboard, auto clipboard, picture-in-picture mode, etc. This is an experimental feature.",
+  "avncAdvantages": "AVNC provides better control experience than noVNC:\nTouchpad controls, two-finger tap for keyboard, auto clipboard, picture-in-picture mode, etc.",
   "avncSettings": "AVNC Settings",
   "aboutAVNC": "About AVNC",
   "avncResolution": "AVNC Startup Resolution",
@@ -44,11 +44,11 @@
   "save": "Save",
   "applyOnNextLaunch": "Apply on next launch",
   "useAVNCByDefault": "Use AVNC by default",
-  "termuxX11Advantages": "Termux:X11 provides faster performance than VNC with better compatibility in some cases.\nSupports DRI3 (enable in Graphics Acceleration) for significant performance boost.\nNow supports features like bidirectional clipboard.\nExperimental feature! If black screen occurs, try fully closing and restarting the app.",
+  "termuxX11Advantages": "Termux:X11 may provide faster speeds than VNC in certain scenarios.\n\nNote that Termux:X11 operates slightly differently from AVNC:\n- A two-finger tap acts as a right mouse click\n- Pressing the back button reveals the additional keyboard\n\nSupports DRI3 (requires enabling in graphics acceleration settings), which can significantly improve performance.\nIf you encounter a black screen, try completely closing and restarting the application.",
   "termuxX11Preferences": "Termux:X11 Preferences",
   "useTermuxX11ByDefault": "Use Termux:X11 by default",
   "disableVNC": "Disable VNC. Requires restart",
-  "hidpiAdvantages": "HiDPI support provides sharper display for high-resolution screens!\n\nNote:\nDisplay may appear too large - set appropriate resolution.\nSome apps may have display issues or slower rendering.",
+  "hidpiAdvantages": "One-click to enable HiDPI mode for clearer display... at the cost of reduced speed.",
   "hidpiEnvVar": "HiDPI Environment Variables",
   "hidpiSupport": "HiDPI Support",
   "fileAccess": "File Access",
@@ -107,5 +107,8 @@
   "solutionUrl": "Usage Guide",
   "discussionUrl": "Discussion",
   "firstLoadInstructions": "The first load may take about 5 to 10 minutes...\n\nNormally, the software will automatically redirect to the graphical interface after loading.\n\nIn the graphical interface:\n- Tap for left-click\n- Long press for right-click\n- Two-finger tap to open the keyboard\n- Two-finger swipe for mouse wheel\n\nPlease do not exit the software during installation.\n\nWhile waiting, you can click the button below to request permissions.\n\nMany folders in Tiny Computer (e.g., Downloads, Documents, Pictures) are bound to the corresponding device folders. Without these permissions, access to these folders will be denied.\n\nIf you don't need to access these folders, you can skip granting file permissions (but this may cause Firefox to fail when downloading files due to denied access to the Downloads folder).",
-  "updateRequest": "Please try to use the latest version. Visit the project address to check for the latest version."
+  "updateRequest": "Please try to use the latest version. Visit the project address to check for the latest version.",
+  "avncScreenResize": "Adaptive Screen Size",
+  "avncResizeFactor": "Screen Scaling Ratio", 
+  "avncResizeFactorValue": "Current scaling is"
 }

@@ -33,7 +33,7 @@
   "fixGetifaddrsPermission": "修复安卓13设备getifaddrs无权限",
   "fakeUOSSystem": "伪装系统为UOS",
   "displaySettings": "显示设置",
-  "avncAdvantages": "AVNC可以带来相比noVNC更好的操控体验；\n如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。这是一个实验性功能。",
+  "avncAdvantages": "AVNC可以带来相比noVNC更好的操控体验；\n如触摸板触控，双指单击弹出键盘，自动剪切板，画中画模式等等。",
   "avncSettings": "AVNC设置",
   "aboutAVNC": "关于AVNC",
   "avncResolution": "AVNC启动时分辨率设置",
@@ -44,11 +44,11 @@
   "applyOnNextLaunch": "下次启动时生效",
   "save": "保存",
   "useAVNCByDefault": "默认使用AVNC",
-  "termuxX11Advantages": "Termux:X11可以带来比VNC更快的速度，某些情况下兼容性也会更好。\n支持使用DRI3（需在图形加速中开启），可以带来相当大的性能提升。\n随着版本的迭代，Termux:X11如今也支持了双向剪切板等功能。\n这是一个实验性功能！如果黑屏，请尝试彻底关闭本应用再重新启动。",
+  "termuxX11Advantages": "Termux:X11某些情况下可以带来比VNC更快的速度。\n\n注意Termux:X11的操作与AVNC略有不同。\n- 双指点击为鼠标右键\n- 返回弹出附加键盘\n\n支持使用DRI3（需在图形加速中开启），可以带来相当大的性能提升。\n如果黑屏，请尝试彻底关闭本应用再重新启动。",
   "termuxX11Preferences": "Termux:X11偏好设置",
   "useTermuxX11ByDefault": "默认使用Termux:X11",
   "disableVNC": "不使用VNC。重启生效",
-  "hidpiAdvantages": "高分辨率支持可以为拥有高分辨率屏幕的设备带来更高清的体验！\n\n注意：\n选项开启后显示会变得很大，请设置一个合适的分辨率。\n\n一些软件可能会存在显示问题，或者显示速度变慢。",
+  "hidpiAdvantages": "一键开启高清模式，显示更清晰的同时...速度会变慢。",
   "hidpiEnvVar": "HiDPI环境变量",
   "hidpiSupport": "高分辨率支持",
   "fileAccess": "文件访问",
@@ -107,5 +107,8 @@
   "solutionUrl": "典型场景使用指南",
   "discussionUrl": "论坛与讨论",
   "firstLoadInstructions": "第一次加载大概需要5到10分钟...\n\n正常情况下，加载完成后软件会自动跳转到图形界面。\n\n在图形界面时：\n- 点击为鼠标左键\n- 长按为鼠标右键\n- 双指点击可弹出键盘\n- 双指划动为鼠标滚轮\n\n请不要在安装时退出软件。\n\n在等待时，可以点击下面的按钮申请一下权限。\n\n小小电脑的许多文件夹，比如下载、文档、图片等等都和设备的对应文件夹绑定，如果不授予这些权限会导致这些文件夹无权访问。\n\n但如果你不需要访问这些文件夹，也可以不授予文件权限（可能导致火狐浏览器下载文件失败，因为无权访问下载文件夹）。",
-  "updateRequest": "请尽量使用最新版本。前往项目地址可查看最新版本。"
+  "updateRequest": "请尽量使用最新版本。前往项目地址可查看最新版本。",
+  "avncScreenResize": "自适应屏幕尺寸",
+  "avncResizeFactor": "屏幕缩放比",
+  "avncResizeFactorValue": "当前缩放为"
 }

@@ -33,7 +33,7 @@
   "fixGetifaddrsPermission": "修復 Android 13 裝置 getifaddrs 無權限",
   "fakeUOSSystem": "偽裝系統為 UOS",
   "displaySettings": "顯示設定",
-  "avncAdvantages": "AVNC 可帶來比 noVNC 更好的操作體驗；如觸控板觸控、雙指單擊喚出鍵盤、自動剪貼簿、畫中畫模式等。這是一個實驗性功能。",
+  "avncAdvantages": "AVNC 可帶來比 noVNC 更好的操作體驗；如觸控板觸控、雙指單擊喚出鍵盤、自動剪貼簿、畫中畫模式等。",
   "avncSettings": "AVNC 設定",
   "aboutAVNC": "關於 AVNC",
   "avncResolution": "AVNC 啟動時解析度設定",
@@ -44,11 +44,11 @@
   "applyOnNextLaunch": "下次啟動時生效",
   "save": "儲存",
   "useAVNCByDefault": "預設使用 AVNC",
-  "termuxX11Advantages": "Termux:X11 可帶來比 VNC 更快的速度，有時兼容性也更好。\n支援使用 DRI3（需在圖形加速中開啟），可大幅提升效能。",
+  "termuxX11Advantages": "Termux:X11 在某些情況下可能比 VNC 提供更快的速度。\n\n請注意 Termux:X11 的操作與 AVNC 略有不同：\n- 雙指點擊相當於滑鼠右鍵\n- 返回鍵可彈出附加鍵盤\n\n支援 DRI3（需在圖形加速設定中開啟），可帶來顯著的性能提升。\n若出現黑屏，請嘗試完全關閉本應用後重新啟動。",
   "termuxX11Preferences": "Termux:X11 偏好設定",
   "useTermuxX11ByDefault": "預設使用 Termux:X11",
   "disableVNC": "停用 VNC。重啟生效",
-  "hidpiAdvantages": "高解析度支援可讓有高解析度螢幕的裝置獲得更清晰的體驗！\n\n注意：\n啟用後顯示會變很大，請設定合適的解析度。",
+  "hidpiAdvantages": "一鍵開啟高清模式，顯示更清晰的同時...速度會變慢。",
   "hidpiEnvVar": "HiDPI 環境變數",
   "hidpiSupport": "高解析度支援",
   "fileAccess": "檔案存取",
@@ -107,5 +107,8 @@
   "solutionUrl": "操作指南",
   "discussionUrl": "討論",
   "firstLoadInstructions": "第一次載入大概需要5到10分鐘...\n\n正常情況下，載入完成後軟體會自動跳轉到圖形介面。\n\n在圖形介面時：\n- 點擊為滑鼠左鍵\n- 長按為滑鼠右鍵\n- 雙指點擊可彈出鍵盤\n- 雙指滑動為滑鼠滾輪\n\n請不要在安裝時退出軟體。\n\n在等待時，可以點擊下面的按鈕申請權限。\n\n小小電腦的許多資料夾，比如下載、文件、圖片等等都和裝置的這些資料夾綁定，如果不授予這些權限會導致這些資料夾無權存取。\n\n但如果你不需要存取這些資料夾，也可以不授予檔案權限（可能導致火狐瀏覽器下載檔案失敗，因為無權存取下載資料夾）。",
-  "updateRequest": "請盡量使用最新版本。前往專案網址查看最新版本。"
+  "updateRequest": "請盡量使用最新版本。前往專案網址查看最新版本。",
+  "avncScreenResize": "自適應螢幕尺寸",
+  "avncResizeFactor": "螢幕縮放比",
+  "avncResizeFactorValue": "目前縮放為"
 }
