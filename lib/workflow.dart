@@ -459,7 +459,7 @@ WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_C
     {"name":"Control Panel", "command":"wine control"},
     {"name":"File Manager", "command":"winefile"},
     {"name":"Task Manager", "command":"wine taskmgr"},
-    {"name":"IE Explorer", "command":"wine iexplore"},
+    {"name":"Internet Explorer", "command":"wine iexplore"},
     {"name":"Kill Wine Process", "command":"wineserver -k"}
   ];
 
