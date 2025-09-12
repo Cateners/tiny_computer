@@ -386,7 +386,7 @@ class D {
 
   //默认快捷指令，英文版本
   static const commands4En = [{"name":"Update Packages", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y"},
-    {"name":"System Info", "command":"neofetch -L && neofetch --off"},
+    {"name":"System Info", "command":"fastfetch --structure meow && fastfetch --logo none"},
     {"name":"Clear", "command":"clear"},
     {"name":"Interrupt", "command":"\x03"},
     {"name":"Install Painting Program Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
@@ -395,10 +395,7 @@ class D {
     {"name":"Uninstall Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
     {"name":"Install LibreOffice", "command":"sudo apt update && sudo apt install -y libreoffice"},
     {"name":"Uninstall LibreOffice", "command":"sudo apt autoremove --purge -y libreoffice"},
-    {"name":"Install WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
-wget https://github.com/tiny-computer/third-party-archives/releases/download/archives/wps-office_11.1.0.11720_arm64.deb -O /tmp/wps.deb
-EOF
-rm /tmp/wps.deb"""},
+    {"name":"Install WPS", "command":r"""sudo dpkg --configure -a && sudo aptss update && sudo aptss install -y wps-office"""},
     {"name":"Uninstall WPS", "command":"sudo apt autoremove --purge -y wps-office"},
     {"name":"Install CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
     {"name":"Uninstall CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
