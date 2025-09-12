@@ -74,7 +74,7 @@
   "installHangoverLatest": "Install Hangover Latest (may fail)",
   "uninstallHangover": "Uninstall Hangover",
   "clearWineData": "Clear Wine Data",
-  "wineCommandsHint": "Common Wine commands. Click to launch GUI and wait patiently.\n\nNote: DXVK is enabled by default. If the program crashes, try disabling it.\n\nTypical launch times:\nTiger T7510 6GB: over 1 minute\nSnapdragon 870 12GB: ~10 seconds",
+  "wineCommandsHint": "Common Wine commands. Click to launch GUI and wait patiently.\n\nTypical launch times:\nTiger T7510 6GB: over 1 minute\nSnapdragon 870 12GB: ~10 seconds",
   "switchToJapanese": "Switch System to Japanese",
   "userManual": "User Manual",
   "openSourceLicenses": "Open Source Licenses",

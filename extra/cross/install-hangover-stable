@@ -4,10 +4,11 @@ echo "正在更新软件包..."
 sudo apt update
 sudo apt upgrade -y
 
-hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-10.11/hangover_10.11_debian12_bookworm_arm64.tar"
-latest_version="10.11"
+hangover_url="https://github.com/AndreRH/hangover/releases/download/hangover-10.14/hangover_10.14_debian12_bookworm_arm64.tar"
+latest_version="10.14"
 
 mirror_sites=(
+    "https://github.akams.cn/"
     "https://gh.llkk.cc/"
     "https://github.moeyy.xyz/"
     "https://mirror.ghproxy.com/"
@@ -50,13 +51,6 @@ echo "正在安装DXVK..."
 tar xvf dxvk-v*.tar.gz
 mv dxvk-v*/x32/* /home/tiny/.wine/drive_c/windows/syswow64
 mv dxvk-v*/arm64ec/* /home/tiny/.wine/drive_c/windows/system32
-
-echo "自动配置 DLL 覆盖..."
-WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v d3d8 /d native /f >/dev/null 2>&1
-WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v d3d9 /d native /f >/dev/null 2>&1
-WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v d3d10core /d native /f >/dev/null 2>&1
-WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v d3d11 /d native /f >/dev/null 2>&1
-WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v dxgi /d native /f >/dev/null 2>&1
 
 echo "正在修复字体..."
 regedit "Z:\\home\\tiny\\.local\\share\\tiny\\extra\\chn_fonts.reg" && wine reg delete "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes" /va /f

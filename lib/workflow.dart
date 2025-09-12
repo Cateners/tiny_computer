@@ -535,7 +535,7 @@ ln -sf ../applib/libexec_tar.so \$DATA_DIR/bin/tar
 ln -sf ../applib/libexec_virgl_test_server.so \$DATA_DIR/bin/virgl_test_server
 ln -sf ../applib/libexec_getifaddrs_bridge_server.so \$DATA_DIR/bin/getifaddrs_bridge_server
 ln -sf ../applib/libexec_pulseaudio.so \$DATA_DIR/bin/pulseaudio
-ln -sf ../applib/libbusybox.so \$DATA_DIR/lib/libbusybox.so.1.36.1
+ln -sf ../applib/libbusybox.so \$DATA_DIR/lib/libbusybox.so.1.37.0
 ln -sf ../applib/libtalloc.so \$DATA_DIR/lib/libtalloc.so.2
 ln -sf ../applib/libvirglrenderer.so \$DATA_DIR/lib/libvirglrenderer.so
 ln -sf ../applib/libepoxy.so \$DATA_DIR/lib/libepoxy.so
