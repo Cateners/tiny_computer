@@ -44,7 +44,7 @@
   "applyOnNextLaunch": "下次啟動時生效",
   "save": "儲存",
   "useAVNCByDefault": "預設使用 AVNC",
-  "termuxX11Advantages": "Termux:X11 在某些情況下可能比 VNC 提供更快的速度。\n\n請注意 Termux:X11 的操作與 AVNC 略有不同：\n- 雙指點擊相當於滑鼠右鍵\n- 返回鍵可彈出附加鍵盤\n若出現黑屏，請嘗試完全關閉本應用後重新啟動。",
+  "termuxX11Advantages": "Termux:X11 在某些情況下可能比 VNC 提供更快的速度。\n\n請注意 Termux:X11 的操作與 AVNC 略有不同：\n- 雙指點擊相當於滑鼠右鍵\n- 返回鍵可彈出小鍵盤\n若出現黑屏，請嘗試完全關閉本應用後重新啟動。",
   "termuxX11Preferences": "Termux:X11 偏好設定",
   "useTermuxX11ByDefault": "預設使用 Termux:X11",
   "disableVNC": "停用 VNC。重啟生效",
