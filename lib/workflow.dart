@@ -384,6 +384,32 @@ class D {
     {"name":"???", "command":"timeout 8 cmatrix"}
   ];
 
+  //默认快捷指令，英文版本
+  static const commands4En = [{"name":"Update Packages", "command":"sudo dpkg --configure -a && sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y"},
+    {"name":"System Info", "command":"neofetch -L && neofetch --off"},
+    {"name":"Clear", "command":"clear"},
+    {"name":"Interrupt", "command":"\x03"},
+    {"name":"Install Painting Program Krita", "command":"sudo apt update && sudo apt install -y krita krita-l10n"},
+    {"name":"Uninstall Krita", "command":"sudo apt autoremove --purge -y krita krita-l10n"},
+    {"name":"Install KDE Non-Linear Video Editor", "command":"sudo apt update && sudo apt install -y kdenlive"},
+    {"name":"Uninstall Kdenlive", "command":"sudo apt autoremove --purge -y kdenlive"},
+    {"name":"Install LibreOffice", "command":"sudo apt update && sudo apt install -y libreoffice"},
+    {"name":"Uninstall LibreOffice", "command":"sudo apt autoremove --purge -y libreoffice"},
+    {"name":"Install WPS", "command":r"""cat << 'EOF' | sh && sudo dpkg --configure -a && sudo apt update && sudo apt install -y /tmp/wps.deb
+wget https://github.com/tiny-computer/third-party-archives/releases/download/archives/wps-office_11.1.0.11720_arm64.deb -O /tmp/wps.deb
+EOF
+rm /tmp/wps.deb"""},
+    {"name":"Uninstall WPS", "command":"sudo apt autoremove --purge -y wps-office"},
+    {"name":"Install CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
+    {"name":"Uninstall CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
+    {"name":"Install EdrawMax", "command":"wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
+    {"name":"Uninstall EdrawMax", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
+    {"name":"Enable Recycle Bin", "command":"sudo apt update && sudo apt install -y gvfs && echo 'Restart the app to use Recycle Bin.'"},
+    {"name":"Clean Package Cache", "command":"sudo apt clean"},
+    {"name":"Power Off", "command":"stopvnc\nexit\nexit"},
+    {"name":"???", "command":"timeout 8 cmatrix"}
+  ];
+
   //默认wine快捷指令
   static const wineCommands = [{"name":"Wine配置", "command":"winecfg"},
     {"name":"修复方块字", "command":"regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
@@ -407,6 +433,31 @@ WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_C
     {"name":"任务管理器", "command":"wine taskmgr"},
     {"name":"IE浏览器", "command":"wine iexplore"},
     {"name":"强制关闭Wine", "command":"wineserver -k"}
+  ];
+
+  //默认wine快捷指令，英文版本
+  static const wineCommands4En = [{"name":"Wine Configuration", "command":"winecfg"},
+    {"name":"Fix CJK Characters", "command":"regedit Z:\\\\home\\\\tiny\\\\.local\\\\share\\\\tiny\\\\extra\\\\chn_fonts.reg && wine reg delete \"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes\" /va /f"},
+    {"name":"Start Menu Dir", "command":"wine explorer \"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\""},
+    {"name":"Enable DXVK", "command":"""WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d8 /d native /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d9 /d native /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d10core /d native /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d11 /d native /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=n,d3d9=n,d3d10core=n,d3d11=n,dxgi=n" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v dxgi /d native /f >/dev/null 2>&1"""},
+    {"name":"Disable DXVK", "command":"""WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d8 /d builtin /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d9 /d builtin /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d10core /d builtin /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v d3d11 /d builtin /f >/dev/null 2>&1
+WINEDLLOVERRIDES="d3d8=b,d3d9=b,d3d10core=b,d3d11=b,dxgi=b" wine reg add 'HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides' /v dxgi /d builtin /f >/dev/null 2>&1"""},
+    {"name":"Explorer", "command":"wine explorer"},
+    {"name":"Notepad", "command":"notepad"},
+    {"name":"Minesweeper", "command":"winemine"},
+    {"name":"Regedit", "command":"regedit"},
+    {"name":"Control Panel", "command":"wine control"},
+    {"name":"File Manager", "command":"winefile"},
+    {"name":"Task Manager", "command":"wine taskmgr"},
+    {"name":"IE Explorer", "command":"wine iexplore"},
+    {"name":"Kill Wine Process", "command":"wineserver -k"}
   ];
 
   //默认小键盘
@@ -554,10 +605,10 @@ chmod 1777 tmp
   //初次启动要做的事情
   static Future<void> initForFirstTime() async {
     //首先设置bootstrap
-    G.updateText.value = "正在安装引导包";
+    G.updateText.value = AppLocalizations.of(G.homePageStateContext)!.installingBootPackage;
     await setupBootstrap();
     
-    G.updateText.value = "正在复制容器系统";
+    G.updateText.value = AppLocalizations.of(G.homePageStateContext)!.copyingContainerSystem;
     //存放容器的文件夹0和存放硬链接的文件夹.l2s
     Util.createDirFromString("${G.dataPath}/containers/0/.l2s");
     //这个是容器rootfs，被split命令分成了xa*，放在assets里
@@ -566,7 +617,7 @@ chmod 1777 tmp
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     //-J
-    G.updateText.value = "正在安装容器系统";
+    G.updateText.value = AppLocalizations.of(G.homePageStateContext)!.installingContainerSystem;
     await Util.execute(
 """
 export DATA_DIR=${G.dataPath}
@@ -596,18 +647,19 @@ cat tmp3 | while read -r group_name group_id; do
 	fi
 done
 \$DATA_DIR/bin/busybox rm -rf xa* tmp1 tmp2 tmp3
+${Localizations.localeOf(G.homePageStateContext).languageCode == 'zh' ? "" : "echo 'LANG=en_US.UTF-8' > \$CONTAINER_DIR/usr/local/etc/tmoe-linux/locale.txt"}
 """);
     //一些数据初始化
     //$DATA_DIR是数据文件夹, $CONTAINER_DIR是容器根目录
     //Termux:X11的启动命令并不在这里面，而是写死了。这下成💩山代码了:P
     await G.prefs.setStringList("containersInfo", ["""{
 "name":"GXDE OS",
-"boot":"${D.boot}",
+"boot":"${Localizations.localeOf(G.homePageStateContext).languageCode == 'zh' ? D.boot : D.boot.replaceFirst('LANG=zh_CN.UTF-8', 'LANG=en_US.UTF-8').replaceFirst('公共', 'Public').replaceFirst('图片', 'Pictures').replaceFirst('音乐', 'Music').replaceFirst('视频', 'Videos').replaceFirst('下载', 'Downloads').replaceFirst('文档', 'Documents').replaceFirst('照片', 'Photos')}",
 "vnc":"startnovnc &",
 "vncUrl":"http://localhost:36082/vnc.html?host=localhost&port=36082&autoconnect=true&resize=remote&password=12345678",
-"commands":${jsonEncode(D.commands)}
+"commands":${jsonEncode(Localizations.localeOf(G.homePageStateContext).languageCode == 'zh' ? D.commands : D.commands4En)}
 }"""]);
-    G.updateText.value = "安装完成";
+    G.updateText.value = AppLocalizations.of(G.homePageStateContext)!.installationComplete;
   }
 
   static Future<void> initData() async {
@@ -631,13 +683,21 @@ done
       final String h = (min(s.width, s.height) * 0.75).round().toString();
       G.postCommand = """sed -i -E "s@(geometry)=.*@\\1=${w}x${h}@" /etc/tigervnc/vncserver-config-tmoe
 sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
+      if (Localizations.localeOf(G.homePageStateContext).languageCode != 'zh') {
+        G.postCommand += "\nlocale-gen";
+        // For English users, assume they need to enable terminal write
+        await G.prefs.setBool("isTerminalWriteEnabled", true);
+        await G.prefs.setBool("isTerminalCommandsEnabled", true);
+        await G.prefs.setBool("isStickyKey", false);
+        await G.prefs.setBool("wakelock", true);
+      }
       await G.prefs.setBool("getifaddrsBridge", (await DeviceInfoPlugin().androidInfo).version.sdkInt >= 31);
     }
     G.currentContainer = Util.getGlobal("defaultContainer") as int;
 
     //是否需要重新安装引导包?
     if (Util.getGlobal("reinstallBootstrap")) {
-      G.updateText.value = "正在重新安装引导包";
+      G.updateText.value = AppLocalizations.of(G.homePageStateContext)!.reinstallingBootPackage;
       await setupBootstrap();
       G.prefs.setBool("reinstallBootstrap", false);
     }

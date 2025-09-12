@@ -197,7 +197,7 @@ class _SettingPageState extends State<SettingPage> {
                     Navigator.of(context).pop();
                   }, child: Text(AppLocalizations.of(context)!.cancel)),
                   TextButton(onPressed:() async {
-                    await Util.setCurrentProp("boot", D.boot);
+                    await Util.setCurrentProp("boot", Localizations.localeOf(context).languageCode == 'zh' ? D.boot : D.boot.replaceFirst('LANG=zh_CN.UTF-8', 'LANG=en_US.UTF-8').replaceFirst('公共', 'Public').replaceFirst('图片', 'Pictures').replaceFirst('音乐', 'Music').replaceFirst('视频', 'Videos').replaceFirst('下载', 'Downloads').replaceFirst('文档', 'Documents').replaceFirst('照片', 'Photos'));
                     G.bootTextChange.value = !G.bootTextChange.value;
                     if (!context.mounted) return;
                     Navigator.of(context).pop();
@@ -579,14 +579,24 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
           const SizedBox.square(dimension: 16),
           Text(AppLocalizations.of(context)!.wineCommandsHint),
           const SizedBox.square(dimension: 8),
-          Wrap(alignment: WrapAlignment.center, spacing: 4.0, runSpacing: 4.0, children: D.wineCommands.asMap().entries.map<Widget>(
-            (e) {
-              return OutlinedButton(style: D.commandButtonStyle, child: Text(e.value["name"]!), onPressed: () {
-                Util.termWrite("${e.value["command"]!} &");
-                G.pageIndex.value = 0;
-              });
-            }
-          ).toList()),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 4.0,
+            runSpacing: 4.0,
+            children: (Localizations.localeOf(context).languageCode == 'zh' 
+                ? D.wineCommands 
+                : D.wineCommands4En
+            ).asMap().entries.map<Widget>((e) {
+              return OutlinedButton(
+                style: D.commandButtonStyle,
+                child: Text(e.value["name"]!),
+                onPressed: () {
+                  Util.termWrite("${e.value["command"]!} &");
+                  G.pageIndex.value = 0;
+                },
+              );
+            }).toList(),
+          ),
           const SizedBox.square(dimension: 16),
           const Divider(height: 2, indent: 8, endIndent: 8),
           const SizedBox.square(dimension: 16),
@@ -1263,7 +1273,7 @@ class _FastCommandsState extends State<FastCommands> {
             Navigator.of(context).pop();
           }, child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(onPressed:() async {
-            await Util.setCurrentProp("commands", D.commands);
+            await Util.setCurrentProp("commands", Localizations.localeOf(context).languageCode == 'zh' ? D.commands : D.commands4En);
             setState(() {});
             if (!context.mounted) return;
             Navigator.of(context).pop();
@@ -1290,7 +1300,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _initializeWorkflow();
+    Future.delayed(Duration.zero,() {
+      _initializeWorkflow();
+    });
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: []);
   }
 
