@@ -397,9 +397,7 @@ class D {
     {"name":"Uninstall LibreOffice", "command":"sudo apt autoremove --purge -y libreoffice"},
     {"name":"Install WPS", "command":r"""sudo dpkg --configure -a && sudo aptss update && sudo aptss install -y wps-office"""},
     {"name":"Uninstall WPS", "command":"sudo apt autoremove --purge -y wps-office"},
-    {"name":"Install CAJViewer", "command":"wget https://download.cnki.net/net.cnki.cajviewer_1.3.20-1_arm64.deb -O /tmp/caj.deb && sudo apt update && sudo apt install -y /tmp/caj.deb && bash /home/tiny/.local/share/tiny/caj/postinst; rm /tmp/caj.deb"},
-    {"name":"Uninstall CAJViewer", "command":"sudo apt autoremove --purge -y net.cnki.cajviewer && bash /home/tiny/.local/share/tiny/caj/postrm"},
-    {"name":"Install EdrawMax", "command":"wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst; rm /tmp/edraw.deb"},
+    {"name":"Install EdrawMax", "command":"""wget https://cc-download.wondershare.cc/business/prd/edrawmax_13.1.0-1_arm64_binner.deb -O /tmp/edraw.deb && sudo apt update && sudo apt install -y /tmp/edraw.deb && bash /home/tiny/.local/share/tiny/edraw/postinst && sudo sed -i 's/<Language V="cn"\\/>/<Language V="en"\\/>/g' /opt/apps/edrawmax/config/settings.xml; rm /tmp/edraw.deb"""},
     {"name":"Uninstall EdrawMax", "command":"sudo apt autoremove --purge -y edrawmax libldap-2.4-2"},
     {"name":"Enable Recycle Bin", "command":"sudo apt update && sudo apt install -y gvfs && echo 'Restart the app to use Recycle Bin.'"},
     {"name":"Clean Package Cache", "command":"sudo apt clean"},
@@ -681,7 +679,7 @@ ${Localizations.localeOf(G.homePageStateContext).languageCode == 'zh' ? "" : "ec
       G.postCommand = """sed -i -E "s@(geometry)=.*@\\1=${w}x${h}@" /etc/tigervnc/vncserver-config-tmoe
 sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""";
       if (Localizations.localeOf(G.homePageStateContext).languageCode != 'zh') {
-        G.postCommand += "\nlocale-gen";
+        G.postCommand += "\nlocaledef -c -i en_US -f UTF-8 en_US.UTF-8";
         // For English users, assume they need to enable terminal write
         await G.prefs.setBool("isTerminalWriteEnabled", true);
         await G.prefs.setBool("isTerminalCommandsEnabled", true);
