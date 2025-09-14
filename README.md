@@ -4,34 +4,36 @@
 
 给所有安卓 9 以上 arm64 设备的“PC 应用引擎”平替。你可以在小小电脑上安装 PC 级 WPS、CAJ Viewer、亿图图示等软件。
 
-Run Debian Bookworm with XFCE/LXQt/... on Android with just one click - optimized for Chinese users. This package comes preinstalled with the Fcitx Pinyin input method and doesn't require Termux.
 
-To change the language in the container, simply run the "tmoe" command (this root filesystem was created using [tmoe](https://github.com/2moe/tmoe)). You'll need to remove the LANG=zh_CN.UTF-8 environment variable from the startup command (Control -> Advanced Settings -> Startup Command) when switching languages.
+Run Debian Bookworm with XFCE, LXQt, or other desktop environments on Android—just with one click. Originally developed for Chinese users to run applications like WPS Office, it comes preinstalled with tools such as the Fcitx Pinyin input method. Please note that this app does not require Termux.
 
-Note: Since version 1.0.23, English UI is supported, though some hint texts remain in Chinese.
+To change the language inside the container, simply run the `tmoe` command, select “Manager” and navigate to the locale settings. The root filesystem was built using [tmoe](https://github.com/2moe/tmoe), so locale configuration is handled through it. You will also need to update the `LANG=zh_CN.UTF-8` environment variable in the startup command (go to Control → Advanced Settings → Startup Command) when switching to another language.
+
+Note: English UI is supported since version 1.0.23, though some hint texts may still appear in Chinese.
+As of version 1.0.100, the container will automatically switch to English if it detects that your device is not using Chinese.
 
 ## 特点
 
 - 一键安装，即开即用
 - 来自 kali-undercover 的 win10 主题(仅 xfce 版本)，友好的界面
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img1.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img1.png)
+![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img1.png)
 
-- 提供常用软件的一键安装指令
+- 提供常用软件的一键安装指令（点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img2.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img2.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img2.png)](https://gitee.com/caten/tc-hints/blob/master/pool/solution.md)
 
-- 可方便地改变屏幕缩放，不用担心屏幕过大或过小(仅 novnc)
+- 可方便地改变屏幕缩放，不用担心屏幕过大或过小 （点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img3.gif)](https://github.com/Cateners/tiny_computer/blob/master/readme/img3.gif)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img3.gif)](https://gitee.com/caten/tc-hints/blob/master/pool/scale.md)
 
-- 便捷访问设备文件，或通过设备 SAF 访问软件文件
+- 便捷访问设备文件，或通过设备 SAF 访问软件文件（点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img4.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img4.png)
+[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img4.png)](https://gitee.com/caten/tc-hints/blob/master/pool/fileaccess.md)
 
 - 提供终端和众多可调节参数供高级用户使用
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img5.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/img5.png)
+![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img5.png)
 
 ## 下载
 
