@@ -50,7 +50,7 @@ dependencies:
   x11_flutter:
     git:
       url: https://github.com/tiny-computer/x11_flutter.git
-      ref: ed10bd71a24af6019ce7bccd173ee367546dac2c
+      ref: 3b92b515b1ebc32c93e18e8b3a2983656713e4dd
   avnc_flutter:
     git:
       url: https://github.com/tiny-computer/avnc_flutter.git
