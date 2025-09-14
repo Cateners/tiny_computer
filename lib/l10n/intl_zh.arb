@@ -110,6 +110,5 @@
   "updateRequest": "请尽量使用最新版本。前往项目地址可查看最新版本。",
   "avncScreenResize": "自适应屏幕尺寸",
   "avncResizeFactor": "屏幕缩放比",
-  "avncResizeFactorValue": "当前缩放为",
-  "recommendHidpi": "推荐同步开启高分辨率支持"
+  "avncResizeFactorValue": "当前缩放为"
 }

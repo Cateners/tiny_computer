@@ -354,6 +354,8 @@ class _SettingPageState extends State<SettingPage> {
             _avncScaleFactor += value ? 0.5 : -0.5;
             _avncScaleFactor = _avncScaleFactor.clamp(-1, 1);
             G.prefs.setDouble("avncScaleFactor", _avncScaleFactor);
+            // Termux:X11 并不是设置缩放比例本身，而是倍率
+            X11Flutter.setX11ScaleFactor(value ? 0.5 : 2.0);
             setState(() {});
           },),
           const SizedBox.square(dimension: 16),
@@ -462,12 +464,6 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.prefs.setBool("useX11", value);
             if (!value && Util.getGlobal("dri3")) {
               G.prefs.setBool("dri3", false);
-            }
-            if (value) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context)!.recommendHidpi))
-              );
             }
             setState(() {});
           },),

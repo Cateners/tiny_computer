@@ -212,10 +212,10 @@ class Util {
     
     while (true) {
       bool isReady = await isXServerReady(host, port);
+      await Future.delayed(Duration(seconds: 1));
       if (isReady) {
         return;
       }
-      await Future.delayed(Duration(seconds: 1));
     }
   }
 
@@ -791,8 +791,12 @@ export PROOT_LOADER=\$DATA_DIR/applib/libproot-loader.so
 export PROOT_LOADER_32=\$DATA_DIR/applib/libproot-loader32.so
 ${Util.getCurrentProp("boot")}
 ${G.postCommand}
-${(Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"""mkdir -p "\$HOME/.vnc" && bash /etc/X11/xinit/Xsession &> "\$HOME/.vnc/x.log" &""":Util.getCurrentProp("vnc")):""}
 clear""");
+  }
+
+  static Future<void> launchGUIBackend() async {
+    Util.termWrite((Util.getGlobal("autoLaunchVnc") as bool)?((Util.getGlobal("useX11") as bool)?"""mkdir -p "\$HOME/.vnc" && bash /etc/X11/xinit/Xsession &> "\$HOME/.vnc/x.log" &""":Util.getCurrentProp("vnc")):"");
+    Util.termWrite("clear");
   }
 
   static Future<void> waitForConnection() async {
@@ -853,9 +857,11 @@ clear""");
     if (Util.getGlobal("autoLaunchVnc") as bool) {
       if (G.wasX11Enabled) {
         await Util.waitForXServer();
+        launchGUIBackend();
         launchX11();
         return;
       }
+      launchGUIBackend();
       waitForConnection().then((value) => G.wasAvncEnabled?launchAvnc():launchBrowser());
     }
   }
