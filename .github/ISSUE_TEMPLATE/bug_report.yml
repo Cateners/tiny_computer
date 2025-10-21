@@ -61,36 +61,22 @@ body:
   - type: textarea
     id: why-not-latest
     attributes:
-      label: "若非最新版，必须说明原因"
+      label: "若非最新版，必须说明不使用最新版的原因"
       placeholder: "详细解释原因..."
 
   - type: textarea
     id: steps
     attributes:
-      label: "出现问题的重现步骤"
+      label: "重现问题的操作过程"
       description: |
-        **为什么需要详细步骤？**  
-        Linux的自由度极高，任何操作都可能影响结果，例如：  
-        - 是否通过sudo运行？  
-        - 是否修改过环境变量？  
-        - 是否安装过第三方依赖？
-      placeholder: "也许可以从启动软件开始逐步描述..."
-    validations:
-      required: true
-
-  - type: textarea
-    id: logs
-    attributes:
-      label: "提供终端截图或其他相关信息"
-      description: |
-        **为什么需要这些？**  
-        文字描述可能遗漏关键信息
-      placeholder: "粘贴日志文本或拖入图片..."
-    validations:
-      required: true
+        **请注意：**  
+        请提供从启动软件开始到问题发生的**完整屏幕录制视频**，而不要使用文字描述或截图，因为根据以往的issue来看，用户的描述会遗漏可能的细节。  
+        由于Linux环境的复杂性，任何操作细节（如权限、环境配置等）都可能影响问题的重现。确保你的问题在新安装的小小电脑上可以复现。
+      validations:
+        required: true
 
   - type: markdown
     attributes:
       value: |
         **问题优先级说明：**  
-        本软件的初衷是安装PC级软件如WPS、CAJ Viewer、亿图图示。和这些软件相关的问题会得到重视。如果是其他问题得视情况（受限于精力和能力...），没能修复的issue会保留以让更多人看到，也许网友会有更好的解决办法！
+        本软件的初衷是安装PC级软件如WPS、CAJ Viewer、亿图图示。小小电脑本身的问题，以及和这些软件相关的问题会得到重视。如果是其他问题，尤其是第三方软件或Linux本身的使用方法等，请在[discussion](https://github.com/Cateners/tiny_computer/discussions)区发布讨论

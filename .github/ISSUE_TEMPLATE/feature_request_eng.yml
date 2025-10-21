@@ -14,7 +14,8 @@ body:
     attributes:  
       label: "Must specify usage scenarios and value"  
       description: |  
-        **Why is this needed? (User research data or screenshot statistics are preferred. Avoid subjective descriptions.)**  
+        **Why is this needed? What benefits will implementing this bring to other users? Developers will spend a lot of time on this—what’s in it for them?**  
+        (In short, don’t just make a wish—convince me or other potential (?) developers with solid reasoning! If you want a feature, either take the time to learn and develop it yourself, pay someone to do it, or wait for someone who shares your idea and has the time or money to implement it.)
         Due to limited resources, I'm more likely to adopt valuable and easily implementable features. Unaddressed issues will remain visible for community solutions!  
     validations:  
       required: true  

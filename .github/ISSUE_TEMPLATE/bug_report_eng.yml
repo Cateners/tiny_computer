@@ -60,7 +60,7 @@ body:
   - type: textarea
     id: why-not-latest
     attributes:
-      label: "If not latest version, explanation is mandatory"
+      label: "If not using the latest version, you must explain the reason for not using the latest version"
       placeholder: "Explain in detail..."
 
   - type: textarea
@@ -68,28 +68,14 @@ body:
     attributes:
       label: "Steps to reproduce the issue"
       description: |
-        **Why detailed steps?**  
-        Linux offers extreme flexibility where any operation may affect results, such as:  
-        - Did you run with sudo?  
-        - Modified environment variables?  
-        - Installed third-party dependencies?
-      placeholder: "Maybe start from launching the application..."
-    validations:
-      required: true
-
-  - type: textarea
-    id: logs
-    attributes:
-      label: "Provide terminal screenshots or other relevant information"
-      description: |
-        **Why is this needed?**  
-        Text descriptions might omit critical details
-      placeholder: "Paste log text or drag images here..."
-    validations:
-      required: true
+        **Please note:**  
+        Provide a **complete screen recording video** starting from launching the software until the issue occurs, rather than using text descriptions or screenshots. Based on past issues, user descriptions often omit potential details.  
+        Due to the complexity of the Linux environment, any operational details (such as permissions, environment configurations, etc.) may affect issue reproduction. Ensure your issue can be reproduced on a freshly installed Tiny Computer.
+      validations:
+        required: true
 
   - type: markdown
     attributes:
       value: |
         **Issue Priority Explanation:**  
-        This software's primary purpose is running PC-level applications like WPS, CAJ Viewer, and Edraw Max. Issues related to these applications will receive priority. Other issues will be handled case-by-case (limited by time and capabilities...). Unresolved issues will remain open for community visibility - maybe someone has a better solution!
+        The original purpose of this software is to install PC-level applications such as WPS, CAJ Viewer, and Edraw Max. Issues related to the Tiny Computer itself and problems associated with these software will be prioritized. For other issues, especially those involving third-party software or general Linux usage, please post in the [discussion](https://github.com/Cateners/tiny_computer/discussions) section.
