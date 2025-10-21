@@ -71,8 +71,8 @@ body:
         **Please note:**  
         Provide a **complete screen recording video** starting from launching the software until the issue occurs, rather than using text descriptions or screenshots. Based on past issues, user descriptions often omit potential details.  
         Due to the complexity of the Linux environment, any operational details (such as permissions, environment configurations, etc.) may affect issue reproduction. Ensure your issue can be reproduced on a freshly installed Tiny Computer.
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: markdown
     attributes:

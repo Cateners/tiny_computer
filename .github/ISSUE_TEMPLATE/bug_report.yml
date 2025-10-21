@@ -72,8 +72,8 @@ body:
         **请注意：**  
         请提供从启动软件开始到问题发生的**完整屏幕录制视频**，而不要使用文字描述或截图，因为根据以往的issue来看，用户的描述会遗漏可能的细节。  
         由于Linux环境的复杂性，任何操作细节（如权限、环境配置等）都可能影响问题的重现。确保你的问题在新安装的小小电脑上可以复现。
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: markdown
     attributes:
