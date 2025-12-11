@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tc_app_name">Tiny Computer</string>
+
+    <string name="tc_s9a_error_message">Terminal terminated abnormally with signal 9. This error is caused by Android 12+ system limiting the number of child processes and requires manual removal of the restriction.</string>
+    <string name="tc_s9a_kaomoji">:(</string>
+    <string name="tc_s9a_solution_intro">You can use the following tool to fix:</string>
+    <string name="tc_s9a_solution_alternative">If the above tool cannot fix the issue, or if the device is a HarmonyOS device, please follow the tutorial below (requires a computer and data cable):</string>
+    <string name="tc_s9a_tool_button">Repair Tool</string>
+    <string name="tc_s9a_tutorial_button">Tutorial Link</string>
+    <string name="tc_s9a_solution_android14">Please enable developer options in the Settings app (usually by going to About device -> System version -> tap System version 5 times continuously), then find "Stop restricting child processes" in developer options and turn on the switch. The steps to enable Developer Options may vary slightly depending on the device model. For specific methods, you can search online.</string>
+</resources>

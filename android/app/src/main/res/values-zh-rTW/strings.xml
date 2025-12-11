@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tc_app_name">小小電腦</string>
+
+    <string name="tc_s9a_error_message">終端異常終止，返回錯誤碼9。此錯誤是安卓12+系統限制子進程數量造成的，需要手動關閉限制。</string>
+    <string name="tc_s9a_kaomoji">:(</string>
+    <string name="tc_s9a_solution_intro">可以使用以下工具修復：</string>
+    <string name="tc_s9a_solution_alternative">如果以上工具無法修復，或者設備為鴻蒙設備，請按照以下教程解決（需要電腦和數據線）：</string>
+    <string name="tc_s9a_tool_button">修復工具</string>
+    <string name="tc_s9a_tutorial_button">教程鏈接</string>
+    <string name="tc_s9a_solution_android14">請在設置應用中啟用開發者選項（通常步驟是找到關於設備->系統版本->連續點擊系統版本5次），然後在開發者選項中找到\"停止限制子進程\"，打開開關即可。不同機型開啟開發者選項的步驟可能略有不同，具體方法可在網絡搜尋。</string>
+</resources>

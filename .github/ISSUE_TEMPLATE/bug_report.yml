@@ -1,0 +1,82 @@
+name: Bug 报告
+description: 报告软件异常行为（提交前请阅读所有说明文字）
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **必读须知：**
+        - 请先搜索[所有issue](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue)，**相同问题重复提交会被直接关闭**
+        - 请先自查[常见使用问题](https://gitee.com/caten/tc-hints/blob/master/pool/faq.md)，是否能解决你的问题
+        - 本模板中的每项要求都有其特定原因，请完整填写
+
+  - type: input
+    id: device
+    attributes:
+      label: "设备型号"
+      description: |
+        **为什么需要这个信息？**  
+        许多Bug与设备强相关，例如：
+        - 三星OneUI 7无法使用v1.0.23及以下版本（issue #303）
+        - 鸿蒙4缺少无线调试选项
+      placeholder: "品牌+具体型号"
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: "操作系统版本"
+      description: |
+        **为什么需要这个信息？**  
+        Android各版本存在兼容性差异
+      placeholder: "完整系统名称+版本号"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "小小电脑版本"
+      description: |
+        **为什么需要这个信息？**  
+        1. 旧版问题可能已在新版修复（请始终使用最新版）  
+        2. 不同桌面环境（XFCE/LXQT/GXDE）行为可能不同  
+        **如果不是最新版，请做好问题被忽略的准备**
+      placeholder: "版本号+桌面环境（如：v1.0.23 GXDE）"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-latest
+    attributes:
+      label: "是否最新版？"
+      options:
+        - "是"
+        - "否"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-not-latest
+    attributes:
+      label: "若非最新版，必须说明不使用最新版的原因"
+      placeholder: "详细解释原因..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "重现问题的操作过程"
+      description: |
+        **请注意：**  
+        请提供从启动软件开始到问题发生的**完整屏幕录制视频**，而不要使用文字描述或截图，因为根据以往的issue来看，用户的描述会遗漏可能的细节。  
+        由于Linux环境的复杂性，任何操作细节（如权限、环境配置等）都可能影响问题的重现。确保你的问题在新安装的小小电脑上可以复现。
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **问题优先级说明：**  
+        本软件的初衷是安装PC级软件如WPS、CAJ Viewer、亿图图示。小小电脑本身的问题，以及和这些软件相关的问题会得到重视。如果是其他问题，尤其是第三方软件或Linux本身的使用方法等，请在[discussion](https://github.com/Cateners/tiny_computer/discussions)区发布讨论

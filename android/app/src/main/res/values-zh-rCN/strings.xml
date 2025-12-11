@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tc_app_name">小小电脑</string>
+
+    <string name="tc_s9a_error_message">终端异常终止，返回错误码9。此错误是安卓12+系统限制子进程数量造成的，需要手动关闭限制。</string>
+    <string name="tc_s9a_kaomoji">:(</string>
+    <string name="tc_s9a_solution_intro">可以使用以下工具修复：</string>
+    <string name="tc_s9a_solution_alternative">如果以上工具无法修复，或者设备为鸿蒙设备，请按照以下教程解决（需要电脑和数据线）：</string>
+    <string name="tc_s9a_tool_button">修复工具</string>
+    <string name="tc_s9a_tutorial_button">教程链接</string>
+    <string name="tc_s9a_solution_android14">请在设置应用中启用开发者选项（通常步骤是找到关于设备->系统版本->连续点击系统版本5次），然后在开发者选项中找到\"停止限制子进程\"，打开开关即可。不同机型开启开发者选项的步骤可能略有不同，具体方法可在网络搜索。</string>
+</resources>

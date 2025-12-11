@@ -1,0 +1,81 @@
+name: Bug Report
+description: Report abnormal software behavior (please read all instructions before submitting)
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Important Notes:**
+        - First search [all issues](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue). **Duplicate reports will be closed immediately**
+        - Every requirement in this template has its specific purpose. Please complete all fields
+
+  - type: input
+    id: device
+    attributes:
+      label: "Device Model"
+      description: |
+        **Why is this needed?**  
+        Many bugs are device-specific, such as:
+        - Samsung OneUI 7 incompatible with v1.0.23 and below (issue #303)
+        - HarmonyOS 4 missing wireless debugging option
+      placeholder: "Brand + specific model"
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: "Operating System Version"
+      description: |
+        **Why is this needed?**  
+        Compatibility varies across Android versions
+      placeholder: "Full OS name + version number"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "Tiny Computer Version"
+      description: |
+        **Why is this needed?**  
+        1. Old version issues may have been fixed in newer releases (always use the latest version)  
+        2. Different desktop environments (XFCE/LXQT/GXDE) may behave differently  
+        **If not using the latest version, be prepared for your issue to be ignored**
+      placeholder: "Version number + desktop environment (e.g., v1.0.23 GXDE)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-latest
+    attributes:
+      label: "Is this the latest version?"
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-not-latest
+    attributes:
+      label: "If not using the latest version, you must explain the reason for not using the latest version"
+      placeholder: "Explain in detail..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce the issue"
+      description: |
+        **Please note:**  
+        Provide a **complete screen recording video** starting from launching the software until the issue occurs, rather than using text descriptions or screenshots. Based on past issues, user descriptions often omit potential details.  
+        Due to the complexity of the Linux environment, any operational details (such as permissions, environment configurations, etc.) may affect issue reproduction. Ensure your issue can be reproduced on a freshly installed Tiny Computer.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **Issue Priority Explanation:**  
+        The original purpose of this software is to install PC-level applications such as WPS, CAJ Viewer, and Edraw Max. Issues related to the Tiny Computer itself and problems associated with these software will be prioritized. For other issues, especially those involving third-party software or general Linux usage, please post in the [discussion](https://github.com/Cateners/tiny_computer/discussions) section.

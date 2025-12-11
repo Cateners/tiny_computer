@@ -1,0 +1,21 @@
+name: 功能请求
+description: "请先确认：该功能是否能显著提升小小电脑的使用体验？"
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **必读须知：**
+        - 请先搜索[所有issue](https://github.com/Cateners/tiny_computer/issues?q=is%3Aissue)，**相同问题重复提交会被直接关闭**
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: "必须说明使用场景和价值"
+      description: |
+        **为什么需要这个？实现这个会对其他用户带来什么好处？开发者会花费许多时间在上面，这对开发者有什么好处？**  
+        （简单来说，就是不要许愿，用充分的理由来说服我或其他潜在(?)的开发者吧！如果你想要一个功能，要么有时间自己学自己开发，要么用钱雇人做，要么等待其他和你想法一致且有时间或有钱的人来做）
+        因为精力有限，我会更高可能采纳有价值且易实现的功能。没能处理的issue会保留以让更多人看到，也许网友会有更好的解决办法！
+    validations:
+      required: true
