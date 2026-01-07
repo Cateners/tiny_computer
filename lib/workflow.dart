@@ -612,7 +612,14 @@ chmod 1777 tmp
     Util.createDirFromString("${G.dataPath}/containers/0/.l2s");
     //这个是容器rootfs，被split命令分成了xa*，放在assets里
     //首次启动，就用这个，别让用户另选了
-    for (String name in jsonDecode(await rootBundle.loadString('AssetManifest.json')).keys.where((String e) => e.startsWith("assets/xa")).map((String e) => e.split("/").last).toList()) {
+	//使用 AssetManifest API 获取 assets/xa* 文件列表
+    final AssetManifest manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final List<String> xaFiles = manifest
+        .listAssets()
+        .where((String key) => key.startsWith('assets/xa'))
+        .map((String key) => key.split('/').last)
+        .toList();
+    for (String name in xaFiles) {
       await Util.copyAsset("assets/$name", "${G.dataPath}/$name");
     }
     //-J
