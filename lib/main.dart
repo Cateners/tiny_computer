@@ -170,7 +170,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  final List<bool> _expandState = [false, false, false, false, false, false];
+  final List<bool> _expandState = [false, false, false, false, false, false, false];
 
   double _avncScaleFactor = Util.getGlobal("avncScaleFactor") as double;
 
@@ -601,6 +601,37 @@ sed -i -E "s@^(VNC_RESOLUTION)=.*@\\1=${w}x${h}@" \$(command -v startvnc)""");
             G.prefs.setBool("isJpEnabled", value);
             setState(() {});
           },),
+        ],))),
+      ExpansionPanel(
+        isExpanded: _expandState[6],
+        headerBuilder: ((context, isExpanded) {
+          return ListTile(title: Text(AppLocalizations.of(context)!.microphoneSupport), subtitle: Text(AppLocalizations.of(context)!.experimentalFeature));
+        }), body: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
+          const SizedBox.square(dimension: 16),
+          SwitchListTile(title: Text(AppLocalizations.of(context)!.startStreaming), value: G.isStreaming, onChanged:(value) async {
+            if (value) {
+              await Permission.microphone.request();
+              if (await Permission.microphone.isGranted) {
+                String path = "/tmp/android_audio";
+                D.androidChannel.invokeMethod("startStreaming", {"path": "${G.dataPath}/containers/${G.currentContainer}$path"});
+                Util.termWrite("""
+pactl load-module module-null-sink sink_name=AndroidSink sink_properties=device.description="Android_Audio_Stream"
+pactl load-module module-remap-source master=AndroidSink.monitor source_name=AndroidMic source_properties=device.description="Android_Virtual_Mic"
+pkill -f tiny_virtual_mic
+tiny_virtual_mic $path AndroidSink &""");
+                G.pageIndex.value = 0;
+              }
+            } else {
+              Util.termWrite("""
+pactl list short modules | grep "Android" | cut -f1 | xargs -L1 pactl unload-module
+pkill -f tiny_virtual_mic""");
+              G.pageIndex.value = 0;
+              D.androidChannel.invokeMethod("stopStreaming", {});
+            }
+            G.isStreaming = value;
+            setState(() {});
+          },),
+          const SizedBox.square(dimension: 16),
         ],))),
     ],);
   }

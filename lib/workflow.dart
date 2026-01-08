@@ -123,7 +123,6 @@ class Util {
       case "avncResizeDesktop" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(true);
       case "avncScaleFactor" : return b ? G.prefs.getDouble(key)!.clamp(-1.0, 1.0) : (value){G.prefs.setDouble(key, value); return value;}(-0.5);
       case "useX11" : return b ? G.prefs.getBool(key)! : (value){G.prefs.setBool(key, value); return value;}(false);
-      case "defaultFFmpegCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("-hide_banner -an -max_delay 1000000 -r 30 -f android_camera -camera_index 0 -i 0:0 -vf scale=iw/2:-1 -rtsp_transport udp -f rtsp rtsp://127.0.0.1:8554/stream");
       case "defaultVirglCommand" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("--use-egl-surfaceless --use-gles --socket-path=\$CONTAINER_DIR/tmp/.virgl_test");
       case "defaultVirglOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("GALLIUM_DRIVER=virpipe");
       case "defaultTurnipOpt" : return b ? G.prefs.getString(key)! : (value){G.prefs.setString(key, value); return value;}("MESA_LOADER_DRIVER_OVERRIDE=zink VK_ICD_FILENAMES=/home/tiny/.local/share/tiny/extra/freedreno_icd.aarch64.json TU_DEBUG=noconform");
@@ -518,11 +517,7 @@ class G {
   static late VirtualKeyboard keyboard; //存储ctrl, shift, alt状态
   static bool maybeCtrlJ = false; //为了区分按下的ctrl+J和enter而准备的变量
   static ValueNotifier<double> termFontScale = ValueNotifier(1); //终端字体大小，存储为G.prefs的termFontScale
-  static bool isStreamServerStarted = false;
   static bool isStreaming = false;
-  //static int? streamingPid;
-  static String streamingOutput = "";
-  static late Pty streamServerPty;
   //static int? virglPid;
   static ValueNotifier<int> pageIndex = ValueNotifier(0); //主界面索引
   static ValueNotifier<bool> terminalPageChange = ValueNotifier(true); //更改值，用于刷新小键盘
@@ -532,7 +527,6 @@ class G {
   
   static bool wasAvncEnabled = false;
   static bool wasX11Enabled = false;
-
 
   static late SharedPreferences prefs;
 }
@@ -777,6 +771,7 @@ ${G.dataPath}/bin/virgl_test_server ${Util.getGlobal("defaultVirglCommand")}""")
     }
     extraMount += "--mount=\$DATA_DIR/tiny/font:/usr/share/fonts/tiny ";
     extraMount += "--mount=\$DATA_DIR/tiny/extra/cmatrix:/home/tiny/.local/bin/cmatrix ";
+    extraMount += "--mount=\$DATA_DIR/tiny/extra/tiny_virtual_mic:/home/tiny/.local/bin/tiny_virtual_mic ";
     Util.termWrite(
 """
 export DATA_DIR=${G.dataPath}

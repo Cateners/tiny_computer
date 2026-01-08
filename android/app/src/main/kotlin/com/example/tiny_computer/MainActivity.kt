@@ -27,6 +27,12 @@ class MainActivity: FlutterActivity() {
                 "getNativeLibraryPath" -> {
                     result.success(getApplicationInfo().nativeLibraryDir)
                 }
+                "startStreaming" -> {
+                    AudioStream.startStreaming(call.argument("path")!!)
+                }
+                "stopStreaming" -> {
+                    AudioStream.stopStreaming()
+                }
                 else -> {
                     // 不支持的方法名
                     result.notImplemented()

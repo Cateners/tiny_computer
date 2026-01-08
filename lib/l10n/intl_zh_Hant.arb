@@ -109,5 +109,7 @@
   "updateRequest": "請盡量使用最新版本。前往專案網址查看最新版本。",
   "avncScreenResize": "自適應螢幕尺寸",
   "avncResizeFactor": "螢幕縮放比",
-  "avncResizeFactorValue": "目前縮放為"
+  "avncResizeFactorValue": "目前縮放為",
+  "microphoneSupport": "麥克風支援",
+  "startStreaming": "開啟麥克風"
 }

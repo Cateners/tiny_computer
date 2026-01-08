@@ -109,5 +109,7 @@
   "updateRequest": "Please try to use the latest version. Visit the project address to check for the latest version.",
   "avncScreenResize": "Adaptive Screen Size",
   "avncResizeFactor": "Screen Scaling Ratio", 
-  "avncResizeFactorValue": "Current scaling is"
+  "avncResizeFactorValue": "Current scaling is",
+  "microphoneSupport": "Microphone Support",
+  "startStreaming": "Start Microphone"
 }
