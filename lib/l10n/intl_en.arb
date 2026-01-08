@@ -31,7 +31,6 @@
   "reinstallBootPackage": "Reinstall Boot Package",
   "getifaddrsBridge": "getifaddrs Bridge",
   "fixGetifaddrsPermission": "Fix getifaddrs permission on Android 13",
-  "fakeUOSSystem": "Pretend System as UOS",
   "displaySettings": "Display Settings",
   "avncAdvantages": "AVNC provides better control experience than noVNC:\nTouchpad controls, two-finger tap for keyboard, auto clipboard, picture-in-picture mode, etc.",
   "avncSettings": "AVNC Settings",

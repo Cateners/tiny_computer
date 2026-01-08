@@ -31,7 +31,6 @@
   "reinstallBootPackage": "重新安裝啟動套件",
   "getifaddrsBridge": "getifaddrs 橋接",
   "fixGetifaddrsPermission": "修復 Android 13 裝置 getifaddrs 無權限",
-  "fakeUOSSystem": "偽裝系統為 UOS",
   "displaySettings": "顯示設定",
   "avncAdvantages": "AVNC 可帶來比 noVNC 更好的操作體驗；如觸控板觸控、雙指單擊喚出鍵盤、自動剪貼簿、畫中畫模式等。",
   "avncSettings": "AVNC 設定",
