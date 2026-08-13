@@ -65,6 +65,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <Button
+                    android:id="@+id/export_to_file"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tooltipText="@string/tc4_quicks_cd_export_file"
+                    app:icon="@drawable/upload_24dp_1f1f1f_fill0_wght400_grad0_opsz24" />
+                <Button
+                    android:id="@+id/import_from_file"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tooltipText="@string/tc4_quicks_cd_import_file"
+                    app:icon="@drawable/download_24dp_1f1f1f_fill0_wght400_grad0_opsz24" />
+                <Button
                     android:id="@+id/import_from_clipboard"
                     style="?attr/materialIconButtonStyle"
                     android:layout_width="wrap_content"

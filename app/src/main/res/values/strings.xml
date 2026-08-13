@@ -143,6 +143,8 @@
     <string name="tc4_quick_import_partial">Imported %1$d, failed %2$d</string>
     <string name="tc4_quick_import_failed">Import failed: %1$s</string>
     <string name="tc4_quick_copied">Copied %1$d node(s) to clipboard</string>
+    <string name="tc4_quick_export_file_success">Exported to file</string>
+    <string name="tc4_quick_export_file_failed">Export failed: %1$s</string>
 
     <!-- ==================== Validation ==================== -->
     <string name="tc4_validate_name_empty">Name cannot be empty</string>
@@ -239,6 +241,8 @@
 
     <!-- ==================== Quicks Toolbar Content Descriptions ==================== -->
     <string name="tc4_quicks_cd_paste">Paste</string>
+    <string name="tc4_quicks_cd_export_file">Export to File</string>
+    <string name="tc4_quicks_cd_import_file">Import from File</string>
     <string name="tc4_quicks_cd_add_folder">Add Folder</string>
     <string name="tc4_quicks_cd_add">Add</string>
     <string name="tc4_quicks_cd_delete">Delete</string>

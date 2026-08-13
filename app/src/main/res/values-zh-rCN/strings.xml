@@ -143,6 +143,8 @@
     <string name="tc4_quick_import_partial">成功导入 %1$d 个，失败 %2$d 个</string>
     <string name="tc4_quick_import_failed">导入失败：%1$s</string>
     <string name="tc4_quick_copied">已复制 %1$d 个节点到剪贴板</string>
+    <string name="tc4_quick_export_file_success">已导出到文件</string>
+    <string name="tc4_quick_export_file_failed">导出失败：%1$s</string>
 
     <!-- ==================== Validation ==================== -->
     <string name="tc4_validate_name_empty">名称不能为空</string>
@@ -239,6 +241,8 @@
 
     <!-- ==================== Quicks Toolbar Content Descriptions ==================== -->
     <string name="tc4_quicks_cd_paste">粘贴</string>
+    <string name="tc4_quicks_cd_export_file">导出到文件</string>
+    <string name="tc4_quicks_cd_import_file">从文件导入</string>
     <string name="tc4_quicks_cd_add_folder">添加文件夹</string>
     <string name="tc4_quicks_cd_add">添加</string>
     <string name="tc4_quicks_cd_delete">删除</string>

@@ -18,11 +18,13 @@
 package com.fct.tc4.ui.page
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -85,6 +87,16 @@ class QuicksFragment : Fragment() {
             QuicksViewModel.Tab.COMMANDS -> "commands"
             QuicksViewModel.Tab.OPTIONS -> "options"
         }
+
+    // ========== 文件导入/导出（Storage Access Framework） ==========
+
+    private val exportToFileLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/x-yaml")
+    ) { uri -> uri?.let { writeExport(it) } }
+
+    private val importFromFileLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> uri?.let { readImport(it) } }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -203,6 +215,16 @@ class QuicksFragment : Fragment() {
             } else {
                 Snackbar.make(binding.root, getString(R.string.tc4_quick_import_failed, result.errors.first()), Snackbar.LENGTH_LONG).show()
             }
+        }
+
+        // ========== export_to_file / import_from_file ==========
+
+        binding.exportToFile.setOnClickListener {
+            exportToFileLauncher.launch("tiny_container_quicks.yaml")
+        }
+
+        binding.importFromFile.setOnClickListener {
+            importFromFileLauncher.launch(arrayOf("*/*"))
         }
 
         // ========== add_folder ==========
@@ -348,6 +370,8 @@ class QuicksFragment : Fragment() {
 
                 binding.buttonGroup.isEnabled = !selecting
                 binding.importFromClipboard.isEnabled = !selecting
+                binding.exportToFile.isEnabled = !selecting
+                binding.importFromFile.isEnabled = !selecting
                 binding.addFolder.isEnabled = !selecting
                 binding.add.isEnabled = !selecting
                 setChipGroupEnabled(!selecting)
@@ -455,6 +479,54 @@ class QuicksFragment : Fragment() {
             } else {
                 chip.visibility = View.VISIBLE
             }
+        }
+    }
+
+    /** 将整份 Quicks 配置写入用户选择的文件 */
+    private fun writeExport(uri: Uri) {
+        try {
+            val yamlText = viewModel.exportAllToYaml()
+            requireContext().contentResolver.openOutputStream(uri)?.use { out ->
+                out.write(yamlText.toByteArray())
+            } ?: throw java.io.IOException("openOutputStream returned null")
+            Snackbar.make(binding.root, R.string.tc4_quick_export_file_success, Snackbar.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.tc4_quick_export_file_failed, e.message),
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    /** 读取用户选择的文件并导入整份 Quicks 配置 */
+    private fun readImport(uri: Uri) {
+        val text = try {
+            requireContext().contentResolver.openInputStream(uri)?.use { input ->
+                input.readBytes().decodeToString()
+            } ?: throw java.io.IOException("openInputStream returned null")
+        } catch (e: Exception) {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.tc4_quick_import_failed, e.message),
+                Snackbar.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        val result = viewModel.importAllFromYaml(text, requireContext())
+        if (result.errors.isEmpty()) {
+            Snackbar.make(binding.root, getString(R.string.tc4_quick_import_success, result.successCount), Snackbar.LENGTH_SHORT).show()
+        } else if (result.successCount > 0) {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.tc4_quick_import_partial, result.successCount, result.errors.size),
+                Snackbar.LENGTH_LONG
+            ).setAction(R.string.tc4_btn_details) {
+                Snackbar.make(binding.root, result.errors.joinToString("\n"), Snackbar.LENGTH_LONG).show()
+            }.show()
+        } else {
+            Snackbar.make(binding.root, getString(R.string.tc4_quick_import_failed, result.errors.first()), Snackbar.LENGTH_LONG).show()
         }
     }
 

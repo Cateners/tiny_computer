@@ -227,6 +227,12 @@ class QuicksViewModel(application: Application) : AndroidViewModel(application) 
         clipboard.setPrimaryClip(ClipData.newPlainText("yaml", yamlText))
     }
 
+    /** 导出整份 Quicks 配置（quick_commands + options）为 YAML 文本，用于写入文件 */
+    fun exportAllToYaml(): String {
+        val config = configRef ?: return ""
+        return exportConfigToYaml(config)
+    }
+
     // ===================== 叶子节点操作 =====================
 
     @Suppress("UNCHECKED_CAST")
@@ -286,6 +292,56 @@ class QuicksViewModel(application: Application) : AndroidViewModel(application) 
         }
 
         return ImportResult(validNodes.size, errors)
+    }
+
+    /** 从文件读取的 YAML 文本导入整份配置：校验后合并 quick_commands 与 options 并保存 */
+    fun importAllFromYaml(text: String, context: Context): ImportResult {
+        val parsed: Map<*, *> = try {
+            when (val raw: Any? = Yaml().load(text)) {
+                is Map<*, *> -> raw
+                null -> return ImportResult(0, listOf(context.getString(R.string.tc4_validate_clipboard_content_empty)))
+                else -> return ImportResult(0, listOf(context.getString(R.string.tc4_validate_yaml_not_object)))
+            }
+        } catch (e: Exception) {
+            return ImportResult(0, listOf(context.getString(R.string.tc4_validate_yaml_format_error, e.message)))
+        }
+
+        val errors = mutableListOf<String>()
+        var successCount = 0
+        successCount += importSubtree(parsed["quick_commands"], "quick_commands", setOf("command", "commands"), context, errors)
+        successCount += importSubtree(parsed["options"], "options", setOf("option", "options"), context, errors)
+
+        if (successCount > 0) save()
+        return ImportResult(successCount, errors)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun importSubtree(
+        raw: Any?, rootKey: String, validTypes: Set<String>,
+        context: Context, errors: MutableList<String>
+    ): Int {
+        if (raw == null) return 0
+        val nodes = (raw as? List<*>)?.filterNotNull() ?: run {
+            errors.add(context.getString(R.string.tc4_validate_yaml_not_object))
+            return 0
+        }
+
+        val validNodes = mutableListOf<Map<String, Any>>()
+        nodes.forEachIndexed { i, obj ->
+            val err = validateNode(obj, validTypes, context)
+            if (err != null) {
+                errors.add(getApplication<Application>().getString(R.string.tc4_validate_yaml_line_error, i + 1, err))
+            } else {
+                validNodes.add(obj as Map<String, Any>)
+            }
+        }
+
+        if (validNodes.isNotEmpty()) {
+            val list = configRef?.get(rootKey) as? MutableList<Any>
+                ?: mutableListOf<Any>().also { configRef?.put(rootKey, it) }
+            list.addAll(validNodes.map { it.toMutableMap() })
+        }
+        return validNodes.size
     }
 
     private fun validateNode(node: Any?, validTypes: Set<String>, context: Context): String? {
@@ -410,6 +466,16 @@ class QuicksViewModel(application: Application) : AndroidViewModel(application) 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return QuicksViewModel(application) as T
+        }
+    }
+
+    companion object {
+        /** 将整份配置的 quick_commands 与 options 子树序列化为 YAML（不依赖 Android Context，便于单测） */
+        fun exportConfigToYaml(config: Map<String, Any>): String {
+            val export = LinkedHashMap<String, Any>()
+            (config["quick_commands"] as? List<*>)?.let { export["quick_commands"] = it }
+            (config["options"] as? List<*>)?.let { export["options"] = it }
+            return Yaml().dump(export)
         }
     }
 }
