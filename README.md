@@ -5,7 +5,7 @@
 > [!NOTE]
 > Linux is powerful. Linux can also be easy to use.
 
-### Install Tiny Container and instantly get a Linux computer* — run PC software right on your phone or tablet!
+### Install Tiny Container and instantly get a Linux computer — run PC software right on your phone or tablet!
 
 ![Preview image](doc/tc4.png)
 
