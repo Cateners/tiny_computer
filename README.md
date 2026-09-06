@@ -1,4 +1,4 @@
-[![小小电脑使用照片](https://github.com/Cateners/tiny_computer/raw/master/readme/cover0.png)](https://github.com/Cateners/tiny_computer/blob/master/readme/cover0.png)
+[![小小电脑使用照片](readme/cover0.png)](readme/cover0.png)
 
 # 小小电脑
 
@@ -17,23 +17,23 @@ As of version 1.0.100, the container will automatically switch to English if it 
 - 一键安装，即开即用
 - 来自 kali-undercover 的 win10 主题(仅 xfce 版本)，友好的界面
 
-![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img1.png)
+![1](readme/img1.png)
 
 - 提供常用软件的一键安装指令（点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img2.png)](https://gitee.com/caten/tc-hints/blob/master/pool/solution.md)
+[![1](readme/img2.png)](https://gitee.com/caten/tc-hints/blob/master/pool/solution.md)
 
 - 可方便地改变屏幕缩放，不用担心屏幕过大或过小 （点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img3.gif)](https://gitee.com/caten/tc-hints/blob/master/pool/scale.md)
+[![1](readme/img3.gif)](https://gitee.com/caten/tc-hints/blob/master/pool/scale.md)
 
 - 便捷访问设备文件，或通过设备 SAF 访问软件文件（点击图片可查看更多说明）
 
-[![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img4.png)](https://gitee.com/caten/tc-hints/blob/master/pool/fileaccess.md)
+[![1](readme/img4.png)](https://gitee.com/caten/tc-hints/blob/master/pool/fileaccess.md)
 
 - 提供终端和众多可调节参数供高级用户使用
 
-![1](https://github.com/Cateners/tiny_computer/raw/master/readme/img5.png)
+![1](readme/img5.png)
 
 ## 下载
 
