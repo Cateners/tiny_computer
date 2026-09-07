@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:name=".Tc4Application"
@@ -63,6 +64,16 @@
         <activity
             android:name=".ui.page.LicenseActivity"
             android:exported="false" />
+
+        <service
+            android:name=".x11.XServerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            android:process=":xserver">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="@string/tc4_xserver_special_use" />
+        </service>
 
         <provider
             android:name=".ui.misc.TinyDocumentsProvider"

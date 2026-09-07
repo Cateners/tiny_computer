@@ -22,7 +22,6 @@ import android.content.Intent
 import android.system.Os
 import android.system.OsConstants
 import android.util.Log
-import com.termux.x11.CmdEntryPointService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,6 +35,7 @@ import com.fct.tc4.ui.misc.ConfigManager
 import com.fct.tc4.ui.misc.Global
 import com.fct.tc4.ui.misc.UpdateChecker
 import com.fct.tc4.ui.misc.UpdateResult
+import com.fct.tc4.x11.XServerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -321,19 +321,12 @@ class ContainerMainViewModel(
             "1",
             app.packageName
         )
-        app.startService(Intent(app, CmdEntryPointService::class.java).apply {
-            action = CmdEntryPointService.ACTION_START
-            putExtra(CmdEntryPointService.EXTRA_ARGS, xserverArgs.toTypedArray())
-            putExtra(CmdEntryPointService.EXTRA_ENV_KEYS, envKeys)
-            putExtra(CmdEntryPointService.EXTRA_ENV_VALUES, envVals)
-        })
+        XServerService.start(app, xserverArgs.toTypedArray(), envKeys, envVals)
     }
 
     private fun killXServer() {
         if (xserverStarted) {
-            getApplication<Application>().startService(Intent(
-                getApplication(), CmdEntryPointService::class.java
-            ).apply { action = CmdEntryPointService.ACTION_STOP })
+            XServerService.stop(getApplication())
             xserverStarted = false
         }
     }
