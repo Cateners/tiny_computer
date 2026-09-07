@@ -1,5 +1,6 @@
 <resources>
     <string name="tc4_app_name">小小容器</string>
+    <string name="tc4_xserver_notification_text">小小容器正在提供 X11 显示服务</string>
 
     <!-- ==================== Common Buttons ==================== -->
     <string name="tc4_btn_ok">确定</string>

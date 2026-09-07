@@ -1,5 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="tc4_app_name">Tiny Container</string>
+    <string name="tc4_xserver_notification_text" tools:ignore="MissingTranslation">Tiny Container is providing the X11 display server</string>
+    <string name="tc4_xserver_special_use" translatable="false">Keeps the local X11 display server available while the user is running a Linux desktop</string>
 
     <!-- ==================== Common Buttons ==================== -->
     <string name="tc4_btn_ok">OK</string>
